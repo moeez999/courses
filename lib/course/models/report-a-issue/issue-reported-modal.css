@@ -1,0 +1,39 @@
+.issue-reported-modal {
+  min-height: 390px;
+  gap: 35px;
+  padding-top: 83px;
+
+  .icon-and-heading {
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .icon-container {
+      width: 83px;
+      height: 83px;
+      border-radius: 50%;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      -ms-border-radius: 50%;
+      -o-border-radius: 50%;
+      background: rgba(254, 240, 199, 1);
+      border: 13.83px solid rgba(255, 250, 235, 1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      svg {
+        width: 36px;
+      }
+    }
+
+    h1 {
+      font-weight: 600;
+      font-size: 24px;
+      color: rgba(18, 17, 23, 1);
+      text-align: center;
+    }
+  }
+}

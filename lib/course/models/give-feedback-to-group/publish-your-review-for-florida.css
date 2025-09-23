@@ -1,0 +1,240 @@
+.publish-your-review-for-florida-1-modal {
+  width: 752px;
+  padding: 64px 48px 48px;
+
+  section.top-part {
+    width: 100%;
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+
+    h1.heading {
+      font-weight: 600;
+      font-size: 21.38px;
+      letter-spacing: 0.3px;
+      color: rgba(18, 17, 23, 1);
+    }
+
+    .review {
+      width: 100%;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      align-items: flex-start;
+
+      .review-short-detail {
+        display: flex;
+        gap: 11px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+
+        h1 {
+          font-family: "Noto Sans", sans-serif;
+          font-weight: 500;
+          font-size: 48px;
+          line-height: 43.2px;
+        }
+
+        .stars {
+          display: flex;
+          gap: 6px;
+          justify-content: center;
+          align-items: center;
+
+          svg {
+            width: 17.12px;
+          }
+        }
+
+        p {
+          font-size: 14px;
+          letter-spacing: 0.07px;
+          color: rgba(77, 76, 92, 1);
+        }
+      }
+
+      .review-bar {
+        flex: 1;
+        display: flex;
+        gap: 2px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .rating-bar {
+          width: 100%;
+          display: flex;
+          gap: 7.06px;
+          justify-content: center;
+          align-items: center;
+
+          &.active-text-color {
+            .rating-stage,
+            .rating-count {
+              color: rgba(18, 17, 23, 1);
+            }
+          }
+
+          .rating-stage,
+          .rating-count {
+            font-family: "Figtree", sans-serif;
+            font-size: 14px;
+            color: rgba(77, 76, 92, 1);
+          }
+
+          .review-progress {
+            flex: 1;
+            height: 8px;
+            border: 2px solid rgba(18, 17, 23, 1);
+            background-color: rgba(244, 244, 248, 1);
+            position: relative;
+
+            &::before {
+              content: "";
+              width: var(--progress-width, 0);
+              height: 100%;
+              position: absolute;
+              left: 0;
+              background-color: rgba(18, 17, 23, 1);
+            }
+          }
+        }
+      }
+    }
+
+    .review-form {
+      width: 100%;
+      display: flex;
+      gap: 24px;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+
+      .btnGroup {
+        width: 100%;
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        align-items: center;
+
+        button {
+          width: 160px;
+          font-size: 14px;
+          font-weight: 600;
+          letter-spacing: 0.09px;
+        }
+      }
+    }
+  }
+
+  section.student-reviews {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+
+    h1.heading {
+      font-weight: 600;
+      font-size: 21.38px;
+      line-height: 32px;
+      letter-spacing: 0.3px;
+      color: rgba(18, 17, 23, 1);
+    }
+
+    .review-cards {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .review-card {
+        width: 100%;
+        display: flex;
+        gap: 16px;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 17px 0;
+        border-top: 1px solid rgba(220, 220, 229, 1);
+
+        .top {
+          width: 100%;
+          display: flex;
+          gap: 16px;
+          justify-content: flex-start;
+          align-items: center;
+          overflow: hidden;
+
+          .image {
+            width: 48px;
+            height: 48px;
+            border-radius: 4px;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            -ms-border-radius: 4px;
+            -o-border-radius: 4px;
+            border: 1px solid rgba(18, 17, 23, 0.06);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+
+            img {
+              width: 100%;
+              height: 100%;
+            }
+          }
+
+          .name-and-date {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+
+            h1 {
+              font-weight: 500;
+              font-size: 16px;
+              color: rgba(18, 17, 23, 1);
+            }
+
+            p {
+              font-size: 14px;
+              letter-spacing: 0.07px;
+              color: rgba(77, 76, 92, 1);
+            }
+          }
+        }
+
+        .content {
+          display: flex;
+          gap: 8px;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: flex-start;
+
+          .stars {
+            display: flex;
+            gap: 7px;
+            justify-content: center;
+            align-items: center;
+
+            svg {
+              width: 17.12px;
+            }
+          }
+
+          p {
+            font-size: 16px;
+            color: rgba(18, 17, 23, 1);
+          }
+        }
+      }
+    }
+  }
+}

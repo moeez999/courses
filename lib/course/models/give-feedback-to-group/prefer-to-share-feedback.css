@@ -1,0 +1,86 @@
+.give-feedback-to-teacher-modal,
+.prefer-to-share-feedback-modal,
+.public-feedback-to-teacher-modal,
+.anonymous-feedback-to-teacher-modal,
+.anonymous-teacher-feedback-last-modal {
+  min-height: 614px;
+  padding: 56px 24px 32.71px;
+  justify-content: space-between;
+
+  .heading-options {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    .image-and-heading {
+      display: flex;
+      gap: 8px;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+
+      .image-container {
+        width: 48px;
+        height: 48px;
+        border-radius: 4px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        -ms-border-radius: 4px;
+        -o-border-radius: 4px;
+        border: 1px solid rgba(18, 17, 23, 0.06);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+      h1 {
+        font-weight: 600;
+        font-size: 28px;
+        color: rgba(18, 17, 23, 1);
+      }
+      p {
+        font-size: 14px;
+        color: rgba(77, 76, 92, 1);
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 630px) {
+  .give-feedback-to-teacher-modal,
+  .prefer-to-share-feedback-modal,
+  .public-feedback-to-teacher-modal,
+  .anonymous-feedback-to-teacher-modal,
+  .anonymous-teacher-feedback-last-modal {
+    min-height: 100%;
+    padding: 16px 16px 24px;
+    gap: 24px;
+
+    .heading-options {
+      gap: 12px;
+
+      .image-and-heading {
+        gap: 12px;
+
+        .image-container {
+          width: 40px;
+          height: 40px;
+        }
+        h1 {
+          font-size: 22px;
+        }
+        p {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}

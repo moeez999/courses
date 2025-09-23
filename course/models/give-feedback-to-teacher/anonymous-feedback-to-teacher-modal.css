@@ -1,0 +1,41 @@
+.anonymous-feedback-to-teacher-modal {
+  .heading-options {
+    gap: 36.31px;
+
+    .bad-okay-great {
+      width: 100%;
+      display: flex;
+      gap: 10.74px;
+      justify-content: center;
+      align-items: stretch;
+
+      button.card {
+        flex: 1;
+        min-height: 108.5px;
+        border-radius: 7.16px;
+        -webkit-border-radius: 7.16px;
+        -moz-border-radius: 7.16px;
+        -ms-border-radius: 7.16px;
+        -o-border-radius: 7.16px;
+        border: 2px solid rgba(220, 220, 229, 1);
+        padding: 18px 15px 15px;
+        display: flex;
+        gap: 10px;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+        font-family: "Poppins", sans-serif;
+        font-weight: 600;
+        font-size: 18px;
+        letter-spacing: -0.08px;
+        background: transparent;
+        cursor: pointer;
+        color: #121117;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.03);
+        }
+      }
+    }
+  }
+}
