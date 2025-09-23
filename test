@@ -1,0 +1,324 @@
+<!-- jQuery CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Modal -->
+
+<div class="lesson-popup" id="subscribeModal">
+    <div class="popup-body">
+        <div class="popup-section">
+            <h1 class="popup-title">Continue learning</h1>
+
+            <div class="teacher-list">
+                <div class="teacher-card">
+                    <div class="card-left-side">
+                        <div class="avatar-box">
+                            <img src="../img/subs/2.png" alt="">
+                        </div>
+
+                        <div class="teacher-info">
+                            <div class="info-header">
+                                <h1>Wade Warren</h1>
+                                <div class="status-point"></div>
+                                <p>English</p>
+                            </div>
+                            <p>Trial lesson completed</p>
+                        </div>
+                    </div>
+                    <a href="">Subscribe</a>
+                </div>
+
+                <div class="teacher-card">
+                    <div class="card-left-side">
+                        <div class="avatar-box">
+                            <img src="../img/subs/3.png" alt="">
+                        </div>
+
+                        <div class="teacher-info">
+                            <div class="info-header">
+                                <h1>Camila</h1>
+                                <div class="status-point"></div>
+                                <p>English</p>
+                            </div>
+                            <p>Trial lesson completed</p>
+                        </div>
+                    </div>
+                    <a href="">Subscribe</a>
+                </div>
+
+                <div class="teacher-card">
+                    <div class="card-left-side">
+                        <div class="avatar-box">
+                            <img src="../img/subs/9.png" alt="">
+                        </div>
+
+                        <div class="teacher-info">
+                            <div class="info-header">
+                                <h1>Karen</h1>
+                                <div class="status-point"></div>
+                                <p>English</p>
+                            </div>
+                            <p>Subscription cancelled</p>
+                        </div>
+                    </div>
+                    <a href="">Subscribe</a>
+                </div>
+
+                <div class="teacher-card">
+                    <div class="card-left-side">
+                        <div class="avatar-box">
+                            <img src="../img/subs/10.png" alt="">
+                        </div>
+
+                        <div class="teacher-info">
+                            <div class="info-header">
+                                <h1>Marbe B.</h1>
+                                <div class="status-point"></div>
+                                <p>English</p>
+                            </div>
+                            <p>Trial lesson completed</p>
+                        </div>
+                    </div>
+                    <a href="">Book trial lesson</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="popup-section">
+            <h1 class="popup-title">Try a first lesson</h1>
+
+            <div class="teacher-list">
+                <div class="teacher-card">
+                    <div class="card-left-side">
+                        <div class="avatar-box">
+                            <img src="../img/subs/11.png" alt="">
+                        </div>
+
+                        <div class="teacher-info">
+                            <div class="info-header">
+                                <h1>Anne S.</h1>
+                                <div class="status-point"></div>
+                                <p>English</p>
+                            </div>
+                            <p>You've viewed their profile</p>
+                        </div>
+                    </div>
+                    <a href="">Book trial lesson</a>
+                </div>
+
+                <div class="teacher-card">
+                    <div class="card-left-side">
+                        <div class="avatar-box">
+                            <img src="../img/subs/12.png" alt="">
+                        </div>
+
+                        <div class="teacher-info">
+                            <div class="info-header">
+                                <h1>Anne S.</h1>
+                                <div class="status-point"></div>
+                                <p>English</p>
+                            </div>
+                            <p>You've viewed their profile</p>
+                        </div>
+                    </div>
+                    <a href="">Book trial lesson</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="transfer-actions transferLessonsBTN">
+        <button>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="18" viewBox="0 0 20 18" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M3.99988 14H15.9999V12H3.99988L6.29288 9.70697L4.87888 8.29297L0.171875 13L4.87888 17.707L6.29288 16.293L3.99988 14ZM15.9999 5.99997H3.99988V3.99997H15.9999L13.7069 1.70697L15.1209 0.292969L19.8279 4.99997L15.1209 9.70697L13.7069 8.29297L15.9999 5.99997Z"
+                    fill="#121117"></path>
+            </svg>
+            <span>Transfer balance or subscription</span>
+        </button>
+    </div>
+</div>
+
+<!-- CSS -->
+<style>
+.lesson-popup {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    width: 583px;
+    height: 417px;
+    border-radius: 8px;
+    border: 1px solid rgba(244, 244, 248, 1);
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0px 8px 32px 0px rgba(18, 17, 23, 0.15), 0px 16px 48px 0px rgba(18, 17, 23, 0.15);
+    padding: 32px 37px 16px 38px;
+    display: flex;
+    gap: 16px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 4;
+    cursor: auto;
+    pointer-events: none;
+}
+
+.lesson-popup .popup-body {
+    width: 100%;
+    height: 305px;
+    overflow: auto;
+    display: flex;
+    gap: 24px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border-bottom: 1px solid rgba(220, 220, 229, 1);
+}
+
+.lesson-popup .popup-body .popup-section {
+    width: 100%;
+    display: flex;
+    gap: 17px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.lesson-popup .popup-body .popup-section h1.popup-title {
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 24px;
+    color: rgba(77, 76, 92, 1);
+}
+
+.lesson-popup .popup-body .popup-section .teacher-list {
+    width: 100%;
+    display: flex;
+    gap: 16px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.lesson-popup .popup-body .popup-section .teacher-list .teacher-card {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lesson-popup .popup-body .popup-section .teacher-list .teacher-card .card-left-side {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.lesson-popup .popup-body .popup-section .teacher-list .teacher-card a {
+    border-radius: 8px;
+    padding: 9px 22.51px;
+    border: 2px solid rgba(18, 17, 23, 1);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 25.71px;
+    letter-spacing: 0.09px;
+    color: rgba(18, 17, 23, 1);
+}
+
+.lesson-popup .popup-body .popup-section .teacher-list .teacher-card .card-left-side .avatar-box img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: unset;
+}
+
+.lesson-popup .popup-body .popup-section .teacher-list .teacher-card .card-left-side .teacher-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.lesson-popup .popup-body .popup-section .teacher-list .teacher-card .card-left-side .teacher-info .info-header {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+}
+
+.lesson-popup .popup-body .popup-section .teacher-list .teacher-card .card-left-side .teacher-info .info-header h1 {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: rgba(18, 17, 23, 1);
+    margin-bottom: 0;
+}
+
+.lesson-popup .popup-body .popup-section .teacher-list .teacher-card .card-left-side .teacher-info .info-header .status-point {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background-color: rgba(18, 17, 23, 1);
+}
+
+.lesson-popup .popup-body .popup-section .teacher-list .teacher-card .card-left-side .teacher-info .info-header p {
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 24px;
+    color: rgba(18, 17, 23, 1);
+    margin-bottom: 0;
+}
+
+.lesson-popup .popup-body .popup-section .teacher-list .teacher-card .card-left-side .teacher-info p {
+    font-family: "Figtree", sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: rgba(106, 105, 124, 1);
+}
+
+.lesson-popup .transferLessonsBTN button {
+    padding: 11px 20px;
+    outline: unset;
+    border: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.lesson-popup .transferLessonsBTN button span {
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 25.71px;
+    text-decoration: underline;
+    color: rgba(18, 17, 23, 1);
+}
+</style>
+
+<!-- jQuery to Toggle Modal -->
+<script>
+$(document).ready(function() {
+    // Show the modal on button click
+    $('#openModal').on('click', function(e) {
+        e.stopPropagation(); // stop bubbling so the document handler doesn't immediately close it
+        $('#subscribeModal').fadeIn();
+    });
+
+    // Close modal if user clicks anywhere outside of it
+    $(document).on('click', function(e) {
+        const $modal = $('#subscribeModal');
+
+        // if the target of the click isn't the modal nor a descendant of the modal
+        if (!$modal.is(e.target) && $modal.has(e.target).length === 0) {
+            $modal.fadeOut();
+        }
+    });
+});
+</script>
