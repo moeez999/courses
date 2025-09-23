@@ -1,0 +1,1 @@
+a:5:{s:10:"pluginname";s:10:"Bulk Email";s:9:"bulkemail";s:13:"Send an email";s:24:"bulkemail:sendbulkemails";s:34:"Send bulk emails to lists of users";s:14:"confirmmessage";s:75:"Do you really want to send the email above to all of these users?<br />{$a}";s:10:"email_from";s:15:"Email from {$a}";}
