@@ -1,0 +1,40 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template core_course/activitychooserbuttonactivity
+
+    Displays a add activity or resource button.
+
+    Context variables required for this template:
+    * id - Which activity we want to add the new activity before.
+    * num - Relative section number (field course_sections.section).
+    * sectionreturn - The section to link back to.
+
+    Example context (json):
+    {
+        "id": 0,
+        "num": 1,
+        "sectionreturn": 5
+    }
+}}
+<button class="btn btn-sm btn-warning btn-icon mb-2 section-modchooser-link activity-add d-flex align-items-center activitychooser-button"
+     data-action="open-chooser" data-sectionid="{{num}}" data-sectionreturnid="{{sectionreturn}}" data-beforemod="{{id}}" aria-label="{{#str}}insertresourceoractivitybefore, core, { "activityname": {{#quote}} {{activityname}} {{/quote}} } {{/str}}" tabindex="0">
+     <svg width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="currentColor">
+        <path d="M13.992 17h3m3 0h-3m0 0v-3m0 3v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M4 9.4V4.6a.6.6 0 01.6-.6h4.8a.6.6 0 01.6.6v4.8a.6.6 0 01-.6.6H4.6a.6.6 0 01-.6-.6zM4 19.4v-4.8a.6.6 0 01.6-.6h4.8a.6.6 0 01.6.6v4.8a.6.6 0 01-.6.6H4.6a.6.6 0 01-.6-.6zM14 9.4V4.6a.6.6 0 01.6-.6h4.8a.6.6 0 01.6.6v4.8a.6.6 0 01-.6.6h-4.8a.6.6 0 01-.6-.6z" stroke="currentColor" stroke-width="1.5"></path>
+    </svg>
+</button>
