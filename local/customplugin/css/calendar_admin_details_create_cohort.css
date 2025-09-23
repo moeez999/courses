@@ -1,0 +1,200 @@
+.custom-tooltip {
+  position: absolute;
+  left: 15px;
+  top: 80px; /* Adjust for vertical spacing below the input */
+  background: #111;
+  color: #fff;
+  font-size: 1.11rem;
+  font-weight: 400;
+  border-radius: 16px;
+  padding: 6px 0px 5px 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  z-index: 22;
+  display: flex;
+  align-items: center;
+  min-width: 225px;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+@media (max-width: 575px) {
+  .custom-tooltip {
+    font-size: 1rem;
+    min-width: 165px;
+    top: 60px;
+    padding: 8px 11px 7px 9px;
+  }
+}
+
+/*=============Time dropdowns====================*/
+
+.custom-time-pill {
+  position: relative;
+  /* min-width: 120px; */
+  flex: 0 0 auto;
+  width: 110px;
+}
+.time-input {
+  border-radius: 10px !important;         /* Match your snapshot: softer corners */
+  border: 2px solid #e0e0e0 !important;   /* Lighter, thinner border */
+  padding: 7px 22px;
+  font-size: 1.16rem;
+  background: #fff;
+  font-weight: 400;
+  color: #222;
+  text-align: center;
+  min-width: 110px;
+  box-shadow: none;
+  transition: border-color 0.14s;
+  cursor: pointer;
+}
+.custom-time-pill.active .time-input, .time-input:focus {
+  border: 2px solid #bfc5cb !important;  /* Slightly darker border on focus/active */
+  background: #fff !important;
+  color: #232323;
+  outline: none;
+}
+.custom-time-dropdown {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 44px;
+  min-width: 170px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(30,40,90,0.13);
+  border-radius: 16px;
+  padding: 7px 0;
+  z-index: 10;
+  font-size: 1.11rem;
+  max-height: 240px;
+  overflow-y: auto;
+  margin-top: 5px;
+}
+.custom-time-dropdown .dropdown-item {
+  padding: 10px 24px;
+  color: #222;
+  cursor: pointer;
+  border-radius: 0;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+  background: transparent;
+  border: none;
+}
+.custom-time-dropdown .dropdown-item:hover,
+.custom-time-dropdown .dropdown-item.active {
+  background: #eaf1fe;
+  color: #2463eb;
+}
+.custom-time-dropdown .no-matches {
+  padding: 12px 24px;
+  color: #999;
+  text-align: center;
+  font-style: italic;
+  cursor: default;
+  user-select: none;
+}
+
+/* Dash between the fields */
+#customTimeFields .time-dash {
+  padding: 10px 4px;
+  font-size: 1.6rem;
+  color: #bfc5cb;
+  line-height: 1;
+  user-select: none;
+}
+
+@media (max-width: 767px) {
+  #customTimeFields { flex-wrap: wrap; gap: 10px; }
+  .custom-time-pill { min-width: 85px; }
+  .time-input { font-size: 0.98rem; min-width: 85px; }
+}
+
+/*==============Time dropdown for right side of the modal========================*/
+
+  .calendar_admin_details_time_right {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;   /* right align inside parent */
+  width: 100%;
+}
+
+.calendar_admin_details_time_right_time-pill {
+  position: relative;
+  width: 100px;
+  flex: 0 0 auto;
+}
+.calendar_admin_details_time_right_time-input {
+  border-radius: 10px !important;
+  border: 2px solid #e0e0e0 !important;
+  padding: 7px 22px;
+  font-size: 1.16rem;
+  background: #fff;
+  font-weight: 400;
+  color: #222;
+  text-align: center;
+  min-width: 110px;
+  box-shadow: none;
+  transition: border-color 0.14s;
+  cursor: pointer;
+}
+.calendar_admin_details_time_right_time-pill.active .calendar_admin_details_time_right_time-input,
+.calendar_admin_details_time_right_time-input:focus {
+  border: 2px solid #bfc5cb !important;
+  background: #fff !important;
+  color: #232323;
+  outline: none;
+}
+.calendar_admin_details_time_right_time-dropdown {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 44px;
+  min-width: 170px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(30,40,90,0.13);
+  border-radius: 16px;
+  padding: 7px 0;
+  z-index: 10;
+  font-size: 1.11rem;
+  max-height: 240px;
+  overflow-y: auto;
+  margin-top: 5px;
+}
+.calendar_admin_details_time_right_time-dropdown .dropdown-item {
+  padding: 10px 24px;
+  color: #222;
+  cursor: pointer;
+  border-radius: 0;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+  background: transparent;
+  border: none;
+}
+.calendar_admin_details_time_right_time-dropdown .dropdown-item:hover,
+.calendar_admin_details_time_right_time-dropdown .dropdown-item.active {
+  background: #eaf1fe;
+  color: #2463eb;
+}
+.calendar_admin_details_time_right_time-dropdown .no-matches {
+  padding: 12px 24px;
+  color: #999;
+  text-align: center;
+  font-style: italic;
+  cursor: default;
+  user-select: none;
+}
+.calendar_admin_details_time_right_time-dash {
+  padding: 0 4px;
+  font-size: 1.6rem;
+  color: #bfc5cb;
+  line-height: 1;
+  user-select: none;
+}
+
+@media (max-width: 767px) {
+  .calendar_admin_details_time_right { flex-wrap: wrap; gap: 10px; justify-content: flex-start; }
+  .calendar_admin_details_time_right_time-pill { min-width: 85px; }
+  .calendar_admin_details_time_right_time-input { font-size: 0.98rem; min-width: 85px; }
+}
+
