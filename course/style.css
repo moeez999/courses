@@ -6230,7 +6230,15 @@ section.sub_level.active {
   flex-direction: column;
   min-height: 824px;
 }
-
+.plan-selection-panel-sub {
+  max-width: 700px;
+  position: relative;
+  background-color: var(--color-white);
+  padding: 32px 48px 32px 64px;
+  display: flex;
+  flex-direction: column;
+  min-height: 824px;
+}
 .panel-content {
   flex-grow: 1;
   display: flex;
@@ -6358,7 +6366,12 @@ section.sub_level.active {
   margin: 32px -48px -32px -64px;
   padding: 16px 48px;
 }
+.selection-footer-sub {
+  background-color: var(--color-white);
 
+  margin: 32px -48px -32px -64px;
+  padding: 16px 48px;
+}
 .checkout-button {
   width: 100%;
   background-color: var(--color-primary);
@@ -7957,4 +7970,10 @@ button.backdrop-level-2-close {
   align-items: flex-start;
   justify-content: space-between;
   padding: 56px 26px 32.71px;
+}
+.tell-us-what-happened-modal,
+.explain-your-issue-modal {
+  min-height: 675px;
+  justify-content: space-between;
+  padding: 56px 26px 24.71px;
 }

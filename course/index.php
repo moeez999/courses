@@ -4508,7 +4508,7 @@ $soonest = $matched[0] ?? null;
                         </div>
                     </div>
 
-                    <button class="btn">Manage</button>
+                    <button class="btn manage_options">Manage</button>
                 </div>
 
                 <div class="card">
@@ -6068,7 +6068,77 @@ $soonest = $matched[0] ?? null;
 
         </div>
     </div>
+    <section class="plan-selection-panel-sub">
+        <div class="panel-content">
+            <div class="selection-header">
+                <!--merged image-->
+                <div class="header-icon-wrapper">
+                    <img src="../img/subs/Progress-steps.png" alt="" />
+                </div>
+                <div class="selection-header-text">
+                    <h2>Time to help you succeed at work!</h2>
+                    <p>Consistency is key to progress, so we recommend a weekly schedule. Each
+                        <b>50-min</b>
+                        lesson costs <b>$9.00</b>.
+                    </p>
+                </div>
+            </div>
+            <div class="plan-options">
+                <div class="plan-option">
+                    <input type="radio" name="plan" id="plan-1" class="visually-hidden">
+                    <label for="plan-1" class="plan-label">
+                        <span class="plan-name">1 Month</span>
+                        <span class="plan-price"><b>$36.00</b> per Month</span>
+                    </label>
+                </div>
+                <div class="plan-option">
+                    <input type="radio" name="plan" id="plan-4" class="visually-hidden">
+                    <label for="plan-4" class="plan-label">
+                        <span class="plan-name">4 Months</span>
+                        <span class="plan-price"><b>$72.00</b> per 4 Month</span>
+                    </label>
+                </div>
+                <div class="plan-option">
+                    <input type="radio" name="plan" id="plan-6" class="visually-hidden" checked>
+                    <label for="plan-6" class="plan-label">
+                        <span class="plan-name">6 Months</span>
+                        <span class="plan-price"><b>$108.00</b> per 6 Month</span>
 
+                    </label>
+                </div>
+                <div class="plan-option">
+                    <input type="radio" name="plan" id="plan-9" class="visually-hidden">
+                    <label for="plan-9" class="plan-label">
+                        <span class="plan-name">9 Months</span>
+                        <span class="plan-price"><b>$144.00</b> per 9 Month</span>
+                    </label>
+                </div>
+                <div class="plan-option">
+                    <input type="radio" name="plan" id="plan-12" class="visually-hidden">
+                    <label for="plan-12" class="plan-label">
+                        <div class="plan-name-wrapper">
+                            <span class="plan-name">12 Months</span>
+                            <span class="popular-badge">Popular</span>
+                        </div>
+                        <span class="plan-price"><b>$180.00</b> per 12 Month</span>
+                    </label>
+                </div>
+                <div class="plan-option">
+                    <input type="radio" name="plan" id="plan-custom" class="visually-hidden">
+                    <label for="plan-custom" class="plan-label">
+                        <div class="custom-plan-text">
+                            <span class="plan-name">Custom plan</span>
+                            <p>Choose the number of <b>months</b> if that suits you better.</p>
+                        </div>
+                        <img src="../img/subs/calendar.png" alt="" />
+                    </label>
+                </div>
+                <button class="checkout-button">Continue to checkout</button>
+
+            </div>
+        </div>
+
+    </section>
 
 
     <div class="subscribe-modal-backdrop" data-subscribe-modal>

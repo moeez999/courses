@@ -1894,6 +1894,7 @@ transferCompleteOpen.addEventListener("click", () => {
           btn.closest("main.modal-basic-style") || btn.closest("main");
 
         modal.classList.remove("active");
+
         closeAllModals();
         if (modal) closeModal(modal);
         else closeTopModal();
