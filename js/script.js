@@ -2175,3 +2175,470 @@ transferCompleteOpen.addEventListener("click", () => {
       });
     });
 })();
+
+(() => {
+  // ===== Helpers =====
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  // Elements
+  const container = $(".rm-container");
+  const monthLabel = $(".rm-month", container);
+  const grid = $(".rm-grid", container);
+  const prevBtn = $(".rm-nav-btn.prev", container);
+  const nextBtn = $(".rm-nav-btn.next", container);
+  const startOut = $("#rm-start-display");
+  const endOut = $("#rm-end-display");
+
+  // Weekday header cells are the first 7 children inside .rm-grid
+  const weekdayCells = $$(".rm-weekday", grid);
+
+  // Configuration
+  const today = startOfDay(new Date());
+  const minDate = today; // block any date < today
+  let viewYear = today.getFullYear();
+  let viewMonth = today.getMonth(); // 0-11
+
+  // Selection state
+  let rangeStart = null;
+  let rangeEnd = null;
+
+  // ===== Date utils =====
+  function startOfDay(d) {
+    const x = new Date(d);
+    x.setHours(0, 0, 0, 0);
+    return x;
+  }
+  function addDays(d, n) {
+    const x = new Date(d);
+    x.setDate(x.getDate() + n);
+    return x;
+  }
+  function daysInMonth(year, month) {
+    return new Date(year, month + 1, 0).getDate();
+  }
+  function formatLabel(d) {
+    return new Intl.DateTimeFormat(undefined, {
+      month: "long",
+      year: "numeric",
+    }).format(d);
+  }
+  function formatHuman(d) {
+    return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(
+      d
+    );
+  }
+  function isoDate(d) {
+    // YYYY-MM-DD for data attributes
+    return d.toISOString().slice(0, 10);
+  }
+  function isBefore(a, b) {
+    return startOfDay(a).getTime() < startOfDay(b).getTime();
+  }
+  function isAfter(a, b) {
+    return startOfDay(a).getTime() > startOfDay(b).getTime();
+  }
+  function isSameDay(a, b) {
+    return startOfDay(a).getTime() === startOfDay(b).getTime();
+  }
+
+  // ===== Rendering =====
+  function render() {
+    // Header label
+    const viewDate = new Date(viewYear, viewMonth, 1);
+    monthLabel.textContent = formatLabel(viewDate);
+
+    // Remove all day cells (keep weekday headers)
+    const toRemove = $$(".rm-day", grid);
+    toRemove.forEach((el) => el.remove());
+
+    // Build a 6x7 grid (42 cells) to be safe for any month layout
+    const firstDow = new Date(viewYear, viewMonth, 1).getDay(); // 0=Sun
+    const totalDays = daysInMonth(viewYear, viewMonth);
+
+    // Days from previous month to fill leading blanks
+    const prevMonth = viewMonth === 0 ? 11 : viewMonth - 1;
+    const prevYear = viewMonth === 0 ? viewYear - 1 : viewYear;
+    const prevTotal = daysInMonth(prevYear, prevMonth);
+    const leading = firstDow; // number of cells before day 1
+
+    // Create 42 day cells
+    const cells = 42;
+    for (let i = 0; i < cells; i++) {
+      const cell = document.createElement("div");
+      cell.className = "rm-day";
+      let cellDate, label;
+
+      if (i < leading) {
+        // previous month
+        const dayNum = prevTotal - leading + 1 + i;
+        cell.classList.add("other");
+        cellDate = new Date(prevYear, prevMonth, dayNum);
+        label = String(dayNum);
+      } else if (i < leading + totalDays) {
+        // current month
+        const dayNum = i - leading + 1;
+        cellDate = new Date(viewYear, viewMonth, dayNum);
+        label = String(dayNum);
+      } else {
+        // next month
+        const nextIndex = i - (leading + totalDays) + 1;
+        const nextMonth = viewMonth === 11 ? 0 : viewMonth + 1;
+        const nextYear = viewMonth === 11 ? viewYear + 1 : viewYear;
+        cell.classList.add("other");
+        cellDate = new Date(nextYear, nextMonth, nextIndex);
+        label = String(nextIndex);
+      }
+
+      cell.textContent = label;
+      cell.dataset.date = isoDate(cellDate);
+
+      // State classes (today / disabled / selected / in-range)
+      if (isSameDay(cellDate, today)) {
+        cell.classList.add("is-today");
+      }
+
+      if (isBefore(cellDate, minDate)) {
+        cell.classList.add("is-disabled");
+      } else {
+        // Click handler only for enabled cells
+        cell.addEventListener("click", () => handleDateClick(cellDate));
+      }
+
+      // Selection styling
+      if (rangeStart && isSameDay(cellDate, rangeStart)) {
+        cell.classList.add("is-selected");
+      }
+      if (rangeEnd && isSameDay(cellDate, rangeEnd)) {
+        cell.classList.add("is-selected");
+      }
+      if (
+        rangeStart &&
+        rangeEnd &&
+        isAfter(cellDate, rangeStart) &&
+        isBefore(cellDate, rangeEnd)
+      ) {
+        cell.classList.add("is-in-range");
+      }
+
+      grid.appendChild(cell);
+    }
+
+    // Optional: disable the prev nav button when the whole displayed month is in the past
+    const lastOfView = new Date(viewYear, viewMonth, totalDays);
+    prevBtn.disabled = isBefore(lastOfView, minDate);
+
+    // Next button always enabled (you can cap if needed)
+    nextBtn.disabled = false;
+
+    // Update the selection readout
+    updateSelectionReadout();
+  }
+
+  function updateSelectionReadout() {
+    if (startOut)
+      startOut.textContent = rangeStart ? formatHuman(rangeStart) : "—";
+    if (endOut) endOut.textContent = rangeEnd ? formatHuman(rangeEnd) : "—";
+  }
+
+  // ===== Selection logic =====
+  function handleDateClick(date) {
+    // Block past dates (should already be disabled visually)
+    if (isBefore(date, minDate)) return;
+
+    if (!rangeStart || (rangeStart && rangeEnd)) {
+      // Start fresh
+      rangeStart = date;
+      rangeEnd = null;
+    } else if (rangeStart && !rangeEnd) {
+      // Set end if >= start, else restart with new start
+      if (isBefore(date, rangeStart)) {
+        rangeStart = date;
+        rangeEnd = null;
+      } else {
+        rangeEnd = date;
+      }
+    }
+    render();
+  }
+
+  // ===== Navigation =====
+  prevBtn.addEventListener("click", () => {
+    // Move to previous month (allowed even if past; selection still blocked)
+    if (viewMonth === 0) {
+      viewMonth = 11;
+      viewYear -= 1;
+    } else {
+      viewMonth -= 1;
+    }
+    render();
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if (viewMonth === 11) {
+      viewMonth = 0;
+      viewYear += 1;
+    } else {
+      viewMonth += 1;
+    }
+    render();
+  });
+
+  // ===== Initialize =====
+  render();
+
+  // ===== Optional: expose selection on CTA click =====
+  const cta = $(".rm-cta", container);
+  if (cta) {
+    cta.addEventListener("click", () => {
+      if (!rangeStart || !rangeEnd) {
+        alert("Please choose a start and end date for the pause.");
+        return;
+      }
+      // Example payload you might send to your backend:
+      const payload = {
+        pause_start: isoDate(rangeStart),
+        pause_end: isoDate(rangeEnd),
+      };
+      console.log("Selected pause range:", payload);
+      // fetch('/api/pause', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) })
+      //   .then(r => r.json()).then(...);
+      alert(
+        `Pausing from ${formatHuman(rangeStart)} to ${formatHuman(rangeEnd)}.`
+      );
+    });
+  }
+})();
+
+(() => {
+  // ===== Helpers =====
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  // Elements (ps- namespace)
+  const container = $(".ps-container");
+  const monthLabel = $(".ps-month", container);
+  const grid = $(".ps-grid", container);
+  const prevBtn = $(".ps-nav__btn.is-prev", container);
+  const nextBtn = $(".ps-nav__btn.is-next", container);
+
+  // Optional selection readouts (supports new ps- ids, falls back to old rm-)
+  const startOut = $("#ps-start-display") || $("#rm-start-display");
+  const endOut = $("#ps-end-display") || $("#rm-end-display");
+
+  // Weekday header cells are the first 7 children inside .ps-grid
+  const weekdayCells = $$(".ps-weekday", grid);
+
+  // Configuration
+  const today = startOfDay(new Date());
+  const minDate = today; // block any date < today
+  let viewYear = today.getFullYear();
+  let viewMonth = today.getMonth(); // 0-11
+
+  // Selection state
+  let rangeStart = null;
+  let rangeEnd = null;
+
+  // ===== Date utils =====
+  function startOfDay(d) {
+    const x = new Date(d);
+    x.setHours(0, 0, 0, 0);
+    return x;
+  }
+  function addDays(d, n) {
+    const x = new Date(d);
+    x.setDate(x.getDate() + n);
+    return x;
+  }
+  function daysInMonth(year, month) {
+    return new Date(year, month + 1, 0).getDate();
+  }
+  function formatLabel(d) {
+    return new Intl.DateTimeFormat(undefined, {
+      month: "long",
+      year: "numeric",
+    }).format(d);
+  }
+  function formatHuman(d) {
+    return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(
+      d
+    );
+  }
+  function isoDate(d) {
+    // YYYY-MM-DD for data attributes
+    return d.toISOString().slice(0, 10);
+  }
+  function isBefore(a, b) {
+    return startOfDay(a).getTime() < startOfDay(b).getTime();
+  }
+  function isAfter(a, b) {
+    return startOfDay(a).getTime() > startOfDay(b).getTime();
+  }
+  function isSameDay(a, b) {
+    return startOfDay(a).getTime() === startOfDay(b).getTime();
+  }
+
+  // ===== Rendering =====
+  function render() {
+    // Header label
+    const viewDate = new Date(viewYear, viewMonth, 1);
+    monthLabel.textContent = formatLabel(viewDate);
+
+    // Remove all day cells (keep weekday headers)
+    const toRemove = $$(".ps-day", grid);
+    toRemove.forEach((el) => el.remove());
+
+    // Build a 6x7 grid (42 cells)
+    const firstDow = new Date(viewYear, viewMonth, 1).getDay(); // 0=Sun
+    const totalDays = daysInMonth(viewYear, viewMonth);
+
+    // Days from previous month to fill leading blanks
+    const prevMonth = viewMonth === 0 ? 11 : viewMonth - 1;
+    const prevYear = viewMonth === 0 ? viewYear - 1 : viewYear;
+    const prevTotal = daysInMonth(prevYear, prevMonth);
+    const leading = firstDow; // number of cells before day 1
+
+    // Create 42 day cells
+    const cells = 42;
+    for (let i = 0; i < cells; i++) {
+      const cell = document.createElement("div");
+      cell.className = "ps-day";
+      let cellDate, label;
+
+      if (i < leading) {
+        // previous month
+        const dayNum = prevTotal - leading + 1 + i;
+        cell.classList.add("is-other");
+        cellDate = new Date(prevYear, prevMonth, dayNum);
+        label = String(dayNum);
+      } else if (i < leading + totalDays) {
+        // current month
+        const dayNum = i - leading + 1;
+        cellDate = new Date(viewYear, viewMonth, dayNum);
+        label = String(dayNum);
+      } else {
+        // next month
+        const nextIndex = i - (leading + totalDays) + 1;
+        const nextMonth = viewMonth === 11 ? 0 : viewMonth + 1;
+        const nextYear = viewMonth === 11 ? viewYear + 1 : viewYear;
+        cell.classList.add("is-other");
+        cellDate = new Date(nextYear, nextMonth, nextIndex);
+        label = String(nextIndex);
+      }
+
+      cell.textContent = label;
+      cell.dataset.date = isoDate(cellDate);
+
+      // State classes (today / disabled / selected / in-range)
+      if (isSameDay(cellDate, today)) {
+        cell.classList.add("is-today");
+      }
+
+      if (isBefore(cellDate, minDate)) {
+        cell.classList.add("is-disabled");
+      } else {
+        // Click handler only for enabled cells
+        cell.addEventListener("click", () => handleDateClick(cellDate));
+      }
+
+      // Selection styling
+      if (rangeStart && isSameDay(cellDate, rangeStart)) {
+        cell.classList.add("is-selected");
+      }
+      if (rangeEnd && isSameDay(cellDate, rangeEnd)) {
+        cell.classList.add("is-selected");
+      }
+      if (
+        rangeStart &&
+        rangeEnd &&
+        isAfter(cellDate, rangeStart) &&
+        isBefore(cellDate, rangeEnd)
+      ) {
+        cell.classList.add("is-in-range");
+      }
+
+      grid.appendChild(cell);
+    }
+
+    // Optional: disable the prev nav button when the whole displayed month is in the past
+    const lastOfView = new Date(viewYear, viewMonth, totalDays);
+    prevBtn.disabled = isBefore(lastOfView, minDate);
+
+    // Next button always enabled (you can cap if needed)
+    nextBtn.disabled = false;
+
+    // Update the selection readout
+    updateSelectionReadout();
+  }
+
+  function updateSelectionReadout() {
+    if (startOut)
+      startOut.textContent = rangeStart ? formatHuman(rangeStart) : "—";
+    if (endOut) endOut.textContent = rangeEnd ? formatHuman(rangeEnd) : "—";
+  }
+
+  // ===== Selection logic =====
+  function handleDateClick(date) {
+    // Block past dates (should already be disabled visually)
+    if (isBefore(date, minDate)) return;
+
+    if (!rangeStart || (rangeStart && rangeEnd)) {
+      // Start fresh
+      rangeStart = date;
+      rangeEnd = null;
+    } else if (rangeStart && !rangeEnd) {
+      // Set end if >= start, else restart with new start
+      if (isBefore(date, rangeStart)) {
+        rangeStart = date;
+        rangeEnd = null;
+      } else {
+        rangeEnd = date;
+      }
+    }
+    render();
+  }
+
+  // ===== Navigation =====
+  prevBtn.addEventListener("click", () => {
+    // Move to previous month (allowed even if past; selection still blocked)
+    if (viewMonth === 0) {
+      viewMonth = 11;
+      viewYear -= 1;
+    } else {
+      viewMonth -= 1;
+    }
+    render();
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if (viewMonth === 11) {
+      viewMonth = 0;
+      viewYear += 1;
+    } else {
+      viewMonth += 1;
+    }
+    render();
+  });
+
+  // ===== Initialize =====
+  render();
+
+  // ===== Optional: expose selection on CTA click =====
+  const cta = $(".ps-cta", container);
+  if (cta) {
+    cta.addEventListener("click", () => {
+      if (!rangeStart || !rangeEnd) {
+        alert("Please choose a start and end date for the pause.");
+        return;
+      }
+      const payload = {
+        pause_start: isoDate(rangeStart),
+        pause_end: isoDate(rangeEnd),
+      };
+      console.log("Selected pause range:", payload);
+      alert(
+        `Pausing from ${formatHuman(rangeStart)} to ${formatHuman(rangeEnd)}.`
+      );
+    });
+  }
+})();

@@ -8292,6 +8292,404 @@ $soonest = $matched[0] ?? null;
 
         <button class="red-button backdrop-level-2-close">Done</button>
     </main>
+
+
+    <section id="gl-modal" class="gl-modal-section">
+        <div class="gl-modal">
+            <div class="gl-modal-header">
+                <div>
+                    <h2 class="gl-modal-title">Group of your level</h2>
+                    <p class="gl-modal-subtitle">Recommended</p>
+                </div>
+                <button class="gl-close-btn" aria-label="Close">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                            fill="#121117" />
+                    </svg>
+                </button>
+            </div>
+
+            <article class="gl-teacher-card">
+                <div class="gl-card-header">
+                    <div class="gl-avatar-container">
+                        <img class="gl-avatar" src="../img/subs/group-section/1.png" alt="Class Avatar">
+                        <div class="gl-status"></div>
+                    </div>
+                    <h3 class="gl-card-title">English Group Classes (Florida 1)</h3>
+                    <div class="gl-favorite">
+                        <div class="gl-heart">
+                            <img src="../img/subs/heart.png" alt="">
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gl-card-body">
+                    <div class="gl-details">
+                        <div class="gl-price-rating">
+                            <div class="gl-price-info">
+                                <p class="gl-price-amount">$60</p>
+                                <p class="gl-price-period">Monthly</p>
+                            </div>
+                            <div class="gl-rating-info">
+                                <div class="gl-rating-score">
+                                    <img src="../img/subs/starr.png" alt="Star Icon">
+                                    <p>4.7</p>
+                                </div>
+                                <p class="gl-reviews">17 reviews</p>
+                            </div>
+                        </div>
+                        <div class="gl-tags">
+                            <span class="gl-tag gl-tag-pro">Professional</span>
+                            <span class="gl-tag gl-tag-super">Super Tutor</span>
+                        </div>
+                    </div>
+
+                    <div class="gl-info-grid">
+                        <div class="gl-info-box">
+                            <p class="gl-info-label">Main Teacher :</p>
+                            <p class="gl-info-strong">Daniela Canelon</p>
+                            <div class="gl-info-sub">
+                                <img src="../img/subs/subject.png" alt="Language Icon">
+                                <span>English (Native)</span>
+                            </div>
+                        </div>
+                        <div class="gl-info-box">
+                            <p class="gl-info-label">Practice Teacher :</p>
+                            <p class="gl-info-light">Axley Perez</p>
+                            <div class="gl-info-sub">
+                                <img src="../img/subs/subject.png" alt="Language Icon">
+                                <span>English (Native)</span>
+                            </div>
+                        </div>
+                        <div class="gl-info-box">
+                            <p class="gl-info-label">Students</p>
+                            <div class="gl-info-sub">
+                                <img src="../img/subs/person.png" alt="Language Icon">
+                                <p class="gl-info-strong">4 Active ,</p>
+                            </div>
+                            <p class="gl-info-light">Max 10</p>
+                        </div>
+                        <div class="gl-info-box">
+                            <p class="gl-info-label">Schedule :</p>
+                            <p class="gl-info-strong">Mon, Wed - 8 PM EST</p>
+                            <p class="gl-info-strong">Fri - 8 PM EST</p>
+                        </div>
+                    </div>
+
+                    <div class="gl-card-actions">
+                        <a href="#" class="gl-btn gl-btn-primary">Change to this group</a>
+                        <a href="#" class="gl-btn gl-btn-secondary">View Group Profile</a>
+                    </div>
+                </div>
+            </article>
+
+            <footer class="gl-modal-footer">
+                <a href="#" class="gl-btn gl-btn-explore">Explore other levels</a>
+            </footer>
+        </div>
+    </section>
+    <section id="pl-details">
+        <div class="pl-card">
+            <div class="pl-card-header">
+                <button class="pl-back-btn" aria-label="Go back">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                            fill="#121117" />
+                    </svg>
+                </button>
+                <h1 class="pl-card-title">Your Custom plan</h1>
+            </div>
+
+            <hr class="pl-separator" />
+
+            <main class="pl-card-body">
+                <h2 class="pl-section-title">How many Months would you like to Select?</h2>
+                <button class="pl-month-selector">
+                    <span class="pl-selected-month">12</span>
+                    <img src="../img/subs/arrow-down.svg" alt="Dropdown arrow">
+                </button>
+            </main>
+
+            <hr class="pl-separator" />
+
+            <div class="pl-summary-wrapper">
+                <div class="pl-summary-grid">
+                    <div class="pl-summary-period">
+                        <span class="pl-period-value">12</span>
+                        <span class="pl-period-label">Months</span>
+                    </div>
+                    <div class="pl-summary-cost">
+                        <span class="pl-cost-value">$180.00 <span class="pl-save-badge">save 20%</span></span>
+                        <span class="pl-cost-label">charged per 12 Month</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr class="pl-separator" />
+
+            <footer class="pl-card-footer">
+                <button class="pl-checkout-btn">Continue to checkout</button>
+            </footer>
+        </div>
+    </section>
+    <section id="renewal-modal" class="rm-wrapper">
+        <div class="rm-container">
+            <button class="rm-close" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+
+            <div class="rm-header">
+                <img src="../img/subs/1.png" alt="Florida 1 Logo" class="rm-logo">
+                <h1 class="rm-title">Change your renewal date</h1>
+            </div>
+
+            <div class="rm-body">
+                <div class="rm-info">
+                    <p class="rm-renewal">Your plan is scheduled to renew on Mar 17.</p>
+                    <p class="rm-instructions">You can postpone your renewal by up to 20 days. Your next renewals will
+                        happen every 28 days from the new selected date.</p>
+                </div>
+
+                <div class="rm-calendar">
+                    <div class="rm-calendar-header">
+                        <h2 class="rm-month">June 2025</h2>
+                        <div class="rm-nav">
+                            <button class="rm-nav-btn prev" aria-label="Previous month"></button>
+                            <button class="rm-nav-btn next" aria-label="Next month"></button>
+                        </div>
+                    </div>
+                    <div class="rm-grid">
+                        <div class="rm-weekday">SU</div>
+                        <div class="rm-weekday">MO</div>
+                        <div class="rm-weekday">TU</div>
+                        <div class="rm-weekday">WE</div>
+                        <div class="rm-weekday">TH</div>
+                        <div class="rm-weekday">FR</div>
+                        <div class="rm-weekday">SA</div>
+
+                        <div class="rm-day other">23</div>
+                        <div class="rm-day other">24</div>
+                        <div class="rm-day other">25</div>
+                        <div class="rm-day other">26</div>
+                        <div class="rm-day other">27</div>
+                        <div class="rm-day other">28</div>
+                        <div class="rm-day">1</div>
+                        <div class="rm-day">2</div>
+                        <div class="rm-day">3</div>
+                        <div class="rm-day">4</div>
+                        <div class="rm-day">5</div>
+                        <div class="rm-day">6</div>
+                        <div class="rm-day">7</div>
+                        <div class="rm-day">8</div>
+                        <div class="rm-day">9</div>
+                        <div class="rm-day">10</div>
+                        <div class="rm-day">11</div>
+                        <div class="rm-day">12</div>
+                        <div class="rm-day">13</div>
+                        <div class="rm-day">14</div>
+                        <div class="rm-day">15</div>
+                        <div class="rm-day">16</div>
+                        <div class="rm-day">17</div>
+                        <div class="rm-day active">18</div>
+                        <div class="rm-day active">19</div>
+                        <div class="rm-day active">20</div>
+                        <div class="rm-day active">21</div>
+                        <div class="rm-day active">22</div>
+                        <div class="rm-day active">23</div>
+                        <div class="rm-day active">24</div>
+                        <div class="rm-day active">25</div>
+                        <div class="rm-day active">26</div>
+                        <div class="rm-day active">27</div>
+                        <div class="rm-day active">28</div>
+                        <div class="rm-day active">29</div>
+                        <div class="rm-day active">30</div>
+                        <div class="rm-day active">31</div>
+                        <div class="rm-day active other">1</div>
+                        <div class="rm-day active other">2</div>
+                        <div class="rm-day active other">3</div>
+                        <div class="rm-day active other">4</div>
+                        <div class="rm-day active other">5</div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="rm-footer">
+                <button class="rm-cta">Continue Pausing</button>
+            </footer>
+        </div>
+    </section>
+
+    <section id="pause-modal" class="ps-wrapper">
+        <div class="ps-container">
+            <button class="ps-close" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+
+            <div class="ps-header">
+                <img src="../img/subs/group-section/1.png" alt="Florida 1 Logo" class="ps-logo">
+                <h1 class="ps-title">Pause your subscription with Florida 1</h1>
+            </div>
+
+            <div class="ps-body">
+                <div class="ps-info">
+                    <p class="ps-renewal">Your subscription is scheduled to renew on <strong>June 18.</strong></p>
+                    <p class="ps-instructions">
+                        Select the date to start and end the pause. If the pause is less than 30
+                        days, you will remain in the same group. If the pause is longer, you have
+                        to resume with another group at your current level. Any remaining lessons
+                        of this cycle within pause will be added to your credit.
+                    </p>
+                </div>
+
+                <div class="ps-calendar">
+                    <div class="ps-calendar__header">
+                        <h2 class="ps-month">June 2025</h2>
+                        <div class="ps-nav">
+                            <button class="ps-nav__btn is-prev" aria-label="Previous month"></button>
+                            <button class="ps-nav__btn is-next" aria-label="Next month"></button>
+                        </div>
+                    </div>
+
+                    <div class="ps-grid">
+                        <div class="ps-weekday">SU</div>
+                        <div class="ps-weekday">MO</div>
+                        <div class="ps-weekday">TU</div>
+                        <div class="ps-weekday">WE</div>
+                        <div class="ps-weekday">TH</div>
+                        <div class="ps-weekday">FR</div>
+                        <div class="ps-weekday">SA</div>
+
+                        <div class="ps-day is-other">23</div>
+                        <div class="ps-day is-other">24</div>
+                        <div class="ps-day is-other">25</div>
+                        <div class="ps-day is-other">26</div>
+                        <div class="ps-day is-other">27</div>
+                        <div class="ps-day is-other">28</div>
+                        <div class="ps-day">1</div>
+                        <div class="ps-day">2</div>
+                        <div class="ps-day">3</div>
+                        <div class="ps-day">4</div>
+                        <div class="ps-day">5</div>
+                        <div class="ps-day">6</div>
+                        <div class="ps-day">7</div>
+                        <div class="ps-day">8</div>
+                        <div class="ps-day">9</div>
+                        <div class="ps-day">10</div>
+                        <div class="ps-day">11</div>
+                        <div class="ps-day">12</div>
+                        <div class="ps-day">13</div>
+                        <div class="ps-day">14</div>
+                        <div class="ps-day">15</div>
+                        <div class="ps-day">16</div>
+                        <div class="ps-day">17</div>
+                        <div class="ps-day is-active">18</div>
+                        <div class="ps-day is-active">19</div>
+                        <div class="ps-day is-active">20</div>
+                        <div class="ps-day is-active">21</div>
+                        <div class="ps-day is-active">22</div>
+                        <div class="ps-day is-active">23</div>
+                        <div class="ps-day is-active">24</div>
+                        <div class="ps-day is-active">25</div>
+                        <div class="ps-day is-active">26</div>
+                        <div class="ps-day is-active">27</div>
+                        <div class="ps-day is-active">28</div>
+                        <div class="ps-day is-active">29</div>
+                        <div class="ps-day is-active">30</div>
+                        <div class="ps-day is-active">31</div>
+                        <div class="ps-day is-active is-other">1</div>
+                        <div class="ps-day is-active is-other">2</div>
+                        <div class="ps-day is-active is-other">3</div>
+                        <div class="ps-day is-active is-other">4</div>
+                        <div class="ps-day is-active is-other">5</div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="ps-footer">
+                <button class="ps-cta">Continue Pausing</button>
+            </footer>
+        </div>
+    </section>
+
+    <section id="pause-confirmation">
+        <div class="pause-modal">
+            <button class="icon-button back-button" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="icon-button close-button" aria-label="Close dialog">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+
+            <div class="modal-content-container">
+                <h1 class="modal-title-sub">Let’s confirm your pause details</h1>
+
+                <div class="details-card">
+                    <div class="pause-info">
+                        <img class="course-image" src="../img/subs/group-section/1.png" alt="Course thumbnail">
+                        <div class="pause-dates">
+                            <p class="pause-label">Your pause will be from</p>
+                            <p class="pause-range">June 18 - June 29</p>
+                        </div>
+                    </div>
+                    <hr class="separator">
+                    <ul class="info-list">
+                        <li>Your subscription will renew on June 20.</li>
+                        <li>The credit of $48 from the 8 lessons of this cycle scheduled during the pause will be added
+                            to your account.</li>
+                        <li>We won't charge you while you're paused.</li>
+                        <li>You can cancel anytime.</li>
+                    </ul>
+                </div>
+
+                <button class="confirm-button">Confirm Pause subscription</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="subscription-modal" class="sp-wrapper" data-start="2025-03-18" data-end="2025-03-29">
+        <div class="sp-card">
+            <button class="sp-close" aria-label="Close modal">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+
+            <img class="sp-icon" src="../img/subs/group-section/1.png" alt="Subscription status">
+            <h1 class="sp-title">Subscription Paused</h1>
+
+            <div class="sp-desc">
+                <p>Your pause will be from <strong><span id="sp-start">—</span></strong> to <strong><span
+                            id="sp-end">—</span></strong>.</p>
+                <p>Your subscription will renew on <strong><span id="sp-renew">—</span></strong>. You can still attend
+                    your lessons before that.</p>
+            </div>
+
+            <button class="sp-btn">Done</button>
+        </div>
+    </section>
+
     <section class="backdrop"></section>
     <section class="backdrop_nested"></section>
     <section class="calendar_backdrop"></section>
