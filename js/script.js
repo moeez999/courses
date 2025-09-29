@@ -161,6 +161,110 @@ const elements = {
   messageBox: querySelectorElement(".messageBox"),
 
   messageBoxGoBack: querySelectorElement(".messageBox .goBack"),
+  smManager: querySelectorElements(".manage_options"),
+  smManagerOpen: querySelectorElement("#sm-manager"),
+  sm_ChangeGroup: querySelectorElement(".sm-change-group"),
+  sm_ChangeGroupModal: querySelectorElement(".gl-modal-section"),
+  sm_ChangeGroupModalClose: querySelectorElement(".gl-close-btn"),
+  sm_changeToThisGroup: querySelectorElement(".gl-btn-primary"),
+  sm_changeYourPlan: querySelectorElement(".sm-change-your-plan"),
+  sm_changeYourPlanModal: querySelectorElement(".plan-selection-panel-sub"),
+  pauseModalOpener: querySelectorElement(".sm-pause-your-plan"),
+  pauseModal: querySelectorElement(".ps-container"),
+  continuePause: querySelectorElement(".ps-cta"),
+  pauseConfirmModal: querySelectorElement("#pause-confirmation"),
+  pausedModal: querySelectorElement("#subscription-paused"),
+  confirmPause: querySelectorElement(".confirm-pause"),
+
+
+
+    renewalOption: document.querySelector(".change-your-renewal-date"), // trigger
+  renewalModal: document.getElementById("renewal-modal"),
+  renewalConfirmBtn: document.querySelector("#renewal-modal .rm-cta"),
+  renewalClose: document.querySelector("#renewal-modal .closeIcon"),
+  renewalBack: document.querySelector("#renewal-modal .goBack"),
+  renewalNotification: document.querySelector(".renewal-card"),
+  renewalNotificationClose: document.querySelector("renewal-card .closeIcon"),
+  renewalNotificationDone: document.querySelector(".renewal-card button"),
+
+
+  cancelGroupSubs: querySelectorElement(".cancel-group-subsciption"),
+  tryPauseModal: querySelectorElement("#subsModal"),
+  subsStep1: querySelectorElement("#subsStep1"),
+  subsStep2: querySelectorElement("#subsStep2"),
+  subsClose: querySelectorElement("#subsClose"),
+  subBtnPause : querySelectorElement(".subs-btn-pause"),
+  subBtnCancel : querySelectorElement(".subs-btn-cancel"),
+  cmModal : querySelectorElement("#cm-modal"),
+  // Cancel subscription modals
+  cancelMainModal: document.getElementById("cm-modal"),
+  cancelMainClose: document.querySelector("#cm-modal .cm-close-btn"),
+  cancelReasons: document.querySelectorAll("#cm-modal .cm-reason"),
+
+  // Group modal (reason 1)
+  groupModal: document.getElementById("gm-modal"),
+  groupBack: document.querySelector("#gm-modal .gm-header button:first-child"),
+  groupClose: document.querySelector("#gm-modal .gm-header button:last-child"),
+
+  // Busy cancellation prompt (reason 4)
+  cancelPrompt: document.getElementById("cp-cancellation-prompt"),
+  cancelPromptBack: document.querySelector("#cp-cancellation-prompt .cp-back-btn"),
+  cancelPromptClose: document.querySelector("#cp-cancellation-prompt .cp-close-btn"),
+
+  // Budget options (reason 2)
+  budgetModal: document.querySelector(".reason-2-modal"),
+  budgetBack: document.querySelector(".reason-2-modal .bo-header button:first-child"),
+  budgetClose: document.querySelector(".reason-2-modal .bo-header button:last-child"),
+
+  // Something else (reason 7)
+  otherModal: document.querySelector(".reason-7-modal"),
+  otherBack: document.querySelector(".reason-7-modal .bo-header button:first-child"),
+  otherClose: document.querySelector(".reason-7-modal .bo-header button:last-child"),
+
+  // Tutor outside (reason 5)
+  tutorOutsideModal: document.querySelector(".reason-5-modal"),
+  tutorOutsideBack: document.querySelector(".reason-5-modal .cp-header button:first-child"),
+  tutorOutsideClose: document.querySelector(".reason-5-modal .cp-header button:last-child"),
+
+  // Reason 3 (Try private classes → tutors modal)
+  tutorsModal: document.getElementById("tutors-modal"),
+  tutorsBack: document.querySelector("#tutors-modal .app-header-top-row button:first-child"),
+  tutorsClose: document.querySelector("#tutors-modal .app-header-top-row button:last-child"),
+
+
+    // Reason 5 (Tutor outside Latingles → cancellation prompt)
+  cancelReason6Modal: document.querySelector(".reason-6-modal"),
+cancelReason6Back: document.querySelector(".reason-6-modal .cp-back-btn"),
+cancelReason6Close: document.querySelector(".reason-6-modal .cp-close-btn"),
+
+proceedWithCancellation:querySelectorElements(".proceed-with-cancel"),
+cancellationConfirmation:querySelectorElement("#cancellation-confirmation"),
+cancelConfirmClose: querySelectorElement(
+  "#cancellation-confirmation .app-modal-close-btn"
+),
+okConfirmBtnPlanChange: querySelectorElement(
+  "#plan-Change-confirmation .app-modal-button"
+),
+cancelConfirmClosePlanChange: querySelectorElement(
+  "#plan-Change-confirmation .app-modal-close-btn"
+),
+okConfirmBtn: querySelectorElement(
+  "#cancellation-confirmation .app-modal-button"
+),
+confirmPlanChange : querySelectorElement(".confirm-plan-change"),
+confirmPlanChangeModal:querySelectorElement("#plan-Change-confirmation"),
+tryAffordableBtn: querySelectorElements(".try-affordable-group"),
+
+trySmallerPlan: querySelectorElement(".try-smaller-plan"),
+cpPlanChange :querySelectorElement("#cp-change-plan"),
+
+cpPlanChangeBackBtn:querySelectorElement("#cp-change-plan .cp-back-btn"),
+cpPlanChangeCloseBtn:querySelectorElement("#cp-change-plan .cp-close-btn"),
+
+
+confirmCheckOutBtn : querySelectorElement(".confirm-checkout"),
+checkOutModal: querySelectorElement(".js-checkout-modal"),
+checkOutModalClose:querySelectorElement(".js-checkout-close")
 };
 
 // Variables
@@ -201,6 +305,10 @@ elements.ArchiveTutor_open.forEach((element, index) => {
     elements.messageCard[index].classList.toggle("active");
   });
 });
+
+
+
+
 
 window.addEventListener("click", (event) => {
   if (archiveTutorIndex) {
@@ -463,7 +571,34 @@ function detectAndAdjustPositionCustomDeiker(
 
   // }
 }
+function detectAndAdjustPositionCustomDeikerGroup(
+  elementGetPosition,
+  modalToSetPosition
+) {
+  const rect = elementGetPosition.getBoundingClientRect();
+  // e]initial modal position
+  let left = rect.left + window.scrollX;
+  let top = rect.bottom + window.scrollY;
 
+  // Get modal dimensions
+  const modalWidth = modalToSetPosition.getBoundingClientRect().width; // Modal width
+  const viewportWidth = window.innerWidth;
+
+  // Check if modal goes out of the right boundary
+  if (left + modalWidth > viewportWidth) {
+    left = viewportWidth - modalWidth - 24; // scrollbar width (14px) and spacing from right (10px)
+  }
+
+  // if (window.innerWidth <= 600) {
+  //   modalToSetPosition.style.top = `${top}px`;
+  // } else {
+  top = 1800;
+  left = left + 50;
+  modalToSetPosition.style.top = `${top}px`;
+  modalToSetPosition.style.left = `${left}px`;
+
+  // }
+}
 // ====================================================
 // ===================== POPUP OPEN ====================
 function popupOpen(backdropContainer, popup, nested) {
@@ -477,12 +612,352 @@ function popupOpen(backdropContainer, popup, nested) {
   bgMoodle(true);
 }
 
+function popUpClose(backdropContainer, popup, nested) {
+  backdropContainer.classList.remove("active");
+  popup.classList.remove("active");
+  bgMoodle(false);
+}
+
 elements.userOptionOpen.forEach((e, i) =>
   e.addEventListener("click", () => {
     detectAndAdjustPosition(e, elements.userOptions);
     popupOpen(elements.backdrop, elements.userOptions);
   })
 );
+
+elements.smManager.forEach((e) =>
+  e.addEventListener("click", () => {
+    detectAndAdjustPositionCustomDeikerGroup(e, elements.smManagerOpen);
+    popupOpen(elements.backdrop, elements.smManagerOpen);
+  })
+);
+
+elements.sm_ChangeGroup.addEventListener("click", () => {
+  popupOpen(elements.backdrop, elements.sm_ChangeGroupModal);
+});
+elements.sm_ChangeGroupModalClose.addEventListener("click", () => {
+  popUpClose(elements.backdrop, elements.sm_ChangeGroupModal);
+});
+elements.sm_changeToThisGroup.addEventListener("click", () => {
+  popUpClose(elements.backdrop, elements.sm_ChangeGroupModal);
+  popupOpen(elements.backdrop, elements.sm_ChangeGroupModal);
+});
+
+elements.sm_changeYourPlan.addEventListener("click", () => {
+  popupOpen(elements.backdrop, elements.sm_changeYourPlanModal);
+});
+
+// ===== Pause Flow Integration =====
+
+// 1. Open Pause Modal
+elements.pauseModalOpener?.addEventListener("click", () => {
+  popupOpen(elements.backdrop, elements.pauseModal);
+});
+
+// 2. Pause modal close (x)
+const pauseCloseBtn = elements.pauseModal?.querySelector(".ps-close");
+pauseCloseBtn?.addEventListener("click", () => {
+  closePopup(elements.pauseModal, elements.backdrop);
+});
+
+// 3. Continue → Confirmation
+elements.continuePause?.addEventListener("click", () => {
+  elements.pauseModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.pauseConfirmModal);
+});
+
+// 4. Confirmation back → Pause modal
+const confirmBackBtn =
+  elements.pauseConfirmModal?.querySelector(".back-button");
+confirmBackBtn?.addEventListener("click", () => {
+  elements.pauseConfirmModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.pauseModal);
+});
+
+// 5. Confirmation close (x)
+const confirmCloseBtn =
+  elements.pauseConfirmModal?.querySelector(".close-button");
+confirmCloseBtn?.addEventListener("click", () => {
+  closePopup(elements.pauseConfirmModal, elements.backdrop);
+});
+
+// 6. Confirm → Paused modal
+elements.confirmPause?.addEventListener("click", () => {
+  elements.pauseConfirmModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.pausedModal);
+
+  // Fill in dates dynamically if attributes exist
+  const start = elements.pausedModal?.getAttribute("data-start");
+  const end = elements.pausedModal?.getAttribute("data-end");
+  const renew = "June 20"; // replace with dynamic date if available
+
+  document.getElementById("sp-start").textContent = start || "—";
+  document.getElementById("sp-end").textContent = end || "—";
+  document.getElementById("sp-renew").textContent = renew;
+});
+
+// 7. Paused modal close (x) + Done
+const pausedCloseBtn = elements.pausedModal?.querySelector(".sp-close");
+const pausedDoneBtn = elements.pausedModal?.querySelector(".sp-btn");
+
+[pausedCloseBtn, pausedDoneBtn].forEach((btn) =>
+  btn?.addEventListener("click", () => {
+    closePopup(elements.pausedModal, elements.backdrop);
+  })
+);
+
+elements.cancelGroupSubs.addEventListener("click", () => {
+  // Show modal
+  elements.tryPauseModal.style.display = "flex";
+
+  // Reset to step1 every time
+  elements.subsStep1.classList.remove("subs-hidden");
+  elements.subsStep2.classList.add("subs-hidden");
+
+  // Small delay to trigger CSS transition
+  setTimeout(() => elements.tryPauseModal.classList.add("subs-show"), 50);
+
+  // After 1.5s switch to step2
+  setTimeout(() => {
+    elements.subsStep1.classList.add("subs-hidden");
+    elements.subsStep2.classList.remove("subs-hidden");
+  }, 1500);
+});
+
+// Close modal
+elements.subsClose.addEventListener("click", () => {
+  elements.tryPauseModal.classList.remove("subs-show");
+  setTimeout(() => (elements.tryPauseModal.style.display = "none"), 300);
+});
+
+elements.subBtnPause.addEventListener("click", () => {
+    elements.tryPauseModal.classList.remove("subs-show");
+  setTimeout(() => (elements.tryPauseModal.style.display = "none"), 300);
+  popupOpen(elements.backdrop, elements.pauseModal);
+
+})
+
+elements.subBtnCancel.addEventListener("click", () => {
+    elements.tryPauseModal.classList.remove("subs-show");
+  setTimeout(() => (elements.tryPauseModal.style.display = "none"), 300);
+  popupOpen(elements.backdrop, elements.cmModal);
+
+})
+
+const closeCmModal = document.querySelector(".cm-close-btn")
+
+closeCmModal.addEventListener("click", () => {
+  closePopup(elements.cmModal, elements.backdrop);
+});
+
+// ===== Change Renewal Date Flow =====
+
+// 1. Open renewal modal
+elements.renewalOption?.addEventListener("click", () => {
+  popupOpen(elements.backdrop, elements.renewalModal);
+});
+
+// 2. Confirm → Notification
+elements.renewalConfirmBtn?.addEventListener("click", () => {
+  elements.renewalModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.renewalNotification);
+});
+
+// 3. Renewal modal back/close
+[elements.renewalClose, elements.renewalBack].forEach((btn) =>
+  btn?.addEventListener("click", () =>
+    closePopup(elements.renewalModal, elements.backdrop)
+  )
+);
+
+// 4. Notification close/done
+[elements.renewalNotificationClose, elements.renewalNotificationDone].forEach((btn) =>
+  btn?.addEventListener("click", () =>
+    closePopup(elements.renewalNotification, elements.backdrop)
+  )
+);
+
+// ===== Cancel Subscription Flow =====
+
+// Open cancel main modal (you probably have a trigger button for this)
+document.querySelectorAll(".openCancelBtn").forEach((btn) =>
+  btn.addEventListener("click", () => {
+    popupOpen(elements.backdrop, elements.cancelMainModal);
+  })
+);
+
+// Close main modal
+elements.cancelMainClose?.addEventListener("click", () => {
+  closePopup(elements.cancelMainModal, elements.backdrop);
+});
+
+// Handle reason clicks
+elements.cancelReasons?.forEach((reason, idx) => {
+  reason.addEventListener("click", (e) => {
+    e.preventDefault();
+    elements.cancelMainModal.classList.remove("active");
+
+    switch (idx + 1) {
+      case 1: // different schedule
+        popupOpen(elements.backdrop, elements.groupModal);
+        break;
+      case 2: // too expensive
+        popupOpen(elements.backdrop, elements.budgetModal);
+        break;
+           case 3: // ← Add this
+        popupOpen(elements.backdrop, elements.tutorsModal);
+        break;
+      case 4: // busy
+        popupOpen(elements.backdrop, elements.cancelPrompt);
+        break;
+      case 5: // tutor outside
+        popupOpen(elements.backdrop, elements.tutorOutsideModal);
+        break;
+
+          case 6: // ← Add this
+        popupOpen(elements.backdrop, elements.cancelReason6Modal);
+        break;
+      case 7: // something else
+        popupOpen(elements.backdrop, elements.otherModal);
+        break;
+      default:
+        // Fallback → just close
+        closePopup(elements.cancelMainModal, elements.backdrop);
+    }
+  });
+});
+
+// Group modal back/close
+elements.groupBack?.addEventListener("click", () => {
+  elements.groupModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cancelMainModal);
+});
+elements.groupClose?.addEventListener("click", () =>
+  closePopup(elements.groupModal, elements.backdrop)
+);
+
+// Budget modal back/close
+elements.budgetBack?.addEventListener("click", () => {
+  elements.budgetModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cancelMainModal);
+});
+elements.budgetClose?.addEventListener("click", () =>
+  closePopup(elements.budgetModal, elements.backdrop)
+);
+// Tutors modal back → return to main cancel modal
+elements.tutorsBack?.addEventListener("click", () => {
+  elements.tutorsModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cancelMainModal);
+});
+
+// Tutors modal close
+elements.tutorsClose?.addEventListener("click", () =>
+  closePopup(elements.tutorsModal, elements.backdrop)
+);
+// Cancel prompt (reason 4) back/close
+elements.cancelPromptBack?.addEventListener("click", () => {
+  elements.cancelPrompt.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cancelMainModal);
+});
+elements.cancelPromptClose?.addEventListener("click", () =>
+  closePopup(elements.cancelPrompt, elements.backdrop)
+);
+
+// Other modal (reason 7) back/close
+elements.otherBack?.addEventListener("click", () => {
+  elements.otherModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cancelMainModal);
+});
+elements.otherClose?.addEventListener("click", () =>
+  closePopup(elements.otherModal, elements.backdrop)
+);
+
+// Tutor outside (reason 5) back/close
+elements.tutorOutsideBack?.addEventListener("click", () => {
+  elements.tutorOutsideModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cancelMainModal);
+});
+elements.tutorOutsideClose?.addEventListener("click", () =>
+  closePopup(elements.tutorOutsideModal, elements.backdrop)
+);
+
+// Reason 5 back → return to main cancel modal
+elements.cancelReason6Back?.addEventListener("click", () => {
+  elements.cancelReason6Modal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cancelMainModal);
+});
+
+// Reason 5 close
+elements.cancelReason6Close?.addEventListener("click", () =>
+  closePopup(elements.cancelReason6Modal, elements.backdrop)
+);
+
+elements.proceedWithCancellation.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    // Close whichever modal is active
+    if (openContainer) openContainer.classList.remove("active");
+
+    // Open confirmation
+    popupOpen(elements.backdrop, elements.cancellationConfirmation);
+  });
+});
+
+// Confirmation modal close (x)
+elements.cancelConfirmClose?.addEventListener("click", () => {
+  closePopup(elements.cancellationConfirmation, elements.backdrop);
+});
+
+// Confirmation modal primary button
+elements.okConfirmBtn?.addEventListener("click", () => {
+  closePopup(elements.cancellationConfirmation, elements.backdrop);
+});
+elements.cancelConfirmClosePlanChange?.addEventListener("click", () => {
+  closePopup(elements.confirmPlanChangeModal, elements.backdrop);
+});
+
+// Confirmation modal primary button
+elements.okConfirmBtnPlanChange?.addEventListener("click", () => {
+  closePopup(elements.confirmPlanChangeModal, elements.backdrop);
+});
+elements.confirmPlanChange.addEventListener("click", () => {
+ if (openContainer) openContainer.classList.remove("active");
+popupOpen(elements.confirmPlanChangeModal, elements.backdrop)
+
+});
+
+elements.cpPlanChangeBackBtn.addEventListener("click", () => {
+   if (openContainer) openContainer.classList.remove("active");
+ elements.cpPlanChange.classList.remove("active");
+popupOpen(elements.otherModal, elements.backdrop)
+
+});
+
+elements.cpPlanChangeCloseBtn?.addEventListener("click", () => {
+  closePopup(elements.cpPlanChange, elements.backdrop);
+});
+elements.tryAffordableBtn.forEach(element => {
+  
+element.addEventListener("click", () => {
+ if (openContainer) openContainer.classList.remove("active");
+ popupOpen(elements.groupModal, elements.backdrop)
+
+})});
+
+elements.trySmallerPlan.addEventListener("click", ()=> {
+   if (openContainer) openContainer.classList.remove("active");
+   popupOpen(elements.cpPlanChange, elements.backdrop)
+})
+elements.confirmCheckOutBtn.addEventListener("click", ()=> {
+   if (openContainer) openContainer.classList.remove("active");
+    elements.cpPlanChange.classList.remove("active");
+   popupOpen(elements.checkOutModal, elements.backdrop)
+})
+
+elements.checkOutModalClose.addEventListener("click", ()=> {
+   if (openContainer) openContainer.classList.remove("active");
+    elements.cpPlanChange.classList.remove("active");
+   closePopup(elements.checkOutModal, elements.backdrop)
+})
 elements.subscription_dropdown_options_open.forEach((e, i) =>
   e.addEventListener("click", () => {
     detectAndAdjustPositionCustomDeiker(
@@ -1150,7 +1625,7 @@ transferCompleteOpen.addEventListener("click", () => {
   }
   function closeModal(modal) {
     backdrop?.classList.remove("is-open");
-    modal.classList.remove("active");
+    modal?.classList.remove("active");
     document.body.style.overflow = "";
     closePricingOptions(); // safety
   }
@@ -1715,6 +2190,641 @@ transferCompleteOpen.addEventListener("click", () => {
     document.querySelector(".backdrop").classList.remove("active");
   });
 })();
+
+// (function () {
+//   const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+//   const $ = (sel, ctx = document) => ctx.querySelector(sel);
+
+//   // ====== Elements ======
+//   const backdrop = $("[data-subscribe-modal]");
+//   const openers = $$(".subscribe-modal-open");
+//   const closeBtns = $$("[data-subscribe-close]");
+//   const planRadios = $$('input[name="plan"]');
+
+//   // Summary targets
+//   const summaryTitleEl = $(".plan-title-section h4");
+//   const summaryLineEl = $(".plan-title-section p b");
+//   const scheduledP = $(".features-list .feature-item p");
+
+//   // ✅ Use the actual ID present in your HTML
+//   const customSelector =
+//     $("#plan-selector") || document.querySelector('[id*="plan-selector" i]');
+
+//   // Custom selector sub-elements (scoped to the section)
+//   const customDropdownBtn = customSelector?.querySelector(".plan-dropdown");
+//   const customDropdownValue = customSelector?.querySelector(
+//     ".plan-dropdown-value"
+//   ); // the "12" in the pill
+//   const customDurationNum = customSelector?.querySelector(
+//     ".plan-details .duration-number"
+//   ); // big "12"
+//   const customPriceAmount = customSelector?.querySelector(
+//     ".plan-pricing .price-amount"
+//   ); // "$180.00"
+//   const customPriceDesc = customSelector?.querySelector(
+//     ".plan-pricing .price-description"
+//   ); // "charged per 12 Month"
+//   const planBadge = customSelector?.querySelector(".plan-pricing .plan-badge"); // optional
+//   const pricingOptions = customSelector?.querySelector("#pricing-options"); // dropdown list container (keep it inside the section)
+
+//   // ====== Plan map for preset radios ======
+//   const PLAN_MAP = {
+//     "plan-1": { months: 1, price: 36.0, label: "1 Month" },
+//     "plan-4": { months: 4, price: 72.0, label: "4 Months" },
+//     "plan-6": { months: 6, price: 108.0, label: "6 Months" },
+//     "plan-9": { months: 9, price: 144.0, label: "9 Months" },
+//     "plan-12": { months: 12, price: 180.0, label: "12 Months" },
+//     "plan-custom": { months: null, price: null, label: "Custom plan" },
+//   };
+
+//   // ====== Utils ======
+//   function money(n) {
+//     return `$${Number(n).toFixed(2)}`;
+//   }
+
+//   // ✅ Fix regex: use a real regex literal and \d
+//   function parseMonthsFromText(txt) {
+//     const m = String(txt).match(/(\d+)\s*Month/i);
+//     return m ? Number(m[1]) : null;
+//   }
+
+//   function parsePriceFromText(txt) {
+//     const clean = String(txt).replace(/[^\d.]/g, "");
+//     return clean ? Number(clean) : null;
+//   }
+
+//   // ====== Modal controls (unchanged) ======
+//   function openModal() {
+//     backdrop?.classList.add("is-open");
+//     document.body.style.overflow = "hidden";
+//   }
+//   function closeModal(modal) {
+//     backdrop?.classList.remove("is-open");
+//     modal?.classList.remove("active");
+//     document.body.style.overflow = "";
+//     closePricingOptions(); // safety
+//   }
+//   openers.forEach((btn) =>
+//     btn.addEventListener("click", (e) => {
+//       e.preventDefault();
+//       openModal();
+//     })
+//   );
+//   closeBtns.forEach((btn) => btn.addEventListener("click", closeModal));
+//   backdrop?.addEventListener("click", (e) => {
+//     if (e.target === backdrop) closeModal();
+//   });
+//   document.addEventListener("keydown", (e) => {
+//     if (e.key === "Escape") {
+//       if (isPricingOpen()) closePricingOptions();
+//       else closeModal();
+//     }
+//   });
+
+//   // ====== Pricing dropdown controls ======
+//   function isPricingOpen() {
+//     return pricingOptions?.classList.contains("is-open");
+//   }
+//   function openPricingOptions() {
+//     if (!pricingOptions) return;
+//     pricingOptions.hidden = false;
+//     pricingOptions.classList.add("is-open");
+//     document.addEventListener("click", outsideCloseHandler, { capture: true });
+//   }
+//   function closePricingOptions() {
+//     if (!pricingOptions) return;
+//     pricingOptions.hidden = true;
+//     pricingOptions.classList.remove("is-open");
+//     document.removeEventListener("click", outsideCloseHandler, {
+//       capture: true,
+//     });
+//   }
+//   function togglePricingOptions() {
+//     if (!pricingOptions) return;
+//     isPricingOpen() ? closePricingOptions() : openPricingOptions();
+//   }
+//   function outsideCloseHandler(e) {
+//     if (!pricingOptions) return;
+//     const clickInsideList = pricingOptions.contains(e.target);
+//     const clickOnButton = customDropdownBtn?.contains(e.target);
+//     if (!clickInsideList && !clickOnButton) closePricingOptions();
+//   }
+
+//   // Wire dropdown button
+//   customDropdownBtn?.addEventListener("click", (e) => {
+//     e.preventDefault();
+//     togglePricingOptions();
+//   });
+//   customDropdownBtn?.addEventListener("keydown", (e) => {
+//     if (e.key === "Enter" || e.key === " ") {
+//       e.preventDefault();
+//       togglePricingOptions();
+//     }
+//   });
+
+//   // Handle item selection from dropdown list
+//   pricingOptions?.addEventListener("click", (e) => {
+//     const item = e.target.closest(".pricing-item");
+//     if (!item) return;
+
+//     // prevent the document click handler from running after selection
+//     e.preventDefault();
+//     e.stopPropagation();
+
+//     const labelEl = item.querySelector(".item-label");
+//     const priceEl = item.querySelector(".item-price");
+
+//     const months = parseMonthsFromText(labelEl?.textContent || "");
+//     const price = parsePriceFromText(priceEl?.textContent || "");
+//     if (!months || !price) return;
+
+//     // Update UI
+//     if (customDropdownValue) customDropdownValue.textContent = String(months);
+//     if (customDurationNum) customDurationNum.textContent = String(months);
+//     if (customPriceAmount) customPriceAmount.textContent = money(price);
+//     if (customPriceDesc)
+//       customPriceDesc.textContent = `charged per ${months} Month`;
+
+//     const customRadio = $("#plan-custom");
+//     if (customRadio && !customRadio.checked) {
+//       customRadio.checked = true;
+//       syncCustomVisibility("plan-custom");
+//     }
+
+//     updateSummaryCustom(months, price);
+
+//     // Close dropdown (use rAF so updates paint first)
+//     requestAnimationFrame(closePricingOptions);
+//   });
+
+//   document.addEventListener("click", outsideCloseHandler, { capture: true });
+
+//   // ====== Show/hide custom selector with plan choice ======
+//   function openCustom() {
+//     if (!customSelector) return;
+//     customSelector.hidden = false;
+//     customSelector.classList.add("is-visible");
+//     customSelector.setAttribute("aria-hidden", "false");
+//     customDropdownBtn?.focus({ preventScroll: false });
+//     $(".plan-title-section").style.display = "none";
+//     customSelector.scrollIntoView({ behavior: "smooth", block: "nearest" });
+//   }
+//   function closeCustom() {
+//     if (!customSelector) return;
+//     customSelector.hidden = true;
+//     customSelector.classList.remove("is-visible");
+//     customSelector.setAttribute("aria-hidden", "true");
+//     $(".plan-title-section").style.display = "block";
+//     closePricingOptions();
+//   }
+//   function syncCustomVisibility(planId) {
+//     if (planId === "plan-custom") openCustom();
+//     else closeCustom();
+//   }
+
+//   // ====== Summary updater ======
+//   function updateSummaryCustom(months, price) {
+//     if (summaryTitleEl) summaryTitleEl.textContent = `${months} Months Plan`;
+//     if (summaryLineEl)
+//       summaryLineEl.textContent = `${months} Months Plan at ${money(price)}.`;
+//     if (scheduledP) {
+//       scheduledP.innerHTML = scheduledP.innerHTML.replace(
+//         /scheduled for <b>.*?<\/b>/,
+//         `scheduled for <b>${months} Months</b>`
+//       );
+//     }
+//   }
+
+//   function updateSummaryById(planId) {
+//     const plan = PLAN_MAP[planId];
+//     if (!plan) return;
+
+//     if (planId === "plan-custom") {
+//       const months = parseInt(customDurationNum?.textContent || "", 10);
+//       const price = parsePriceFromText(customPriceAmount?.textContent || "");
+//       if (months && price) {
+//         updateSummaryCustom(months, price);
+//       } else {
+//         if (summaryTitleEl) summaryTitleEl.textContent = "Custom Plan";
+//         if (summaryLineEl)
+//           summaryLineEl.textContent = "Choose a custom number of months.";
+//         if (scheduledP) {
+//           scheduledP.innerHTML = scheduledP.innerHTML.replace(
+//             /scheduled for .*?<\/b>/,
+//             "scheduled for <b>your chosen duration</b>"
+//           );
+//         }
+//       }
+//       return;
+//     }
+
+//     const { months, price, label } = plan;
+//     if (summaryTitleEl) summaryTitleEl.textContent = `${label} Plan`;
+//     if (summaryLineEl)
+//       summaryLineEl.textContent = `${label} Plan at ${money(price)}.`;
+//     if (scheduledP) {
+//       scheduledP.innerHTML = scheduledP.innerHTML.replace(
+//         /scheduled for <b>.*?<\/b>/,
+//         `scheduled for <b>${months} Months</b>`
+//       );
+//     }
+//   }
+
+//   // ====== Wire up radios ======
+//   planRadios.forEach((r) => {
+//     r.addEventListener("change", () => {
+//       if (r.checked) {
+//         updateSummaryById(r.id);
+//         syncCustomVisibility(r.id);
+//       }
+//     });
+//   });
+
+//   // ====== Init ======
+//   // Hide custom selector unless custom is selected
+//   const initial = planRadios.find((r) => r.checked) || planRadios[0];
+//   if (initial) {
+//     updateSummaryById(initial.id);
+//     syncCustomVisibility(initial.id);
+//   } else {
+//     // no radio? just hide custom UI by default
+//     closeCustom();
+//   }
+
+//   // ===== Promo code toggle =====
+//   const promoLink = document.querySelector(".promo-link");
+//   const promoRow = document.querySelector(".promo-row");
+//   const promoInput = document.getElementById("promo-input");
+//   const promoApply = document.querySelector(".promo-apply");
+
+//   if (promoLink && promoRow && promoInput && promoApply) {
+//     promoLink.addEventListener("click", (e) => {
+//       e.preventDefault();
+//       promoLink.setAttribute("hidden", ""); // hide the link
+//       promoRow.hidden = false; // show the input+button
+//       promoInput.focus(); // focus the input
+//     });
+
+//     promoApply.addEventListener("click", () => {
+//       const code = promoInput.value.trim();
+//       if (!code) {
+//         promoInput.focus();
+//         return;
+//       }
+//       // TODO: replace with your real apply-code call
+//       // Example: applyPromo(code).then(...).catch(...)
+//       console.log("Applying promo code:", code);
+//     });
+
+//     // Allow Enter key in the input to trigger Apply
+//     promoInput.addEventListener("keydown", (e) => {
+//       if (e.key === "Enter") {
+//         e.preventDefault();
+//         promoApply.click();
+//       }
+//     });
+//   }
+
+//   // ===== Payment dropdown =====
+//   const selectorBtn = document.querySelector(".payment-selector");
+//   const menu = document.querySelector(".payment-menu");
+//   const options = menu
+//     ? Array.from(menu.querySelectorAll(".payment-option"))
+//     : [];
+//   const numberSpan = document.querySelector(".card-number"); // in the button
+//   let menuOpen = false;
+//   let activeIndex = -1;
+
+//   function openMenu() {
+//     if (!selectorBtn || !menu) return;
+//     menu.hidden = false;
+//     menuOpen = true;
+//     selectorBtn.setAttribute("aria-expanded", "true");
+//     selectorBtn.setAttribute("aria-haspopup", "listbox");
+//     // Focus the first option by default
+//     setActive(0);
+//     options[0]?.focus();
+//     document.addEventListener("click", onDocumentClick);
+//     document.addEventListener("keydown", onKeydown);
+//   }
+
+//   function closeMenu() {
+//     if (!selectorBtn || !menu) return;
+//     menu.hidden = true;
+//     menuOpen = false;
+//     selectorBtn.setAttribute("aria-expanded", "false");
+//     activeIndex = -1;
+//     document.removeEventListener("click", onDocumentClick);
+//     document.removeEventListener("keydown", onKeydown);
+//   }
+
+//   function toggleMenu() {
+//     if (menuOpen) closeMenu();
+//     else openMenu();
+//   }
+
+//   function onDocumentClick(e) {
+//     if (!menuOpen) return;
+//     const isInside = menu.contains(e.target) || selectorBtn.contains(e.target);
+//     if (!isInside) closeMenu();
+//   }
+
+//   function onKeydown(e) {
+//     if (!menuOpen) return;
+//     const key = e.key;
+
+//     if (key === "Escape") {
+//       e.preventDefault();
+//       closeMenu();
+//       selectorBtn.focus();
+//       return;
+//     }
+
+//     if (key === "ArrowDown" || key === "Down") {
+//       e.preventDefault();
+//       setActive(Math.min(options.length - 1, activeIndex + 1));
+//       options[activeIndex]?.focus();
+//     } else if (key === "ArrowUp" || key === "Up") {
+//       e.preventDefault();
+//       setActive(Math.max(0, activeIndex - 1));
+//       options[activeIndex]?.focus();
+//     } else if (key === "Enter" || key === " ") {
+//       // Space or Enter selects when focus is on an option
+//       if (
+//         document.activeElement &&
+//         document.activeElement.classList.contains("payment-option")
+//       ) {
+//         e.preventDefault();
+//         selectOption(document.activeElement);
+//       }
+//     }
+//   }
+
+//   function setActive(index) {
+//     if (activeIndex >= 0 && options[activeIndex]) {
+//       options[activeIndex].removeAttribute("aria-selected");
+//     }
+//     activeIndex = index;
+//     if (activeIndex >= 0 && options[activeIndex]) {
+//       options[activeIndex].setAttribute("aria-selected", "true");
+//     }
+//   }
+
+//   function selectOption(el) {
+//     const label = el.getAttribute("data-label") || el.textContent.trim();
+//     const method = el.getAttribute("data-method");
+
+//     // Update the visible text on the trigger button
+//     if (numberSpan && label) {
+//       numberSpan.textContent = label;
+//     }
+
+//     // Handle special methods
+//     switch (method) {
+//       case "new-card":
+//         // TODO: open your "add card" flow/modal here
+//         console.log('Open "New Payment Card" flow');
+//         break;
+//       case "apple-pay":
+//         // TODO: trigger your Apple Pay flow
+//         console.log("Selected Apple Pay");
+//         break;
+//       case "google-pay":
+//         // TODO: trigger your Google Pay flow
+//         console.log("Selected Google Pay");
+//         break;
+//       default:
+//         // 'visa' or other saved methods—no-op or fetch details
+//         console.log("Selected saved method:", label);
+//     }
+
+//     closeMenu();
+//     selectorBtn.focus();
+//   }
+
+//   if (selectorBtn && menu) {
+//     // Toggle on click
+//     selectorBtn.addEventListener("click", (e) => {
+//       e.preventDefault();
+//       toggleMenu();
+//     });
+
+//     // Make options clickable
+//     options.forEach((opt, idx) => {
+//       opt.addEventListener("click", () => selectOption(opt));
+//       opt.addEventListener("mousemove", () => setActive(idx)); // hover updates active
+//     });
+
+//     // Improve ARIA on first load
+//     selectorBtn.setAttribute("aria-expanded", "false");
+//     selectorBtn.setAttribute("aria-haspopup", "listbox");
+//     menu.setAttribute("role", "listbox");
+//     options.forEach((o) => o.setAttribute("role", "option"));
+//   }
+//   function selectOption(el) {
+//     const label = el.getAttribute("data-label") || el.textContent.trim();
+//     const method = el.getAttribute("data-method");
+
+//     // Update visible label on the trigger button
+//     if (numberSpan && label) {
+//       numberSpan.textContent = label;
+//     }
+
+//     // Hide all conditional sections
+//     document.querySelector(".new-card-form")?.setAttribute("hidden", "");
+//     document.querySelector(".apple-pay-button")?.setAttribute("hidden", "");
+//     document.querySelector(".google-pay-button")?.setAttribute("hidden", "");
+//     document.querySelector(".confirm-button")?.removeAttribute("hidden");
+
+//     // Show relevant UI based on selection
+//     switch (method) {
+//       case "new-card":
+//         document.querySelector(".new-card-form")?.removeAttribute("hidden");
+//         break;
+//       case "apple-pay":
+//         document.querySelector(".apple-pay-button")?.removeAttribute("hidden");
+//         document.querySelector(".confirm-button")?.setAttribute("hidden", "");
+//         break;
+//       case "google-pay":
+//         document.querySelector(".google-pay-button")?.removeAttribute("hidden");
+//         document.querySelector(".confirm-button")?.setAttribute("hidden", "");
+//         break;
+//       case "visa":
+//       default:
+//         // Default saved card → confirm button remains
+//         break;
+//     }
+
+//     closeMenu();
+//     selectorBtn.focus();
+//   }
+//   const openBtn = document.querySelector(".open-faq-modal");
+//   const overlay = document.querySelector("[data-faq-overlay]");
+//   const modal = overlay?.querySelector(".modal");
+//   const closeBtn = overlay?.querySelector("[data-faq-close]");
+//   const triggers = Array.from(overlay?.querySelectorAll(".faq-trigger") || []);
+
+//   if (!openBtn || !overlay || !modal || !closeBtn) return;
+
+//   // --- Modal open/close with focus trap
+//   let lastFocused = null;
+
+//   function openModalSub() {
+//     lastFocused = document.activeElement;
+//     overlay.hidden = false;
+//     modal.setAttribute("data-anim", "in");
+//     // focus first interactive element
+//     (closeBtn || modal).focus();
+
+//     document.addEventListener("keydown", onKeydown);
+//     document.addEventListener("focus", trapFocus, true);
+//     overlay.addEventListener("click", onOverlayClick);
+//   }
+
+//   function closeModalSub() {
+//     modal.setAttribute("data-anim", "out");
+//     // wait for animation end then hide
+//     const done = () => {
+//       overlay.hidden = true;
+//       modal.removeAttribute("data-anim");
+//       document.removeEventListener("keydown", onKeydown);
+//       document.removeEventListener("focus", trapFocus, true);
+//       overlay.removeEventListener("click", onOverlayClick);
+//       if (lastFocused) lastFocused.focus();
+//       modal.removeEventListener("animationend", done);
+//     };
+//     modal.addEventListener("animationend", done);
+//   }
+
+//   function onOverlayClick(e) {
+//     if (e.target === overlay) closeModalSub();
+//   }
+
+//   function onKeydown(e) {
+//     if (e.key === "Escape") {
+//       e.preventDefault();
+//       closeModal();
+//     }
+//     if (e.key === "Tab") {
+//       // simple focus trap: keep focus inside modal
+//       const focusables = modal.querySelectorAll(
+//         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+//       );
+//       const list = Array.from(focusables).filter(
+//         (el) => !el.hasAttribute("disabled")
+//       );
+//       if (!list.length) return;
+
+//       const first = list[0];
+//       const last = list[list.length - 1];
+
+//       if (e.shiftKey && document.activeElement === first) {
+//         e.preventDefault();
+//         last.focus();
+//       } else if (!e.shiftKey && document.activeElement === last) {
+//         e.preventDefault();
+//         first.focus();
+//       }
+//     }
+//   }
+
+//   function trapFocus(e) {
+//     if (!overlay.hidden && !modal.contains(e.target)) {
+//       e.stopPropagation();
+//       (closeBtn || modal).focus();
+//     }
+//   }
+
+//   openBtn.addEventListener("click", openModalSub);
+//   closeBtn.addEventListener("click", closeModal);
+
+//   // --- FAQ accordion behavior with animation
+//   triggers.forEach((btn) => {
+//     btn.addEventListener("click", () => togglePanel(btn));
+//     btn.addEventListener("keydown", (e) => {
+//       if (e.key === "Enter" || e.key === " ") {
+//         e.preventDefault();
+//         togglePanel(btn);
+//       }
+//     });
+//   });
+
+//   function togglePanel(btn) {
+//     const panelId = btn.getAttribute("aria-controls");
+//     const panel = document.getElementById(panelId);
+//     const expanded = btn.getAttribute("aria-expanded") === "true";
+
+//     if (expanded) {
+//       // Close clicked
+//       btn.setAttribute("aria-expanded", "false");
+//       panel.classList.remove("open");
+
+//       // Wait until transition ends, then hide
+//       panel.addEventListener(
+//         "transitionend",
+//         () => {
+//           if (!panel.classList.contains("open")) {
+//             panel.hidden = true;
+//           }
+//         },
+//         { once: true }
+//       );
+//     } else {
+//       // Close ALL others first
+//       triggers.forEach((otherBtn) => {
+//         const otherId = otherBtn.getAttribute("aria-controls");
+//         const otherPanel = document.getElementById(otherId);
+
+//         if (otherBtn !== btn) {
+//           otherBtn.setAttribute("aria-expanded", "false");
+//           otherPanel.classList.remove("open");
+//           otherPanel.addEventListener(
+//             "transitionend",
+//             () => {
+//               if (!otherPanel.classList.contains("open")) {
+//                 otherPanel.hidden = true;
+//               }
+//             },
+//             { once: true }
+//           );
+
+//           const chev = otherBtn.querySelector(".chev");
+//           if (chev) chev.style.transform = "rotate(0deg)";
+//         }
+//       });
+
+//       // Open clicked
+//       panel.hidden = false; // make sure it's visible before animating
+//       requestAnimationFrame(() => panel.classList.add("open"));
+//       btn.setAttribute("aria-expanded", "true");
+//     }
+
+//     // Chevron update
+//     const chev = btn.querySelector(".chev");
+//     if (chev)
+//       chev.style.transform = expanded ? "rotate(0deg)" : "rotate(180deg)";
+//   }
+
+//   const checkoutBtn = document.querySelector(".checkout-button");
+//   const confirmModal = document.querySelector(".confirm-section");
+//   const planSelectionModal = document.querySelector(".plan-selection-panel");
+//   checkoutBtn.addEventListener("click", () => {
+//     confirmModal.style.display = "flex";
+//     planSelectionModal.style.display = "none";
+//   });
+
+//   const cyp = document.querySelector(".c_y_p");
+//   cyp.addEventListener("click", () => {
+//     const popup = document.querySelector(".modal-wrapper");
+//     popup.classList.add("active");
+//   });
+//   const closeModalButton = document.querySelector(".modal-close-button");
+//   closeModalButton.addEventListener("click", () => {
+//     const popup = document.querySelector(".modal-wrapper");
+//     popup.classList.remove("active");
+//     document.querySelector(".backdrop").classList.remove("active");
+//   });
+// })();
 
 /**
  * Custom Modal Manager for the provided markup
@@ -2387,27 +3497,7 @@ transferCompleteOpen.addEventListener("click", () => {
   // ===== Initialize =====
   render();
 
-  // ===== Optional: expose selection on CTA click =====
-  const cta = $(".rm-cta", container);
-  if (cta) {
-    cta.addEventListener("click", () => {
-      if (!rangeStart || !rangeEnd) {
-        alert("Please choose a start and end date for the pause.");
-        return;
-      }
-      // Example payload you might send to your backend:
-      const payload = {
-        pause_start: isoDate(rangeStart),
-        pause_end: isoDate(rangeEnd),
-      };
-      console.log("Selected pause range:", payload);
-      // fetch('/api/pause', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) })
-      //   .then(r => r.json()).then(...);
-      alert(
-        `Pausing from ${formatHuman(rangeStart)} to ${formatHuman(rangeEnd)}.`
-      );
-    });
-  }
+
 })();
 
 (() => {
@@ -2624,21 +3714,4 @@ transferCompleteOpen.addEventListener("click", () => {
   render();
 
   // ===== Optional: expose selection on CTA click =====
-  const cta = $(".ps-cta", container);
-  if (cta) {
-    cta.addEventListener("click", () => {
-      if (!rangeStart || !rangeEnd) {
-        alert("Please choose a start and end date for the pause.");
-        return;
-      }
-      const payload = {
-        pause_start: isoDate(rangeStart),
-        pause_end: isoDate(rangeEnd),
-      };
-      console.log("Selected pause range:", payload);
-      alert(
-        `Pausing from ${formatHuman(rangeStart)} to ${formatHuman(rangeEnd)}.`
-      );
-    });
-  }
 })();

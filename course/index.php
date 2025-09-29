@@ -4405,7 +4405,8 @@ $soonest = $matched[0] ?? null;
                         </div>
                     </div>
                     <div class="row_03">
-                        <a href="" class="btn">Scheule Lessons</a>
+                        <a href="/courses/local/customplugin/my_lessons_details_reshedule.php" class="btn">Schedule
+                            Lessons</a>
                         <div class="options subscription_dropdown_options_open">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="4" viewBox="0 0 18 4"
                                 fill="none">
@@ -5555,9 +5556,9 @@ $soonest = $matched[0] ?? null;
             <img src="../img/cour/icons/calander.png" alt="" />
             <p>Schedule lessons</p>
         </a>
-        <div class="option">
+        <div class="option change-your-renewal-date">
             <img src="../img/cour/icons/revision.png" alt="" />
-            <p>Change nenewal date</p>
+            <p>Change Renewal date</p>
         </div>
         <div href="" class="option c_y_p">
             <img src="../img/cour/icons/dollar.png" alt="" />
@@ -5599,7 +5600,39 @@ $soonest = $matched[0] ?? null;
     </div>
 
 
-
+    <section id="sm-manager" class="sm-section">
+        <div class="sm-card">
+            <h1 class="sm-title">Manage Group Subscription<br>Of Florida 1</h1>
+            <nav aria-label="Subscription Options">
+                <ul class="sm-options cancel-group-subsciption">
+                    <li class="sm-option sm-change-group">
+                        <a href="#" class="sm-link">
+                            <img src="../img/cour/icons/revision.png" alt="Change group icon" class="sm-icon">
+                            <span class="sm-text">Change to a new group</span>
+                        </a>
+                    </li>
+                    <li class="sm-option sm-change-your-plan">
+                        <a href="#" class="sm-link">
+                            <img src="../img/cour/icons/dollar.png" alt="Change plan icon" class="sm-icon">
+                            <span class="sm-text">Change your plan</span>
+                        </a>
+                    </li>
+                    <li class="sm-option sm-pause-your-plan">
+                        <a href="#" class="sm-link">
+                            <img src="../img/cour/icons/revision.png" alt="Pause subscription icon" class="sm-icon">
+                            <span class="sm-text">Pause Subscription</span>
+                        </a>
+                    </li>
+                    <li class="sm-option">
+                        <a href="#" class="sm-link">
+                            <img src="../img/cour/icons/cancel.png" alt="Cancel subscription icon" class="sm-icon">
+                            <span class="sm-text">Cancel Group Subscription</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
 
     <div class="subscribe-modal-backdrop" data-subscribe-modal>
         <div class="subscribe-modal-main">
@@ -6068,7 +6101,332 @@ $soonest = $matched[0] ?? null;
 
         </div>
     </div>
-    <section class="plan-selection-panel-sub">
+
+
+    <div class="subscribe-group-modal-backdrop js-checkout-modal">
+        <div class="subscribe-modal-main">
+            <button class="subscribe-modal__close js-checkout-close" style="z-index:1;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117"></path>
+                </svg>
+            </button>
+            <main class="checkout-page">
+                <div class="checkout-container">
+
+
+                    <div class="confirm-section-sub">
+                        <section id="intro">
+                            <div class="intro-container">
+                                <!--merged image-->
+                                <div class="intro-icon-wrapper">
+                                    <img src="../img/subs/good-choice.png" alt="icon element" />
+                                </div>
+                                <div class="intro-text">
+                                    <h1 class="intro-heading">Good choice. Last step!</h1>
+                                    <p class="intro-subheading">Enter your details to confirm your monthly subscription.
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="order">
+                            <div class="order-container">
+                                <h2 class="order-title">Your order</h2>
+                                <hr>
+                                <div class="order-items-list">
+                                    <div class="order-item">
+                                        <span class="item-name js-checkout-name">6 Months Plan</span>
+                                        <span class="item-price js-checkout-price">$108.00</span>
+                                    </div>
+                                    <div class="order-item">
+                                        <div class="item-name-with-icon">
+                                            <span class="item-name js-checkout-name">Taxes & fees</span>
+                                            <img src="../img/subs/question-mark.svg" alt="info icon" class="info-icon">
+                                        </div>
+                                        <span class="item-price">$12.00</span>
+                                    </div>
+                                    <div class="order-item">
+                                        <div class="item-name-with-icon">
+                                            <span class="item-name">Your latingles credit</span>
+                                            <img src="../img/subs/question-mark.svg" alt="info icon" class="info-icon">
+                                        </div>
+                                        <span class="item-price">$20.00</span>
+                                    </div>
+                                </div>
+                                <div class="order-total">
+                                    <div class="total-row">
+                                        <h3 class="total-label">Total</h3>
+                                        <span class="total-amount">$120.00</span>
+                                    </div>
+                                    <span class="total-period">per 6 Month</span>
+                                </div>
+                                <!-- Promo code row (hidden until "Have a promo code?" is clicked) -->
+                                <div class="promo-row" hidden>
+                                    <label class="sr-only" for="promo-input">Promo code</label>
+                                    <input id="promo-input" class="promo-input" type="text" inputmode="text"
+                                        autocomplete="off" placeholder="Enter promo code" />
+                                    <button class="promo-apply" type="button">Apply</button>
+                                </div>
+
+                                <a href="#" class="promo-link">Have a promo code?</a>
+                            </div>
+                        </section>
+                        <section id="payment">
+                            <div class="payment-container">
+                                <hr>
+                                <div class="payment-details">
+                                    <h2 class="payment-title">Payment method</h2>
+                                    <div class="payment-selector-container">
+                                        <button class="payment-selector">
+                                            <div class="card-details">
+                                                <img src="../img/subs/visa.png" alt="Visa" alt="Visa" class="card-logo">
+                                                <span class="card-number">visa****7583</span>
+                                            </div>
+                                            <img src="../img/subs/arrow-down.svg" alt="dropdown arrow"
+                                                alt="dropdown arrow" class="dropdown-arrow">
+                                        </button>
+                                        <!-- Payment dropdown menu -->
+                                        <ul class="payment-menu" role="listbox" aria-label="Payment methods" hidden>
+                                            <li class="payment-option" role="option" tabindex="-1" data-method="visa"
+                                                data-label="visa ****7583">
+                                                <span>visa ****7583</span>
+                                            </li>
+                                            <li class="payment-option" role="option" tabindex="-1"
+                                                data-method="new-card" data-label="New Payment Card">
+                                                <span>New Payment Card</span>
+                                            </li>
+                                            <li class="payment-option" role="option" tabindex="-1"
+                                                data-method="apple-pay" data-label="Apple Pay">
+                                                <span>Apple Pay</span>
+                                            </li>
+                                            <li class="payment-option" role="option" tabindex="-1"
+                                                data-method="google-pay" data-label="Google Pay">
+                                                <span>Google Pay</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!-- New Card form (hidden until 'New Payment Card' selected) -->
+                                    <div class="new-card-form" hidden>
+                                        <label>Card Number</label>
+                                        <input type="text" placeholder="5218 - 9811 - 4323 - 5216" />
+
+                                        <div class="new-card-row">
+                                            <div>
+                                                <label>Expire Date</label>
+                                                <input type="text" placeholder="MM / YYYY" />
+                                            </div>
+                                            <div>
+                                                <label>Security Code</label>
+                                                <input type="text" placeholder="CVC / CVV" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Apple Pay button (hidden until Apple Pay selected) -->
+                                    <button class="apple-pay-button" hidden><img src="../img/subs/apple-pay.svg"
+                                            alt="Apple Pay" alt="Apple Pay" class="apple-pay-logo"></button>
+
+                                    <!-- Google Pay button (hidden until Google Pay selected) -->
+                                    <button class="google-pay-button" hidden><img src="../img/subs/google-pay.svg"
+                                            alt="Google Pay" alt="Google Pay" class="google-pay-logo"></button>
+
+                                    <button class="confirm-button">Confirm monthly subscription</button>
+                                    <p class="policy-text">
+                                        By pressing the "Confirm monthly subscription" button, you agree to <a href="#"
+                                            class="policy-link">LAtingles’s Refund and Payment Policy</a>.
+                                    </p>
+                                    <div class="info-box-cancellation">
+                                        <img src="../img/subs/check-mark.svg" alt="checkmark" class="info-icon">
+                                        <p>You can change your tutor for free or cancel your subscriptioat any time</p>
+                                    </div>
+                                    <div class="info-box-renewal">
+                                        <h3 class="renewal-title">Renews automatically every 6 Months</h3>
+                                        <p class="renewal-text">We will charge <strong>$120.00</strong> to your saved
+                                            payment method to add <strong>6 Months</strong> plan unless you cancel your
+                                            subscription</p>
+                                    </div>
+                                    <p class="security-text">It’s safe to pay on Latingles. All transactions are
+                                        protected
+                                        by SSL encryption.</p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <section class="plan-summary-panel">
+
+                        <div class="summary-card">
+
+                            <div class="summary-header">
+                                <h3>Your learning plan</h3>
+                                <a href="#" class="link open-faq-modal">See how our plans work</a>
+                            </div>
+                            <hr class="separator">
+                            <div class="summary-body">
+                                <div class="plan-title-section">
+                                    <h4>6 Months Plan</h4>
+                                    <p>That’s <b>6 Months Plan at $108.00.</b></p>
+                                    <span class="flexible-badge"><img src="${ASSET_PATH}/8160_24684.svg" alt="">Flexible
+                                        plan</span>
+                                </div>
+
+
+                                <ul class="features-list">
+                                    <li class="feature-item">
+                                        <div class="feature-icon-wrapper"><img src="../img/subs/calender-1.png" alt="">
+                                        </div>
+                                        <p>your <b>lessons will be scheduled for 6 Months</b></p>
+                                    </li>
+                                    <li class="feature-item">
+                                        <div class="feature-icon-wrapper"><img src="../img/subs/cap.png" alt=""></div>
+                                        <p>Change your tutor <b>for free at any time.</b></p>
+                                    </li>
+                                    <li class="feature-item">
+                                        <div class="feature-icon-wrapper"><img src="../img/subs/stop.png" alt=""></div>
+                                        <p>Cancel your plan <b>at any time.</b></p>
+                                    </li>
+                                    <li class="feature-item">
+                                        <div class="feature-icon-wrapper"><img src="../img/subs/clock.png" alt=""></div>
+                                        <p>Change the duration of your classes <b>at any time.</b></p>
+                                    </li>
+                                </ul>
+                            </div>
+                            <hr class="separator">
+                            <div class="group-details">
+                                <img src="../img/subs/group-section/1.png" alt="Florida 1" class="group-logo">
+                                <div class="group-info">
+                                    <div class="group-header">
+                                        <h5 class="group-name">English Group (NewYork)</h5>
+                                        <div class="group-rating">
+                                            <img src="../img/subs/star.png" alt="star icon">
+                                            <span class="rating-score">5</span>
+                                            <a href="#" class="link">(3 reviews)</a>
+                                        </div>
+                                    </div>
+                                    <div class="group-schedule">
+                                        <!--merged image-->
+                                        <div class="tutor-avatars">
+                                            <img src="../img/subs/1.png" alt="Tutor avatar">
+                                            <img src="../img/subs/2.png" alt="Tutor avatar">
+                                        </div>
+                                        <div class="time-tags">
+                                            <span class="time-tag">Mon - 5: 40 am</span>
+                                            <span class="time-tag">Tue - 5: 40 am</span>
+                                            <span class="time-tag">Fri - 5: 40 am</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+
+
+
+                </div>
+            </main>
+
+            <!-- Modal + overlay -->
+            <div class="modal-overlay" data-faq-overlay hidden>
+                <div class="modal modal-faq" data-faq>
+                    <button class="modal-close" type="button" aria-label="Close" data-faq-close>&times;</button>
+
+                    <h2 id="faq-modal-title" class="modal-title">See how plans works</h2>
+
+                    <div class="faq" data-faq>
+                        <!-- Item -->
+                        <section class="faq-item">
+                            <h3>
+                                <button class="faq-trigger" aria-expanded="false" aria-controls="faq-p1" id="faq-h1">
+                                    How to schedule your lessons
+                                    <span class="chev" aria-hidden="true"><img src="../img/subs/arrow-down.svg"
+                                            alt=""></span>
+                                </button>
+                            </h3>
+                            <div id="faq-p1" class="faq-panel" role="region" aria-labelledby="faq-h1" hidden>
+                                <div class="faq-panel-inner">
+                                    Dummy content: Go to “My Lessons”, pick a time slot, and confirm. You’ll receive a
+                                    calendar invite and in-app reminder.
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Item -->
+                        <section class="faq-item">
+                            <h3>
+                                <button class="faq-trigger" aria-expanded="false" aria-controls="faq-p2" id="faq-h2">
+                                    How to change your tutor
+                                    <span class="chev" aria-hidden="true"><img src="../img/subs/arrow-down.svg"
+                                            alt=""></span>
+                                </button>
+                            </h3>
+                            <div id="faq-p2" class="faq-panel" role="region" aria-labelledby="faq-h2" hidden>
+                                <div class="faq-panel-inner">
+                                    Dummy content: From your dashboard, choose “Change tutor”, review suggestions, and
+                                    confirm. Your plan and credits carry over.
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Item -->
+                        <section class="faq-item">
+                            <h3>
+                                <button class="faq-trigger" aria-expanded="false" aria-controls="faq-p3" id="faq-h3">
+                                    How to cancel your plan
+                                    <span class="chev" aria-hidden="true"><img src="../img/subs/arrow-down.svg"
+                                            alt=""></span>
+                                </button>
+                            </h3>
+                            <div id="faq-p3" class="faq-panel" role="region" aria-labelledby="faq-h3" hidden>
+                                <div class="faq-panel-inner">
+                                    Dummy content: Open “Billing & Plan”, click “Cancel plan”, follow the steps, and
+                                    you’ll see your end date immediately.
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Item -->
+                        <section class="faq-item">
+                            <h3>
+                                <button class="faq-trigger" aria-expanded="false" aria-controls="faq-p4" id="faq-h4">
+                                    How to change your renewal date
+                                    <span class="chev" aria-hidden="true"><img src="../img/subs/arrow-down.svg"
+                                            alt=""></span>
+                                </button>
+                            </h3>
+                            <div id="faq-p4" class="faq-panel" role="region" aria-labelledby="faq-h4" hidden>
+                                <div class="faq-panel-inner">
+                                    Dummy content: In “Billing & Plan”, choose “Change renewal”, select a new date, and
+                                    confirm the proration preview.
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Item -->
+                        <section class="faq-item">
+                            <h3>
+                                <button class="faq-trigger" aria-expanded="false" aria-controls="faq-p5" id="faq-h5">
+                                    How automatic payments work
+                                    <span class="chev" aria-hidden="true"><img src="../img/subs/arrow-down.svg"
+                                            alt=""></span>
+                                </button>
+                            </h3>
+                            <div id="faq-p5" class="faq-panel" role="region" aria-labelledby="faq-h5" hidden>
+                                <div class="faq-panel-inner">
+                                    Dummy content: We charge your saved method on the renewal date. You’ll get a receipt
+                                    and can update payment any time.
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <section class="plan-selection-panel-sub js-plan-panel">
         <div class="panel-content">
             <div class="selection-header">
                 <!--merged image-->
@@ -6133,7 +6491,7 @@ $soonest = $matched[0] ?? null;
                         <img src="../img/subs/calendar.png" alt="" />
                     </label>
                 </div>
-                <button class="checkout-button">Continue to checkout</button>
+                <button class="checkout-button js-plan-continue">Continue to checkout</button>
 
             </div>
         </div>
@@ -8390,7 +8748,7 @@ $soonest = $matched[0] ?? null;
             </footer>
         </div>
     </section>
-    <section id="pl-details">
+    <section id="pl-details" class="custom-plan-modal js-custom-modal">
         <div class="pl-card">
             <div class="pl-card-header">
                 <button class="pl-back-btn" aria-label="Go back">
@@ -8411,6 +8769,49 @@ $soonest = $matched[0] ?? null;
                     <span class="pl-selected-month">12</span>
                     <img src="../img/subs/arrow-down.svg" alt="Dropdown arrow">
                 </button>
+
+                <section id="pricing-options" class="is-open">
+                    <div class="pricing-list-container">
+                        <ul class="pricing-list">
+                            <li class="pricing-item">
+                                <span class="item-label">4 Months</span>
+                                <span class="item-price">$72.00</span>
+                            </li>
+                            <li class="pricing-item">
+                                <span class="item-label">5 Months</span>
+                                <span class="item-price">$90.00</span>
+                            </li>
+                            <li class="pricing-item">
+                                <span class="item-label">6 Months</span>
+                                <span class="item-price">$108.00</span>
+                            </li>
+                            <li class="pricing-item">
+                                <span class="item-label">7 Months</span>
+                                <span class="item-price">$120.00</span>
+                            </li>
+                            <li class="pricing-item">
+                                <span class="item-label">8 Months</span>
+                                <span class="item-price">$135.00</span>
+                            </li>
+                            <li class="pricing-item">
+                                <span class="item-label">9 Months</span>
+                                <span class="item-price">$144.00</span>
+                            </li>
+                            <li class="pricing-item">
+                                <span class="item-label">10 Months</span>
+                                <span class="item-price">$156.00</span>
+                            </li>
+                            <li class="pricing-item">
+                                <span class="item-label">11 Months</span>
+                                <span class="item-price">$170.00</span>
+                            </li>
+                            <li class="pricing-item">
+                                <span class="item-label">12 Months</span>
+                                <span class="item-price">$180.00</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
             </main>
 
             <hr class="pl-separator" />
@@ -8432,7 +8833,7 @@ $soonest = $matched[0] ?? null;
             <hr class="pl-separator" />
 
             <footer class="pl-card-footer">
-                <button class="pl-checkout-btn">Continue to checkout</button>
+                <button class="pl-checkout-btn js-custom-continue">Continue to checkout</button>
             </footer>
         </div>
     </section>
@@ -8526,102 +8927,127 @@ $soonest = $matched[0] ?? null;
             </footer>
         </div>
     </section>
-
-    <section id="pause-modal" class="ps-wrapper">
-        <div class="ps-container">
-            <button class="ps-close" aria-label="Close">
+    <section id="renewal-notification">
+        <div class="renewal-card">
+            <button class="close-btn" aria-label="Close">
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd"
                         d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
                         fill="#121117" />
                 </svg>
             </button>
-
-            <div class="ps-header">
-                <img src="../img/subs/group-section/1.png" alt="Florida 1 Logo" class="ps-logo">
-                <h1 class="ps-title">Pause your subscription with Florida 1</h1>
-            </div>
-
-            <div class="ps-body">
-                <div class="ps-info">
-                    <p class="ps-renewal">Your subscription is scheduled to renew on <strong>June 18.</strong></p>
-                    <p class="ps-instructions">
-                        Select the date to start and end the pause. If the pause is less than 30
-                        days, you will remain in the same group. If the pause is longer, you have
-                        to resume with another group at your current level. Any remaining lessons
-                        of this cycle within pause will be added to your credit.
+            <img class="avatar" src="../img/subs/1.png" alt="User avatar">
+            <div class="card-body">
+                <h2 class="card-title">Renewal Date Changed</h2>
+                <div class="text-content">
+                    <p class="card-text">
+                        You’ve changed your renewal date to <strong>March18</strong>
+                    </p>
+                    <p class="card-text">
+                        If you need more lessons now, you can renew your subscription right away. We’ll refill your
+                        balance and charge your saved payment method.
                     </p>
                 </div>
-
-                <div class="ps-calendar">
-                    <div class="ps-calendar__header">
-                        <h2 class="ps-month">June 2025</h2>
-                        <div class="ps-nav">
-                            <button class="ps-nav__btn is-prev" aria-label="Previous month"></button>
-                            <button class="ps-nav__btn is-next" aria-label="Next month"></button>
-                        </div>
-                    </div>
-
-                    <div class="ps-grid">
-                        <div class="ps-weekday">SU</div>
-                        <div class="ps-weekday">MO</div>
-                        <div class="ps-weekday">TU</div>
-                        <div class="ps-weekday">WE</div>
-                        <div class="ps-weekday">TH</div>
-                        <div class="ps-weekday">FR</div>
-                        <div class="ps-weekday">SA</div>
-
-                        <div class="ps-day is-other">23</div>
-                        <div class="ps-day is-other">24</div>
-                        <div class="ps-day is-other">25</div>
-                        <div class="ps-day is-other">26</div>
-                        <div class="ps-day is-other">27</div>
-                        <div class="ps-day is-other">28</div>
-                        <div class="ps-day">1</div>
-                        <div class="ps-day">2</div>
-                        <div class="ps-day">3</div>
-                        <div class="ps-day">4</div>
-                        <div class="ps-day">5</div>
-                        <div class="ps-day">6</div>
-                        <div class="ps-day">7</div>
-                        <div class="ps-day">8</div>
-                        <div class="ps-day">9</div>
-                        <div class="ps-day">10</div>
-                        <div class="ps-day">11</div>
-                        <div class="ps-day">12</div>
-                        <div class="ps-day">13</div>
-                        <div class="ps-day">14</div>
-                        <div class="ps-day">15</div>
-                        <div class="ps-day">16</div>
-                        <div class="ps-day">17</div>
-                        <div class="ps-day is-active">18</div>
-                        <div class="ps-day is-active">19</div>
-                        <div class="ps-day is-active">20</div>
-                        <div class="ps-day is-active">21</div>
-                        <div class="ps-day is-active">22</div>
-                        <div class="ps-day is-active">23</div>
-                        <div class="ps-day is-active">24</div>
-                        <div class="ps-day is-active">25</div>
-                        <div class="ps-day is-active">26</div>
-                        <div class="ps-day is-active">27</div>
-                        <div class="ps-day is-active">28</div>
-                        <div class="ps-day is-active">29</div>
-                        <div class="ps-day is-active">30</div>
-                        <div class="ps-day is-active">31</div>
-                        <div class="ps-day is-active is-other">1</div>
-                        <div class="ps-day is-active is-other">2</div>
-                        <div class="ps-day is-active is-other">3</div>
-                        <div class="ps-day is-active is-other">4</div>
-                        <div class="ps-day is-active is-other">5</div>
-                    </div>
-                </div>
+                <a href="/courses/local/customplugin/my_lessons_details_reshedule.php" class="action-btn">Shedule
+                    Lesson</a>
             </div>
-
-            <footer class="ps-footer">
-                <button class="ps-cta">Continue Pausing</button>
-            </footer>
         </div>
     </section>
+
+    <div class="ps-container">
+        <button class="ps-close" aria-label="Close">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+
+        <div class="ps-header">
+            <img src="../img/subs/group-section/1.png" alt="Florida 1 Logo" class="ps-logo">
+            <h1 class="ps-title">Pause your subscription with Florida 1</h1>
+        </div>
+
+        <div class="ps-body">
+            <div class="ps-info">
+                <p class="ps-renewal">Your subscription is scheduled to renew on <strong>June 18.</strong></p>
+                <p class="ps-instructions">
+                    Select the date to start and end the pause. If the pause is less than 30
+                    days, you will remain in the same group. If the pause is longer, you have
+                    to resume with another group at your current level. Any remaining lessons
+                    of this cycle within pause will be added to your credit.
+                </p>
+            </div>
+
+            <div class="ps-calendar">
+                <div class="ps-calendar__header">
+                    <h2 class="ps-month">June 2025</h2>
+                    <div class="ps-nav">
+                        <button class="ps-nav__btn is-prev" aria-label="Previous month"></button>
+                        <button class="ps-nav__btn is-next" aria-label="Next month"></button>
+                    </div>
+                </div>
+
+                <div class="ps-grid">
+                    <div class="ps-weekday">SU</div>
+                    <div class="ps-weekday">MO</div>
+                    <div class="ps-weekday">TU</div>
+                    <div class="ps-weekday">WE</div>
+                    <div class="ps-weekday">TH</div>
+                    <div class="ps-weekday">FR</div>
+                    <div class="ps-weekday">SA</div>
+
+                    <div class="ps-day is-other">23</div>
+                    <div class="ps-day is-other">24</div>
+                    <div class="ps-day is-other">25</div>
+                    <div class="ps-day is-other">26</div>
+                    <div class="ps-day is-other">27</div>
+                    <div class="ps-day is-other">28</div>
+                    <div class="ps-day">1</div>
+                    <div class="ps-day">2</div>
+                    <div class="ps-day">3</div>
+                    <div class="ps-day">4</div>
+                    <div class="ps-day">5</div>
+                    <div class="ps-day">6</div>
+                    <div class="ps-day">7</div>
+                    <div class="ps-day">8</div>
+                    <div class="ps-day">9</div>
+                    <div class="ps-day">10</div>
+                    <div class="ps-day">11</div>
+                    <div class="ps-day">12</div>
+                    <div class="ps-day">13</div>
+                    <div class="ps-day">14</div>
+                    <div class="ps-day">15</div>
+                    <div class="ps-day">16</div>
+                    <div class="ps-day">17</div>
+                    <div class="ps-day is-active">18</div>
+                    <div class="ps-day is-active">19</div>
+                    <div class="ps-day is-active">20</div>
+                    <div class="ps-day is-active">21</div>
+                    <div class="ps-day is-active">22</div>
+                    <div class="ps-day is-active">23</div>
+                    <div class="ps-day is-active">24</div>
+                    <div class="ps-day is-active">25</div>
+                    <div class="ps-day is-active">26</div>
+                    <div class="ps-day is-active">27</div>
+                    <div class="ps-day is-active">28</div>
+                    <div class="ps-day is-active">29</div>
+                    <div class="ps-day is-active">30</div>
+                    <div class="ps-day is-active">31</div>
+                    <div class="ps-day is-active is-other">1</div>
+                    <div class="ps-day is-active is-other">2</div>
+                    <div class="ps-day is-active is-other">3</div>
+                    <div class="ps-day is-active is-other">4</div>
+                    <div class="ps-day is-active is-other">5</div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="ps-footer">
+            <button class="ps-cta">Continue Pausing</button>
+        </footer>
+    </div>
+
 
     <section id="pause-confirmation">
         <div class="pause-modal">
@@ -8661,12 +9087,12 @@ $soonest = $matched[0] ?? null;
                     </ul>
                 </div>
 
-                <button class="confirm-button">Confirm Pause subscription</button>
+                <button class="confirm-button confirm-pause">Confirm Pause subscription</button>
             </div>
         </div>
     </section>
 
-    <section id="subscription-modal" class="sp-wrapper" data-start="2025-03-18" data-end="2025-03-29">
+    <section id="subscription-paused" class="sp-wrapper" data-start="2025-03-18" data-end="2025-03-29">
         <div class="sp-card">
             <button class="sp-close" aria-label="Close modal">
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -8689,6 +9115,34 @@ $soonest = $matched[0] ?? null;
             <button class="sp-btn">Done</button>
         </div>
     </section>
+    <div class="subs-overlay" id="subsModal">
+        <div class="subs-box">
+            <button class="subs-close" id="subsClose">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+
+            </button>
+            <div>
+
+                <img src="../img/subs/try-pause.png" alt="">
+            </div>
+
+            <div class="subs-step1" id="subsStep1">
+                <h2>Try Pausing Before You Cancel</h2>
+            </div>
+            <div class="subs-step2 subs-hidden" id="subsStep2">
+                <h2 class="subs-h2">Try Pausing Before You <br> Cancel</h2>
+                <p>Busy at the moment? You can <b>pause your subscription</b> for up to <b>20 days</b> instead of
+                    cancelling.</p>
+                <button class="subs-btn subs-btn-pause">Pause subscription</button>
+                <button class="subs-btn subs-btn-cancel ">Proceed with cancellation</button>
+            </div>
+        </div>
+    </div>
+
 
     <section class="backdrop"></section>
     <section class="backdrop_nested"></section>
@@ -8697,6 +9151,639 @@ $soonest = $matched[0] ?? null;
 
 </div>
 
+<section id="cm-modal">
+    <div class="cm-modal-container">
+        <button class="cm-close-btn" aria-label="Close">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+
+        <div class="cm-header">
+            <h1>Why would you like to cancel?</h1>
+            <p>This stays between us, so be honest.</p>
+        </div>
+
+        <nav class="cm-reasons" aria-label="Cancellation reasons">
+            <a href="#" class="cm-reason cm-reason-1">
+                <div class="cm-reason-content">
+                    <img class="cm-reason-icon" src="../img/subs/1-a.png" alt="">
+                    <span>I need a different schedule</span>
+                </div>
+                <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+            </a>
+
+            <a href="#" class="cm-reason cm-reason-2">
+                <div class="cm-reason-content">
+                    <img class="cm-reason-icon" src="../img/subs/2-a.png" alt="">
+                    <span>It’s too expensive</span>
+                </div>
+                <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+            </a>
+
+            <a href="#" class="cm-reason cm-reason-3">
+                <div class="cm-reason-content">
+                    <img class="cm-reason-icon" src="../img/subs/3-a.png" alt="">
+                    <span>I'd like to try private classes</span>
+                </div>
+                <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+
+                <a href="#" class="cm-reason cm-reason-4">
+                    <div class="cm-reason-content">
+                        <img class="cm-reason-icon" src="../img/subs/4-a.png" alt="">
+                        <span>I will be busy for sometime</span>
+                    </div>
+                    <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+                </a>
+
+                <a href="#" class="cm-reason cm-reason-5">
+                    <div class="cm-reason-content">
+                        <img class="cm-reason-icon" src="../img/subs/5-a.png" alt="">
+                        <span>I’ll study with my tutor outside Latingles</span>
+                    </div>
+                    <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+                </a>
+
+                <a href="#" class="cm-reason cm-reason-6">
+                    <div class="cm-reason-content">
+                        <img class="cm-reason-icon" src="../img/subs/6-a.png" alt="">
+                        <span>I don't have time for live classes</span>
+                    </div>
+                    <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+                </a>
+
+                <a href="#" class="cm-reason cm-reason-7">
+                    <div class="cm-reason-content">
+                        <img class="cm-reason-icon" src="../img/subs/7-a.png" alt="">
+                        <span>Something else</span>
+                    </div>
+                    <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+                </a>
+        </nav>
+    </div>
+</section>
+<section id="gm-modal" class="gm-modal-container reason-1-modal">
+    <div class="gm-header">
+        <button class="gm-icon-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+        <button class="gm-icon-btn">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+    </div>
+    <h1 class="gm-title">We have lots of great Groups that will meet schedule</h1>
+
+    <main class="gm-content">
+        <div class="gm-cards">
+            <article class="gm-card">
+                <div class="gm-card-top">
+                    <div class="gm-avatar-wrap">
+                        <img src="../img/subs/group-section/1.png" alt="Florida 1 Group" class="gm-avatar-img">
+                        <div class="gm-online"></div>
+                    </div>
+                    <h2 class="gm-card-title">English Group Classes (Florida 1)</h2>
+                    <div class="gm-favorite">
+                        <img src="../img/subs/heart.png" alt="" class="gm-heart">
+
+                    </div>
+                </div>
+
+                <div class="gm-info">
+                    <div class="gm-price-rating">
+                        <div class="gm-price-info">
+                            <p class="gm-price">$60</p>
+                            <p class="gm-period">Monthly</p>
+                        </div>
+                        <div class="gm-rating-info">
+                            <div class="gm-rating-value">
+                                <img src="../img/subs/star.png" alt="">
+                                <span>4.7</span>
+                            </div>
+                            <p class="gm-reviews">17 reviews</p>
+                        </div>
+                    </div>
+                    <div class="gm-tags">
+                        <span class="gm-tag gm-tag-professional">Professional</span>
+                        <span class="gm-tag gm-tag-super">Super Tutor</span>
+                    </div>
+                </div>
+
+                <div class="gm-details">
+                    <div class="gm-detail-box">
+                        <p class="gm-detail-label">Main Teacher :</p>
+                        <p class="gm-detail-strong">Daniela Canelon</p>
+                        <div class="gm-lang">
+                            <img src="../img/subs/subject.png" alt="">
+                            <span>English (Native)</span>
+                        </div>
+                    </div>
+                    <div class="gm-detail-box">
+                        <p class="gm-detail-label">Practice Teacher :</p>
+                        <p class="gm-detail-value">Axley Perez</p>
+                        <div class="gm-lang">
+                            <img src="../img/subs/subject.png" alt="">
+                            <span>English (Native)</span>
+                        </div>
+                    </div>
+                    <div class="gm-detail-box">
+                        <p class="gm-detail-label">Students</p>
+                        <div class="gm-students">
+                            <img src="../img/subs/person.png" alt="Language Icon">
+                            <p class="gm-detail-strong">4 Active ,</p>
+                        </div>
+                        <p class="gm-detail-value">Max 10</p>
+                    </div>
+                    <div class="gm-detail-box">
+                        <p class="gm-detail-label">Schedule :</p>
+                        <p class="gm-detail-strong">Mon, Wed - 8 PM EST</p>
+                        <p class="gm-detail-strong">Fri - 8 PM EST</p>
+                    </div>
+                </div>
+
+                <div class="gm-actions">
+                    <button class="gm-btn gm-btn-primary">Change To This Group</button>
+                    <button class="gm-btn gm-btn-secondary">View Group Profile</button>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer class="gm-footer">
+        <button class="gm-btn-tertiary">View more Groups</button>
+        <a href="#" class="gm-cancel-link proceed-with-cancel">No thanks, cancel subscription</a>
+    </footer>
+</section>
+<section id="cp-cancellation-prompt" class="reason-4-modal">
+    <div class="cp-card">
+        <div class="cp-header">
+
+            <button class="cp-icon-btn cp-back-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="cp-icon-btn cp-close-btn" aria-label="Close dialog">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <div class="cp-text">
+            <h1 class="cp-title">Try pausing before you<br>cancel</h1>
+            <p class="cp-subtitle">Busy at the moment? You can pause your subscription<br>for up to 20 days instead of
+                cancelling.</p>
+        </div>
+
+        <div class="cp-actions">
+            <button class="cp-btn cp-btn-primary">Pause subscription</button>
+            <a href="#" class="cp-btn cp-btn-secondary proceed-with-cancel">Proceed with cancellation</a>
+        </div>
+    </div>
+</section>
+
+<section id="cp-cancellation-prompt-sub" class="reason-6-modal">
+    <div class="cp-card">
+
+        <div class="cp-header">
+            <button class="cp-icon-btn cp-back-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="cp-icon-btn cp-close-btn" aria-label="Close dialog">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <div class="cp-text">
+            <h1 class="cp-title">Review your changes to<br>Recorded Classes Only</h1>
+            <p class="cp-subtitle">Change your plan to Recorded Classes Only</p>
+        </div>
+
+        <div class="cp-text-sub">
+            <h1 class="cp-title-sub">$36.00 per Month</h1>
+            <p class="cp-subtitle-sub">live classes</p>
+            <img src="../img/subs/arrow-down.svg" alt="">
+            <h1 class="cp-title-sub">$36.00 per Month</h1>
+            <p class="cp-subtitle-sub">Recorded Classes Only</p>
+        </div>
+
+        <div class="cp-actions-sub">
+            <button class="cp-btn cp-btn-primary-confirm confirm-plan-change">Confirm</button>
+            <a href="#" class="cp-btn cp-btn-secondary proceed-with-cancel">Proceed with cancellation</a>
+        </div>
+    </div>
+</section>
+<section id="bo-modal" class="reason-2-modal">
+    <div class="bo-container">
+        <div class="bo-header">
+            <button class="bo-icon-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="bo-icon-btn" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+
+        <main class="bo-content">
+            <div class="bo-text">
+                <h1 class="bo-title">Why not try these budget-friendly options?</h1>
+                <p class="bo-subtitle">Here’s how you can continue practicing even on a tight budget.</p>
+            </div>
+
+            <div class="bo-options">
+                <a href="#" class="bo-option">
+                    <div class="bo-icon-wrap">
+                        <div class="bo-icon-merged">
+                            <img src="../img/subs/camera.png" alt="Recorded classes icon"
+                                style="position:absolute; top:4.9px; left:0; width:24px; height:14.1px;">
+                        </div>
+                    </div>
+                    <span>Try Recorded Classes Only</span>
+                </a>
+
+                <a href="#" class="bo-option try-affordable-group">
+                    <div class="bo-icon-wrap">
+                        <div class="bo-icon-merged">
+                            <img src="../img/subs/persons.png" alt="Recorded classes icon"
+                                style="position:absolute; top:1.8px; left:1.1px; width:21.9px; height:20.5px;">
+                        </div>
+                    </div>
+                    <span>Try affordable Groups</span>
+                </a>
+            </div>
+
+            <a href="#" class="bo-cancel proceed-with-cancel">No thanks, cancel subscription</a>
+        </main>
+    </div>
+</section>
+
+<section id="bo-modal" class="reason-7-modal">
+    <div class="bo-container">
+        <div class="bo-header">
+            <button class="bo-icon-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="bo-icon-btn" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+
+        <main class="bo-content">
+            <div class="bo-text">
+                <h1 class="bo-title">Why not try a new way to learn?</h1>
+                <p class="bo-subtitle">Here’s how to make your subscription work better for you.</p>
+            </div>
+
+            <div class="bo-options">
+                <a href="#" class="bo-option try-smaller-plan">
+                    <div class="bo-icon-wrap">
+                        <div class="bo-icon-merged">
+                            <img src="../img/subs/smallerplan.png" alt="Recorded classes icon"
+                                style="position:absolute; top:4.9px; left:0; width:24px; height:14.1px;">
+                        </div>
+                    </div>
+                    <span>Try a smaller plan</span>
+                </a>
+
+                <a href="#" class="bo-option try-affordable-group">
+                    <div class="bo-icon-wrap">
+                        <div class="bo-icon-merged">
+                            <img src="../img/subs/persons.png" alt="Recorded classes icon"
+                                style="position:absolute; top:1.8px; left:1.1px; width:21.9px; height:20.5px;">
+                        </div>
+                    </div>
+                    <span>Try a affordable Group</span>
+                </a>
+            </div>
+
+            <a href="#" class="bo-cancel proceed-with-cancel">No thanks, cancel subscription</a>
+        </main>
+    </div>
+</section>
+<section id="cp-prompt" class="cp-section reason-5-modal">
+    <div class="cp-card">
+        <div class="cp-header">
+            <button class="cp-icon-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="cp-icon-btn" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+
+        <main class="cp-body">
+            <div class="cp-intro">
+                <h1 class="cp-heading">Learning on Latingles is secure and convenient.</h1>
+                <p class="cp-subheading">Here’s what you’ll lose when you leave Latingles.</p>
+            </div>
+
+            <div class="cp-features">
+                <article class="cp-feature">
+                    <img class="cp-feature-icon" src="../img/subs/protection.png" alt="Payment protection icon">
+                    <div class="cp-feature-text">
+                        <h2 class="cp-feature-title">Payment protection</h2>
+                        <p class="cp-feature-desc">If the tutor doesn’t show up, we’ll keep your money safe. We won’t be
+                            able to protect you if you continue outside Latingles.</p>
+                    </div>
+                </article>
+                <article class="cp-feature">
+                    <img class="cp-feature-icon" src="../img/subs/uniquelearning.png" alt="Payment protection icon">
+
+                    <div class="cp-feature-text">
+                        <h2 class="cp-feature-title">Unique learning tools</h2>
+                        <p class="cp-feature-desc">Latingles supports your progress by offering simple scheduling, a
+                            classroom with a speaking tracker, progress tests and more.</p>
+                    </div>
+                </article>
+                <article class="cp-feature">
+                    <img class="cp-feature-icon" src="../img/subs/access.png" alt="Payment protection icon">
+                    <div class="cp-feature-text">
+                        <h2 class="cp-feature-title">Full access to your materials</h2>
+                        <p class="cp-feature-desc">Stay in control of your learning resources, vocab and chats. If you
+                            stop using Latingles, your access will be lost after 180 days.</p>
+                    </div>
+                </article>
+            </div>
+        </main>
+
+        <footer class="cp-actions">
+            <a href="#" class="cp-btn cp-btn-primary">Keep learning on latingles</a>
+            <a href="#" class="cp-btn cp-btn-secondary proceed-with-cancel">No thanks, cancel subscription</a>
+        </footer>
+    </div>
+</section>
+<section id="tutors-modal" class="reason-3-modal">
+    <div class="app-tutor-modal-container">
+        <div class="app-tutor-modal-header">
+            <div class="app-header-top-row">
+                <button class="app-icon-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                            fill="#121117" />
+                    </svg>
+                </button>
+                <button class="app-icon-btn">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                            fill="#121117" />
+                    </svg>
+                </button>
+            </div>
+            <h1 class="app-modal-title">We have lots of great tutors for you.</h1>
+        </div>
+
+        <main class="app-tutor-list">
+            <article class="app-tutor-card">
+                <div class="app-tutor-card-main">
+                    <div class="app-tutor-avatar-wrapper">
+                        <img class="app-tutor-avatar" src="../img/subs/tutor-1.png" alt="Avatar of Julia">
+                        <div class="app-status-indicator app-offline"></div>
+                    </div>
+                    <div class="app-tutor-details">
+                        <div class="app-tutor-info">
+                            <div class="app-tutor-name-wrapper">
+                                <h2 class="app-tutor-name">Julia</h2>
+                                <img class="app-country-flag" src="../img/subs/flag/4.png" alt="Spain flag">
+                            </div>
+                            <span class="app-super-tutor-badge">Super Tutor</span>
+                        </div>
+                        <div class="app-tutor-stats">
+                            <div class="app-stat-item">
+                                <span class="app-price">$28</span>
+                                <span class="app-price-label">per lesson</span>
+                            </div>
+                            <div class="app-stat-item">
+                                <div class="app-rating">
+                                    <img src="../img/subs/star.svg" alt="Star icon">
+                                    <span class="app-rating-score">5</span>
+                                </div>
+                                <span class="app-reviews">24 reviews</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <p class="app-tutor-description">Full time professional and certified tutor/ +3 years
+                    experience</p>
+            </article>
+
+            <article class="app-tutor-card">
+                <div class="app-tutor-card-main">
+                    <div class="app-tutor-avatar-wrapper">
+                        <img class="app-tutor-avatar" src="../img/subs/12-1.png" alt="Avatar of Julia">
+                        <div class="app-status-indicator app-offline"></div>
+                    </div>
+                    <div class="app-tutor-details">
+                        <div class="app-tutor-info">
+                            <div class="app-tutor-name-wrapper">
+                                <h2 class="app-tutor-name">Mónica</h2>
+                                <img class="app-country-flag" src="../img/subs/flag/5.png" alt="Spain flag">
+                            </div>
+                            <span class="app-super-tutor-badge">Super Tutor</span>
+                        </div>
+                        <div class="app-tutor-stats">
+                            <div class="app-stat-item">
+                                <span class="app-price">$28</span>
+                                <span class="app-price-label">per lesson</span>
+                            </div>
+                            <div class="app-stat-item">
+                                <div class="app-rating">
+                                    <img src="../img/subs/star.svg" alt="Star icon">
+                                    <span class="app-rating-score">5</span>
+                                </div>
+                                <span class="app-reviews">24 reviews</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <p class="app-tutor-description">Certified native Spanish tutor. Take your Spanish to the next level!
+                    Fun and functional methodology. Lessons focused on your needs!</p>
+            </article>
+            <!-- repeat same pattern for other tutor cards -->
+        </main>
+
+        <footer class="app-tutor-modal-footer">
+            <a href="#" class="app-btn app-btn-primary">View more tutors</a>
+            <a href="#" class="app-btn app-btn-link proceed-with-cancel">No thanks, cancel subscription</a>
+        </footer>
+    </div>
+</section>
+<section id="cancellation-confirmation" class="app-cancellation-section">
+    <div class="app-cancellation-modal">
+        <button class="app-modal-close-btn" aria-label="Close">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+
+        <div class="app-modal-header">
+            <img class="app-modal-icon" src="../img/subs/cancel-plan.png" alt="Subscription cancelled icon">
+            <h1 class="app-modal-title">You’ve cancelled your subscription.</h1>
+        </div>
+
+        <div class="app-modal-body">
+            <p class="app-modal-description">Your plan expires on April 07. We’ll be happy to welcome you back anytime!
+            </p>
+            <a href="#" role="button" class="app-modal-button">Okay, thanks!</a>
+        </div>
+    </div>
+</section>
+<section id="plan-Change-confirmation" class="app-cancellation-section">
+    <div class="app-cancellation-modal">
+        <button class="app-modal-close-btn" aria-label="Close">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+
+        <div class="app-modal-header">
+            <img class="app-modal-icon" src="../img/subs/cancel-plan.png" alt="Subscription cancelled icon">
+            <h1 class="app-modal-title">You’ve Changed your Plan.</h1>
+        </div>
+
+        <div class="app-modal-body">
+            <p class="app-modal-description">Your plan expires on April 07. We’ll be happy to welcome you back anytime!
+            </p>
+            <a href="#" role="button" class="app-modal-button">Okay, thanks!</a>
+        </div>
+    </div>
+</section>
+<section id="cp-change-plan">
+    <div class="cp-card">
+        <div class="cp-header">
+
+            <button class="cp-icon-btn cp-back-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="cp-icon-btn cp-close-btn" aria-label="Close dialog">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+
+        <div>
+
+            <h1 class="modal-title">
+                Why not try a plan that fits your schedule?
+            </h1>
+        </div>
+
+        <div class="plan-options">
+            <div class="plan-option">
+                <input type="radio" name="plan" id="plan-1" class="visually-hidden">
+                <label for="plan-1" class="plan-label">
+                    <span class="plan-name">1 Month</span>
+                    <span class="plan-price"><b>$36.00</b> per Month</span>
+                </label>
+            </div>
+            <div class="plan-option">
+                <input type="radio" name="plan" id="plan-4" class="visually-hidden">
+                <label for="plan-4" class="plan-label">
+                    <span class="plan-name">4 Months</span>
+                    <span class="plan-price"><b>$72.00</b> per 4 Month</span>
+                </label>
+            </div>
+            <div class="plan-option">
+                <input type="radio" name="plan" id="plan-6" class="visually-hidden" checked>
+                <label for="plan-6" class="plan-label">
+                    <span class="plan-name">6 Months</span>
+                    <span class="plan-price"><b>$108.00</b> per 6 Month</span>
+
+                </label>
+            </div>
+            <div class="plan-option">
+                <input type="radio" name="plan" id="plan-9" class="visually-hidden">
+                <label for="plan-9" class="plan-label">
+                    <span class="plan-name">9 Months</span>
+                    <span class="plan-price"><b>$144.00</b> per 9 Month</span>
+                </label>
+            </div>
+            <div class="plan-option">
+                <input type="radio" name="plan" id="plan-12" class="visually-hidden">
+                <label for="plan-12" class="plan-label">
+                    <div class="plan-name-wrapper">
+                        <span class="plan-name">12 Months</span>
+                        <span class="popular-badge">Popular</span>
+                    </div>
+                    <span class="plan-price"><b>$180.00</b> per 12 Month</span>
+                </label>
+            </div>
+            <div class="plan-option">
+                <input type="radio" name="plan" id="plan-custom" class="visually-hidden">
+                <label for="plan-custom" class="plan-label">
+                    <div class="custom-plan-text">
+                        <span class="plan-name">Custom plan</span>
+                        <p>Choose the number of <b>months</b> if that suits you better.</p>
+                    </div>
+                    <img src="../img/subs/calendar.png" alt="" />
+                </label>
+            </div>
+        </div>
+
+        <div class="cp-actions-plan">
+            <button class="cp-btn cp-btn-primary-confirm confirm-checkout">Confirm</button>
+            <a href="#" class="cp-btn cp-btn-secondary cp-btn-sub proceed-with-cancel">Proceed with cancellation</a>
+        </div>
+    </div>
+</section>
 <?php // 1️⃣ Check if the user has the "student" role in Moodle.
 $context = context_system::instance();
 //$isStudent = user_has_role_assignment($user->id, 5, $context->id); // 5 is usually the student role ID
