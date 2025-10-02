@@ -1158,7 +1158,7 @@
             </div>
 
             <div class="btns">
-                <a href="">Shedule Lesson</a>
+                <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">Shedule Lesson</a>
                 <button class="transfer-balance-or-subscription-modol-open outline-button"
                     id="transfer-balance-or-subscription-modol-open">
                     Transfer lessons or subscription

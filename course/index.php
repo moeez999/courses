@@ -1,39 +1,37 @@
 <?php
-
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * Lists the course categories
- *
- * @copyright 1999 Martin Dougiamas  http://dougiamas.com
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package course
- */
-
-require_once("../config.php");
-require_once($CFG->dirroot. '/course/lib.php');
-//include($CFG->dirroot. '/local/adminboard/test/index.php');
-include($CFG->dirroot. '/local/adminboard/test/index_new.php');
-
-
-$PAGE->requires->css(new moodle_url('./style.css?v=' . time()), true);
-$PAGE->requires->css(new moodle_url('./group-subscription.css?v=' . time()), true);
-$PAGE->requires->css(new moodle_url('./calendar.css?v=' . time()), true);
-?>
-
+   // This file is part of Moodle - http://moodle.org/
+   //
+   // Moodle is free software: you can redistribute it and/or modify
+   // it under the terms of the GNU General Public License as published by
+   // the Free Software Foundation, either version 3 of the License, or
+   // (at your option) any later version.
+   //
+   // Moodle is distributed in the hope that it will be useful,
+   // but WITHOUT ANY WARRANTY; without even the implied warranty of
+   // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   // GNU General Public License for more details.
+   //
+   // You should have received a copy of the GNU General Public License
+   // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+   
+   /**
+    * Lists the course categories
+    *
+    * @copyright 1999 Martin Dougiamas  http://dougiamas.com
+    * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+    * @package course
+    */
+   
+   require_once("../config.php");
+   require_once($CFG->dirroot. '/course/lib.php');
+   //include($CFG->dirroot. '/local/adminboard/test/index.php');
+   include($CFG->dirroot. '/local/adminboard/test/index_new.php');
+   
+   
+   $PAGE->requires->css(new moodle_url('./style.css?v=' . time()), true);
+   $PAGE->requires->css(new moodle_url('./group-subscription.css?v=' . time()), true);
+   $PAGE->requires->css(new moodle_url('./calendar.css?v=' . time()), true);
+   ?>
 <style>
 .tertiary-navigation {
     display: none !important;
@@ -46,138 +44,137 @@ $PAGE->requires->css(new moodle_url('./calendar.css?v=' . time()), true);
 }
 </style>
 <?php
-$PAGE->requires->css(new moodle_url('./MessageBox.css?v=' . time()), true);
-$PAGE->requires->css(new moodle_url('./course.css?v=' . time()), true);
-$PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css'), true);
-$PAGE->requires->js(new moodle_url('https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js '), true);
-$user = $USER;
-$urlCourse = new moodle_url($CFG->wwwroot .'/course/view.php?id');
-
-$categoryid = optional_param('categoryid', 0, PARAM_INT); // Category id
-$site = get_site();
-
-if ($CFG->forcelogin) {
-    require_login();
-}
-
-
-$heading = $site->fullname;
-
-
-if ($categoryid) {
-    $category = core_course_category::get($categoryid); // This will validate access.
-    $PAGE->set_category_by_id($categoryid);
-    $PAGE->set_url(new moodle_url('/course/index.php', array('categoryid' => $categoryid)));
-    $PAGE->set_pagetype('course-index-category');
-    $heading = $category->get_formatted_name();
-} else if ($category = core_course_category::user_top()) {
-    // Check if there is only one top-level category, if so use that.
-    $categoryid = $category->id;
-    $PAGE->set_url('/course/index.php');
-    if ($category->is_uservisible() && $categoryid) {
-        $PAGE->set_category_by_id($categoryid);
-        $PAGE->set_context($category->get_context());
-        if (!core_course_category::is_simple_site()) {
-            $PAGE->set_url(new moodle_url('/course/index.php', array('categoryid' => $categoryid)));
-            $heading = $category->get_formatted_name();
-        }
-    } else {
-        $PAGE->set_context(context_system::instance());
-    }
-    $PAGE->set_pagetype('course-index-category');
-} else {
-    // throw new moodle_exception('cannotviewcategory');
-}
-
-$PAGE->set_pagelayout('coursecategory');
-$PAGE->set_primary_active_tab('home');
-$PAGE->add_body_class('limitedwidth');
-$courserenderer = $PAGE->get_renderer('core', 'course');
-
-$PAGE->set_heading($heading);
-$content = $courserenderer->course_category($categoryid);
-
-$PAGE->set_secondary_active_tab('categorymain');
-
-echo $OUTPUT->header();
-
-// Ejecutamos la consulta
-$cursos = $DB->get_records('course', null, 'fullname ASC');
-
-$cursosArray = [];
-// Mostrar los cursos
-function ordering($fullname) {
-    // Usamos una expresión regular para obtener el número al final del fullname
-    preg_match('/(\d+)$/', $fullname, $coincidencias);
-    return isset($coincidencias[1]) ? (int)$coincidencias[1] : 0;
-}
-
-// Mostrar los cursos
-foreach ($cursos as $curso) {
-    // Creamos un objeto para almacenar la información del curso
-    $cursoObj = new stdClass();
-    $cursoObj->id = $curso->id;
-    $cursoObj->fullname = $curso->fullname;
-    $cursoObj->category = $curso->category;
-    $cursoObj->summary = $curso->summary;
-
-    // Verificar si el usuario está inscrito en el curso
-    if (is_enrolled(context_course::instance($curso->id), $user)) {
-        $cursoObj->inscrito = true; // El usuario está inscrito
-    } else {
-        $cursoObj->inscrito = false; // El usuario NO está inscrito
-    }
-
-    // Añadir el objeto curso al array
-    $cursosArray[] = $cursoObj;
-}
-
-
-if (!empty($cursosArray)) {
-
-// Ordenar el array de cursos según el número al final del fullname
-usort($cursosArray, function($a, $b) {
-    return ordering($a->fullname) - ordering($b->fullname);
-});
-}
-if (is_siteadmin($user->id)) {
-    // echo $content; // Aquí va el contenido que quieres mostrar
-} else {
-    echo "";
-}
-function verificarInscripcion($cursos, $id) {
-    $bol = false;  // Inicializamos bol como false para el caso en que no se encuentre el id
-
-    // Recorremos todos los cursos
-    foreach ($cursos as $curso) {
-        // Verificamos si el fullname del curso coincide con el nombre
-        if ($curso->id == $id) {
-            // Si el curso está inscrito, retornamos true, si no, false
-            if ($curso->inscrito === true) {
-                $bol = true;  // El usuario está inscrito
-            }
-            return $bol;  // Salimos de la función inmediatamente
-        }
-    } 
-    return $bol;  // Si no encuentra el nombre en los cursos, devuelve false
-}
-
-function getLink($cursos, $id, $url) {
-    foreach ($cursos as $curso) {
-        if ($curso->id == $id && !empty($curso->inscrito)) {
-            return $url . "=" . $id; // Si está inscrito, devuelve la URL
-        }
-    }
-    return "#"; // Si no está inscrito o no se encontró el curso, devuelve "#"
-}
-
-if (is_siteadmin($user->id)) {
-    echo $content; // Aquí va el contenido que quieres mostrar
-} else {
-    echo "";
-}
-echo $OUTPUT->skip_link_target(); ?>
-
+   $PAGE->requires->css(new moodle_url('./MessageBox.css?v=' . time()), true);
+   $PAGE->requires->css(new moodle_url('./course.css?v=' . time()), true);
+   $PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css'), true);
+   $PAGE->requires->js(new moodle_url('https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js '), true);
+   $user = $USER;
+   $urlCourse = new moodle_url($CFG->wwwroot .'/course/view.php?id');
+   
+   $categoryid = optional_param('categoryid', 0, PARAM_INT); // Category id
+   $site = get_site();
+   
+   if ($CFG->forcelogin) {
+       require_login();
+   }
+   
+   
+   $heading = $site->fullname;
+   
+   
+   if ($categoryid) {
+       $category = core_course_category::get($categoryid); // This will validate access.
+       $PAGE->set_category_by_id($categoryid);
+       $PAGE->set_url(new moodle_url('/course/index.php', array('categoryid' => $categoryid)));
+       $PAGE->set_pagetype('course-index-category');
+       $heading = $category->get_formatted_name();
+   } else if ($category = core_course_category::user_top()) {
+       // Check if there is only one top-level category, if so use that.
+       $categoryid = $category->id;
+       $PAGE->set_url('/course/index.php');
+       if ($category->is_uservisible() && $categoryid) {
+           $PAGE->set_category_by_id($categoryid);
+           $PAGE->set_context($category->get_context());
+           if (!core_course_category::is_simple_site()) {
+               $PAGE->set_url(new moodle_url('/course/index.php', array('categoryid' => $categoryid)));
+               $heading = $category->get_formatted_name();
+           }
+       } else {
+           $PAGE->set_context(context_system::instance());
+       }
+       $PAGE->set_pagetype('course-index-category');
+   } else {
+       // throw new moodle_exception('cannotviewcategory');
+   }
+   
+   $PAGE->set_pagelayout('coursecategory');
+   $PAGE->set_primary_active_tab('home');
+   $PAGE->add_body_class('limitedwidth');
+   $courserenderer = $PAGE->get_renderer('core', 'course');
+   
+   $PAGE->set_heading($heading);
+   $content = $courserenderer->course_category($categoryid);
+   
+   $PAGE->set_secondary_active_tab('categorymain');
+   
+   echo $OUTPUT->header();
+   
+   // Ejecutamos la consulta
+   $cursos = $DB->get_records('course', null, 'fullname ASC');
+   
+   $cursosArray = [];
+   // Mostrar los cursos
+   function ordering($fullname) {
+       // Usamos una expresión regular para obtener el número al final del fullname
+       preg_match('/(\d+)$/', $fullname, $coincidencias);
+       return isset($coincidencias[1]) ? (int)$coincidencias[1] : 0;
+   }
+   
+   // Mostrar los cursos
+   foreach ($cursos as $curso) {
+       // Creamos un objeto para almacenar la información del curso
+       $cursoObj = new stdClass();
+       $cursoObj->id = $curso->id;
+       $cursoObj->fullname = $curso->fullname;
+       $cursoObj->category = $curso->category;
+       $cursoObj->summary = $curso->summary;
+   
+       // Verificar si el usuario está inscrito en el curso
+       if (is_enrolled(context_course::instance($curso->id), $user)) {
+           $cursoObj->inscrito = true; // El usuario está inscrito
+       } else {
+           $cursoObj->inscrito = false; // El usuario NO está inscrito
+       }
+   
+       // Añadir el objeto curso al array
+       $cursosArray[] = $cursoObj;
+   }
+   
+   
+   if (!empty($cursosArray)) {
+   
+   // Ordenar el array de cursos según el número al final del fullname
+   usort($cursosArray, function($a, $b) {
+       return ordering($a->fullname) - ordering($b->fullname);
+   });
+   }
+   if (is_siteadmin($user->id)) {
+       // echo $content; // Aquí va el contenido que quieres mostrar
+   } else {
+       echo "";
+   }
+   function verificarInscripcion($cursos, $id) {
+       $bol = false;  // Inicializamos bol como false para el caso en que no se encuentre el id
+   
+       // Recorremos todos los cursos
+       foreach ($cursos as $curso) {
+           // Verificamos si el fullname del curso coincide con el nombre
+           if ($curso->id == $id) {
+               // Si el curso está inscrito, retornamos true, si no, false
+               if ($curso->inscrito === true) {
+                   $bol = true;  // El usuario está inscrito
+               }
+               return $bol;  // Salimos de la función inmediatamente
+           }
+       } 
+       return $bol;  // Si no encuentra el nombre en los cursos, devuelve false
+   }
+   
+   function getLink($cursos, $id, $url) {
+       foreach ($cursos as $curso) {
+           if ($curso->id == $id && !empty($curso->inscrito)) {
+               return $url . "=" . $id; // Si está inscrito, devuelve la URL
+           }
+       }
+       return "#"; // Si no está inscrito o no se encontró el curso, devuelve "#"
+   }
+   
+   if (is_siteadmin($user->id)) {
+       echo $content; // Aquí va el contenido que quieres mostrar
+   } else {
+       echo "";
+   }
+   echo $OUTPUT->skip_link_target(); ?>
 <script>
 function joinClass(url) {
     //window.location.href = url;  // Redirect to the sample URL
@@ -253,7 +250,6 @@ function redirectToActivities(cohortId, userid) {
 </script>
 <div class="noSelect">
     <div class="wrapper">
-
         <header>
             <ul>
                 <li><a href="" class="active">Home</a></li>
@@ -262,1965 +258,1960 @@ function redirectToActivities(cohortId, userid) {
                 <li><a href="">Learn</a></li>
                 <li><a href="">Settings</a></li>
             </ul>
-
             <div class="findTutors_and_findGroups">
                 <a href="">Find Tutors</a>
                 <a href="">Find Groups</a>
             </div>
         </header>
-
         <section class="page_top custom-top-margin">
             <div class="center_content">
                 <?php
-
-
-           function is_cohort_teacher($userid) {
-                global $DB;
-
-                $sql = "SELECT 1
-                        FROM {cohort}
-                        WHERE cohortmainteacher = :uid1 OR cohortguideteacher = :uid2";
-
-                return $DB->record_exists_sql($sql, [
-                    'uid1' => (int)$userid,
-                    'uid2' => (int)$userid
-                ]);
-            }
-                        
-            
-            if (isloggedin()) {
-                if (!is_siteadmin($user->id)) {
-
+               function is_cohort_teacher($userid) {
                     global $DB;
-
-
-                     $isteacher = is_cohort_teacher($user->id);
-
-                    if ($isteacher) {
-                        // User is a teacher in at least one course
-                        //echo 'Yes';
-
-                    }
+               
+                    $sql = "SELECT 1
+                            FROM {cohort}
+                            WHERE cohortmainteacher = :uid1 OR cohortguideteacher = :uid2";
+               
+                    return $DB->record_exists_sql($sql, [
+                        'uid1' => (int)$userid,
+                        'uid2' => (int)$userid
+                    ]);
+                }
+                            
                 
-                    // Fetch the course details using the idnumber.
-                    $course = $DB->get_record('course', ['idnumber' => 'CR001'], '*');
-
-                    if (!defined('CONTEXT_COHORT')) {
-                        define('CONTEXT_COHORT', 10); // 10 is the constant value for cohort context level
-                    }
-
-                    $cohortData = [];
-
-                    $ff = 0;
-
-
-                    if(!$isteacher){
-                    // SQL query to fetch the cohort names the user belongs to
-                    $sql = "SELECT c.id, c.name, c.description
-                            FROM {cohort} c
-                            JOIN {cohort_members} cm ON cm.cohortid = c.id
-                            WHERE cm.userid = :userid AND c.visible = 1";
-                
-                    // Execute the query and fetch the results
-                    $cohorts = $DB->get_records_sql($sql, ['userid' => $user->id]);
-
-                    if(count($cohorts) == 0)
-                    {
-                        $ff = 1;
-                        
-                    }else{
-                   
-                    foreach ($cohorts as $cohort) {
-                        $cohortid = $cohort->id;
-                         // Get the context for the cohort
-                       
-                    // Get the system context or category context if needed
-                    $context = context_system::instance();
-
-                    // Rewrite the cohort description to get pluginfile URL
-                    $rewrittenDescription = file_rewrite_pluginfile_urls(
-                        $cohort->description,
-                        'pluginfile.php',
-                        $context->id,
-                        'cohort',
-                        'description',
-                        $cohort->id
-                    );
-
-                    // Extract the actual image URL from the rewritten HTML
-                    preg_match('/<img[^>]+src=["\']([^"\']+)["\']/', $rewrittenDescription, $matches);
-                    $imageUrl = isset($matches[1]) ? $matches[1] : ''; // fallback if not found
-
-                     // ✅ ADD THIS
-                    $cohortData[] = [
-                        'id' => $cohortid,
-                        'name' => $cohort->name,
-                        'image' => $imageUrl,
-                        'description' => $rewrittenDescription
-                    ];}
-                    }
-                    }else{
-                         // User is a cohort main teacher or guide teacher
-                        $sql = "SELECT c.id, c.name, c.description, c.cohortmainteacher, c.visible, c.cohortguideteacher
+                if (isloggedin()) {
+                    if (!is_siteadmin($user->id)) {
+               
+                        global $DB;
+               
+               
+                         $isteacher = is_cohort_teacher($user->id);
+               
+                        if ($isteacher) {
+                            // User is a teacher in at least one course
+                            //echo 'Yes';
+               
+                        }
+                    
+                        // Fetch the course details using the idnumber.
+                        $course = $DB->get_record('course', ['idnumber' => 'CR001'], '*');
+               
+                        if (!defined('CONTEXT_COHORT')) {
+                            define('CONTEXT_COHORT', 10); // 10 is the constant value for cohort context level
+                        }
+               
+                        $cohortData = [];
+               
+                        $ff = 0;
+               
+               
+                        if(!$isteacher){
+                        // SQL query to fetch the cohort names the user belongs to
+                        $sql = "SELECT c.id, c.name, c.description
                                 FROM {cohort} c
-                                WHERE c.cohortmainteacher = :userid1 OR c.cohortguideteacher = :userid2 AND c.visible = 1";
-
-                        $cohorts = $DB->get_records_sql($sql, [
-                            'userid1' => $user->id,
-                            'userid2' => $user->id
-                        ]);
-
-                        
-
+                                JOIN {cohort_members} cm ON cm.cohortid = c.id
+                                WHERE cm.userid = :userid AND c.visible = 1";
+                    
+                        // Execute the query and fetch the results
+                        $cohorts = $DB->get_records_sql($sql, ['userid' => $user->id]);
+               
+                        if(count($cohorts) == 0)
+                        {
+                            $ff = 1;
+                            
+                        }else{
+                       
                         foreach ($cohorts as $cohort) {
                             $cohortid = $cohort->id;
-
-                             // If 'visible' is already in your record, use it.
-    if (isset($cohort->visible) && (int)$cohort->visible === 0) {
-        continue; // skip hidden cohort
-    }
-
-                            // Get the context for the cohort description files
-                            $context = context_system::instance(); // or use context_cohort::instance($cohortid) if available in your version
-
-                            // Rewrite the cohort description with embedded file URLs
-                            $rewrittenDescription = file_rewrite_pluginfile_urls(
-                                $cohort->description,
-                                'pluginfile.php',
-                                $context->id,
-                                'cohort',
-                                'description',
-                                $cohortid
-                            );
-
-                            // Extract image URL if present
-                            preg_match('/<img[^>]+src=["\']([^"\']+)["\']/', $rewrittenDescription, $matches);
-                            $imageUrl = isset($matches[1]) ? $matches[1] : '';
-
-                            // Store everything in the array
-                            $cohortData[] = [
-                                'id' => $cohortid,
-                                'name' => $cohort->name,
-                                'image' => $imageUrl,
-                                'description' => $rewrittenDescription
-                            ];
+                             // Get the context for the cohort
+                           
+                        // Get the system context or category context if needed
+                        $context = context_system::instance();
+               
+                        // Rewrite the cohort description to get pluginfile URL
+                        $rewrittenDescription = file_rewrite_pluginfile_urls(
+                            $cohort->description,
+                            'pluginfile.php',
+                            $context->id,
+                            'cohort',
+                            'description',
+                            $cohort->id
+                        );
+               
+                        // Extract the actual image URL from the rewritten HTML
+                        preg_match('/<img[^>]+src=["\']([^"\']+)["\']/', $rewrittenDescription, $matches);
+                        $imageUrl = isset($matches[1]) ? $matches[1] : ''; // fallback if not found
+               
+                         // ✅ ADD THIS
+                        $cohortData[] = [
+                            'id' => $cohortid,
+                            'name' => $cohort->name,
+                            'image' => $imageUrl,
+                            'description' => $rewrittenDescription
+                        ];}
                         }
-                    }
-
-
-                    if($ff == 1){ 
-                       $googleMeetURL=""; 
-                    }else{ 
-                
-                    
-                    
-                
-                    // Fetch all sections in the course
-                $sections = $DB->get_records('course_sections', ['course' => $course->id], 'section ASC');
-
-
-                $context = context_course::instance($course->id);
-
-                // Get the role ID for editingteacher (or use 'teacher' if needed)
-                $teacherrole = $DB->get_record('role', ['shortname' => 'editingteacher']);
-
-                $teachers = get_role_users($teacherrole->id, $context);
-                $teacherName = '';
-
-                foreach ($teachers as $teacher) {
-                    $teacherName = $teacher->firstname;
-                }
-                
-                // Loop through sections to find those restricted to the cohort
-                $allowed_sections = [];
-                foreach ($sections as $section) {
-                    if (!empty($section->availability)) {
-                        // Decode the availability JSON
-                        $availability = json_decode($section->availability, true);
-                
-                        // Check if there is a cohort restriction
-                        if (isset($availability['c']) && is_array($availability['c'])) {
-                            foreach ($availability['c'] as $condition) {
-
-                                
-                                    $cohortids = array_column($cohortData, 'id');
-                                    if ($condition['type'] === 'cohort' && in_array($condition['id'], $cohortids)) {
-
-
-                                           if($isteacher){
-                                        // Determine the user's role in the matched cohort
-                                            $cohortRole = 'practice'; // default
-                                            foreach ($cohorts as $cohort) {
-                                                if ($cohort->id == $condition['id']) {
-                                                    if ($cohort->cohortmainteacher == $user->id && $cohort->cohortguideteacher == $user->id ) {
-                                                        $cohortRole = 'main_practice';
-                                                    }
-
-                                                    if ($cohort->cohortmainteacher == $user->id && $cohort->cohortguideteacher != $user->id ) {
-                                                        $cohortRole = 'main';
-                                                    }
-
-                                                    if ($cohort->cohortmainteacher != $user->id && $cohort->cohortguideteacher == $user->id ) {
-                                                        $cohortRole = 'practice';
-                                                    }
-
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                                
-                                                // Convert section to array, add role, then back to object
-                                                $sectionWithRole = (array) $section;
-                                                $sectionWithRole['role'] = $cohortRole;
-                                                $allowed_sections[] = (object) $sectionWithRole;
-                                                break;
-                                            }
-                                
-                                
+                        }else{
+                             // User is a cohort main teacher or guide teacher
+                            $sql = "SELECT c.id, c.name, c.description, c.cohortmainteacher, c.visible, c.cohortguideteacher
+                                    FROM {cohort} c
+                                    WHERE c.cohortmainteacher = :userid1 OR c.cohortguideteacher = :userid2 AND c.visible = 1";
+               
+                            $cohorts = $DB->get_records_sql($sql, [
+                                'userid1' => $user->id,
+                                'userid2' => $user->id
+                            ]);
+               
+                            
+               
+                            foreach ($cohorts as $cohort) {
+                                $cohortid = $cohort->id;
+               
+                                 // If 'visible' is already in your record, use it.
+               if (isset($cohort->visible) && (int)$cohort->visible === 0) {
+               continue; // skip hidden cohort
+               }
+               
+                                // Get the context for the cohort description files
+                                $context = context_system::instance(); // or use context_cohort::instance($cohortid) if available in your version
+               
+                                // Rewrite the cohort description with embedded file URLs
+                                $rewrittenDescription = file_rewrite_pluginfile_urls(
+                                    $cohort->description,
+                                    'pluginfile.php',
+                                    $context->id,
+                                    'cohort',
+                                    'description',
+                                    $cohortid
+                                );
+               
+                                // Extract image URL if present
+                                preg_match('/<img[^>]+src=["\']([^"\']+)["\']/', $rewrittenDescription, $matches);
+                                $imageUrl = isset($matches[1]) ? $matches[1] : '';
+               
+                                // Store everything in the array
+                                $cohortData[] = [
+                                    'id' => $cohortid,
+                                    'name' => $cohort->name,
+                                    'image' => $imageUrl,
+                                    'description' => $rewrittenDescription
+                                ];
                             }
                         }
-                    }
-                }
-                
-                
-                $googleMeetActivities = []; // Array to store Google Meet activities with their upcoming schedules
-                
-                if (!empty($allowed_sections)) {
-
-                    $googleMeetActivities = []; // For all activities
-                    $schedules = []; // Only from the first section
-                    $i = 0;
-                    // Get cohort ID from section availability
-                   $ccid = null;
-                                    
-                    foreach ($allowed_sections as $section) {
-                   
-                      
-
-                    // Fetch all modules in this section
-                    $modules = $DB->get_records('course_modules', ['section' => $section->id]);
+               
+               
+                        if($ff == 1){ 
+                           $googleMeetURL=""; 
+                        }else{ 
                     
-                       
-
-                    if (empty($modules)) {
-                        continue;
+                        
+                        
+                    
+                        // Fetch all sections in the course
+                    $sections = $DB->get_records('course_sections', ['course' => $course->id], 'section ASC');
+               
+               
+                    $context = context_course::instance($course->id);
+               
+                    // Get the role ID for editingteacher (or use 'teacher' if needed)
+                    $teacherrole = $DB->get_record('role', ['shortname' => 'editingteacher']);
+               
+                    $teachers = get_role_users($teacherrole->id, $context);
+                    $teacherName = '';
+               
+                    foreach ($teachers as $teacher) {
+                        $teacherName = $teacher->firstname;
                     }
                     
-                    
-                 
-                   
-
-                    foreach ($modules as $module) {
-                        
-                        
-                        $modinfo = $DB->get_record('modules', ['id' => $module->module]);
-                        if (!$modinfo || $modinfo->name !== 'googlemeet') {
-                            continue;
-                        }
-                        
-                        
-
-                        $googleMeetActivity = $DB->get_record('googlemeet', ['id' => $module->instance]);
-                        
-                        if (!$googleMeetActivity) {
-                            continue;
-                        }
-
-                         if ($googleMeetActivity) {
-                            $role = strtolower($section->role); // Convert role to lowercase
-                            $name = strtolower($googleMeetActivity->name); // Convert name to lowercase
-
-                            // if (strpos($name, $role) !== false) {
-                            //     // Role matches activity name
-                            //     // Proceed with your logic here
-                            // } else {
-                            //     // Role doesn't match the name, skip
-                            //     continue;
-                            // }
-
-
-                          
-
-if (strpos($role, '_') !== false) {
-    // Case: main_practice → ["main", "practice"]
-    $roles = explode('_', $role);
-    $found = false;
-
-    foreach ($roles as $r) {
-        if (strpos($name, $r) !== false) {
-            $found = true;
-            break;
-        }
-    }
-
-    if (!$found) {
-        continue; // none matched, skip
-    }
-
-} else {
-    // Case: main OR practice
-    if (strpos($name, $role) === false) {
-        continue;
-    }
-}
-
-                        }
-
-
-                        
-                     
-                        
-
-                        // For first iteration only: add to $schedules
-                        if ($i === 0) {
-                            $schedules[] = [
-                                'starthour' => $googleMeetActivity->starthour,
-                                'startminute' => $googleMeetActivity->startminute,
-                                'days' => $googleMeetActivity->days,
-                            ];
-
-                                            if (!empty($section->availability)) {
+                    // Loop through sections to find those restricted to the cohort
+                    $allowed_sections = [];
+                    foreach ($sections as $section) {
+                        if (!empty($section->availability)) {
+                            // Decode the availability JSON
                             $availability = json_decode($section->availability, true);
+                    
+                            // Check if there is a cohort restriction
                             if (isset($availability['c']) && is_array($availability['c'])) {
                                 foreach ($availability['c'] as $condition) {
-                                    if (isset($condition['type']) && $condition['type'] === 'cohort' && isset($condition['id'])) {
-                                        $ccid = $condition['id'];
-                                        break;
-                                    }
+               
+                                    
+                                        $cohortids = array_column($cohortData, 'id');
+                                        if ($condition['type'] === 'cohort' && in_array($condition['id'], $cohortids)) {
+               
+               
+                                               if($isteacher){
+                                            // Determine the user's role in the matched cohort
+                                                $cohortRole = 'practice'; // default
+                                                foreach ($cohorts as $cohort) {
+                                                    if ($cohort->id == $condition['id']) {
+                                                        if ($cohort->cohortmainteacher == $user->id && $cohort->cohortguideteacher == $user->id ) {
+                                                            $cohortRole = 'main_practice';
+                                                        }
+               
+                                                        if ($cohort->cohortmainteacher == $user->id && $cohort->cohortguideteacher != $user->id ) {
+                                                            $cohortRole = 'main';
+                                                        }
+               
+                                                        if ($cohort->cohortmainteacher != $user->id && $cohort->cohortguideteacher == $user->id ) {
+                                                            $cohortRole = 'practice';
+                                                        }
+               
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                                    
+                                                    // Convert section to array, add role, then back to object
+                                                    $sectionWithRole = (array) $section;
+                                                    $sectionWithRole['role'] = $cohortRole;
+                                                    $allowed_sections[] = (object) $sectionWithRole;
+                                                    break;
+                                                }
+                                    
+                                    
                                 }
                             }
                         }
-                        }
-
-                        // Always fetch upcoming schedule
-                        $sql = "SELECT *
-                                FROM {googlemeet_events}
-                                WHERE googlemeetid = :googlemeetid 
-                                AND eventdate > :currenttime 
-                                ORDER BY eventdate ASC
-                                LIMIT 1";
-
-                                // $sql = "SELECT *
-                                // FROM {googlemeet_events}
-                                // WHERE googlemeetid = :googlemeetid 
-                                // AND ( eventdate >= :currenttime OR (:currenttime1 >= eventdate AND :currenttime2 <= (eventdate + 3600)) )
-                                // ORDER BY eventdate ASC
-                                // LIMIT 1";
-
-                            
-
-                        $params = [
-                            'googlemeetid' => $googleMeetActivity->id,
-                            'currenttime' => time() 
-                        ];
-
-
-
-
-
-
-                        
-
-                        $upcomingSchedule = $DB->get_record_sql($sql, $params);
-                        
-
-                        // Store activity info for all
-                        $googleMeetActivities[] = (object)[
-                            'name' => $googleMeetActivity->name,
-                            'section' => $section->section,
-                            'module_id' => $module->id,
-                            'upcoming_schedule' => $upcomingSchedule
-                        ];
                     }
-                  
-                    // Only the first section should populate $schedules
-                    $i++;
-                    //if ($i > 11) break; // No need to loop more if only first section is needed for schedules
-                }
-                
-                
-
-                    $classes = []; // Initialize the array for storing remaining Google Meet activities
-                    $today = new DateTime();
-                
-                
-                    // Final Output
-                    if (!empty($googleMeetActivities)) {
-                        $mostUpcomingSchedule = null;
-                        //echo "<br>Final Google Meet Activities with Upcoming Schedules:<br>";
-                        foreach ($googleMeetActivities as $activity) {
-                            //echo "- " . $activity->name . " (Section: " . $activity->section . ")<br>";
                     
-                            if ($activity->upcoming_schedule) {
-                                
-                
-                            // Directly compare eventdate for each activity to find the most upcoming one
-                            if (!$mostUpcomingSchedule || $activity->upcoming_schedule->eventdate < $mostUpcomingSchedule->eventdate) {
-                                $d = $activity->upcoming_schedule->eventdate;
-                                $s = $mostUpcomingSchedule?->eventdate ?? null;
-                                $mostUpcomingSchedule = $activity->upcoming_schedule;
-                            }
-                            } else {
-                                //echo "-- No upcoming schedule found.<br>";
-                            }
-                        }
-
-                        $allMeetFutureDates = []; // Step 1: Store future dates per Google Meet (with name)
-
                     
-
-                         // Step 2: Loop over other meets and extract classes
-                      foreach ($googleMeetActivities as $index => $activity) {
-
-                                if($activity->upcoming_schedule == false)
-                                {
-                                    continue;
-                                }
-                            
-                                $googleMeet = $DB->get_record('googlemeet', ['id' => $activity->upcoming_schedule->googlemeetid], '*', MUST_EXIST);
-
-                                $daysJson = $googleMeet->days ?? '{}';
-                                $recurringDays = json_decode($daysJson, true);
-                            
-                                $dayMap = [
-                                    'Sun' => 0, 'Mon' => 1, 'Tue' => 2, 'Wed' => 3,
-                                    'Thu' => 4, 'Fri' => 5, 'Sat' => 6
-                                ];
-                            
-                                $fullDayMap = [
-                                    'Sun' => 'Sunday', 'Mon' => 'Monday', 'Tue' => 'Tuesday',
-                                    'Wed' => 'Wednesday', 'Thu' => 'Thursday',
-                                    'Fri' => 'Friday', 'Sat' => 'Saturday'
-                                ];
-                            
-                                $activeDays = [];
-                                foreach ($recurringDays as $day => $isActive) {
-                                    if ($isActive === "1") {
-                                        $activeDays[] = $day;
-                                    }
-                                }
-
-                                if (!empty($activeDays)) {
-                            
-                                usort($activeDays, function($a, $b) use ($dayMap) {
-                                    return $dayMap[$a] - $dayMap[$b];
-                                });
-                            }
-                            
-                                // Collect formatted classes
-                                $today = new DateTime();
-                                $classCount = 0;
-                                $maxClasses = 500;
-                                $weekOffset = 1;
-                            
-                                //while ($classCount < $maxClasses) {
-                                    foreach ($activeDays as $dayKey) {
-                                        if ($classCount >= $maxClasses) break;
-                            
-                                        $nextDate = new DateTime("next " . $fullDayMap[$dayKey]);
-                                        $nextDate->modify("+".($weekOffset - 1)." week");
-                            
-                                        $fullDayName = $nextDate->format('l'); // e.g., Thursday
-                                        $formattedTime = date('g:i A', strtotime(sprintf('%02d:%02d', $googleMeet->starthour, $googleMeet->startminute)));
-                            
-
-                                        $namePrefix = explode('-', $googleMeet->name)[0] ?? '';
-                                        $badgeText = strtoupper(substr($namePrefix, 0, 4)); // E.g., FL1
-                                        $parts = preg_split('/\s+/',$googleMeet->originalname);
-                                        if (!empty($parts)) {
-                                        $fullname = implode(' ', array_slice($parts, 0, 2));
-                                        }
-
-                                        //$coh = $DB->get_record('cohort', ['shortname' => $namePrefix], '*', MUST_EXIST);
+                    $googleMeetActivities = []; // Array to store Google Meet activities with their upcoming schedules
+                    
+                    if (!empty($allowed_sections)) {
+               
+                        $googleMeetActivities = []; // For all activities
+                        $schedules = []; // Only from the first section
+                        $i = 0;
+                        // Get cohort ID from section availability
+                       $ccid = null;
                                         
-                                        $coh = $DB->get_record('cohort', ['shortname' => $namePrefix], '*', IGNORE_MISSING);
-
-                                        if (!$coh) {
-                                            // Skip if cohort doesn't exist
-                                            continue;
-                                        }
-                                                                               
-                                        $cohortcolor = $coh->cohortcolor ?? 'Green'; // fallback color
-
-
-                                        $classType = 'Group Class';
-                                        if (strpos($googleMeet->name, 'Main') !== false) {
-                                            $classType = 'Main Class';
-                                        } elseif (strpos($googleMeet->name, 'Practice') !== false) {
-                                            $classType = 'Practice Class';
-                                        }
-                            
-
-                                        $allMeetFutureDates[] = [
-                                            'date' => $nextDate->format('Y-m-d'),
-                                            'class_display' => [
-                                                'date' => $nextDate->format('F j'),
-                                                'day_time' => $fullDayName . ' at ' . $formattedTime,
-                                                'short_text' => [
-                                                    'title' => $classType,
-                                                    'badge' => $badgeText,
-                                                    'label' => $coh->name,
-                                                    'color' => $cohortcolor
-                                                ],
-                                                'type' => 'group',
-                                                'image' => '',
-                                                'user' => ''
-                                            ]
-                                        ];
-                            
-                                        $classCount++;
-                                    }
-                                    $weekOffset++;
-                                //}
-                                
-                                
+                        foreach ($allowed_sections as $section) {
+                       
+                          
+               
+                        // Fetch all modules in this section
+                        $modules = $DB->get_records('course_modules', ['section' => $section->id]);
+                        
+                           
+               
+                        if (empty($modules)) {
+                            continue;
+                        }
+                        
+                        
+                     
+                       
+               
+                        foreach ($modules as $module) {
                             
                             
-
-                                $daysJson = $googleMeet->days ?? '{}';
-                                $recurringDays = json_decode($daysJson, true);
-
-                                // Time format
-                                $startTime = sprintf('%02d:%02d', $googleMeet->starthour, $googleMeet->startminute);
-                                $endTime   = sprintf('%02d:%02d', $googleMeet->endhour, $googleMeet->endminute);
-                                $formattedTime = date('g:i A', strtotime($startTime)) . ' - ' . date('g:i A', strtotime($endTime));
-                                $formattedTimee = date('g:i A', strtotime($startTime));
-
-                                // Map weekday short names to PHP constants
-                                $dayMap = [
-                                    'Sun' => 0,
-                                    'Mon' => 1,
-                                    'Tue' => 2,
-                                    'Wed' => 3,
-                                    'Thu' => 4,
-                                    'Fri' => 5,
-                                    'Sat' => 6
-                                ];
-
-                                $fullDayMap = [
-                                    'Sun' => 'Sunday',
-                                    'Mon' => 'Monday',
-                                    'Tue' => 'Tuesday',
-                                    'Wed' => 'Wednesday',
-                                    'Thu' => 'Thursday',
-                                    'Fri' => 'Friday',
-                                    'Sat' => 'Saturday'
-                                ];
-                                
-                                
-                                
-
-//                                 foreach ($recurringDays as $dayName => $isActive) {
-//                                     if ($isActive !== "1") continue;
-
-//                                      $fullDayName = $fullDayMap[$dayName];
-//     $targetWeekday = $dayMap[$dayName];
-//     $nextDate = clone $today;
-
-    
-//     $currentWeekday = (int)$today->format('w'); // 0 (Sun) to 6 (Sat)
-
-//     // Time comparison values
-//     $currentTime = (int)date('Hi'); // e.g., 1345 for 1:45 PM
-//     $startTimeStr = sprintf('%02d%02d', $googleMeet->starthour, $googleMeet->startminute); // e.g., 1400
-
-// // Build end by adding 1 hour to the start time
-// $endTimeStr    = (int)date(
-//     'Hi',
-//     strtotime(sprintf('%02d:%02d', $googleMeet->starthour, $googleMeet->startminute) . ' +1 hour')
-// );
-
-//     if ($currentWeekday === $targetWeekday) {
-//         if ($currentTime >= (int)$startTimeStr && !($currentTime >= $startTimeStr && $currentTime <= $endTimeStr)) {
-//             // Today is the target day, but time has passed — move to next week's same day
-//             $nextDate->modify('+7 days');
-//         }  else {
-//         // Today is the target day and the meeting time is still upcoming — keep today
-//         $daysToAdd = 0;
-//         $nextDate->modify("+$daysToAdd days"); // Optional but clear
-//     }
-//         // else: Today is the day and time has not yet come → no modification needed
-//     } elseif ($currentWeekday > $targetWeekday) {
-//         // Target day already passed this week → go to next week's day
-//         $daysToAdd = 7 - ($currentWeekday - $targetWeekday);
-//         $nextDate->modify("+$daysToAdd days");
-//     } else {
-//         // Target day is upcoming this week
-//         $daysToAdd = $targetWeekday - $currentWeekday;
-//         $nextDate->modify("+$daysToAdd days");
-//     }
-                                    
-
-//                                     //$nextDate->modify("+$daysToAdd days");
-
-//                                     // Determine class type based on name
-//                                     $classType = 'Group Class'; // default fallback
-
-//                                     if (strpos($googleMeet->name, 'Main') !== false) {
-//                                         $classType = 'Main Class';
-//                                     } elseif (strpos($googleMeet->name, 'Practice') !== false) {
-//                                         $classType = 'Practice Class';
-//                                     }
-                                    
-
-//                                     // Build entry
-//                                     $classes[] = [
-//                                         'date' => $nextDate->format('F j'), // Ex: April 4
-//                                         'day_time' => $fullDayName . ' at ' . $formattedTimee,
-//                                         'short_text' => $classType,
-//                                         'type' => 'group',
-//                                         'image' => '',
-//                                         'user' => '' // You can add teacher's name here later
-//                                     ];
-
-//                                     $dateLabel = ($nextDate->format('Y-m-d') === date('Y-m-d')) 
-//     ? 'Today' 
-//     : $nextDate->format('F j');
-
-
-//                                      $allMeetFutureDatess[] = [
-//                                             'date' => $nextDate->format('Y-m-d'),
-//                                             'class_display' => [
-//                                                 'date' => $dateLabel,
-//                                                 'day_time' => $fullDayName . ' at ' . $formattedTime,
-//                                                 'short_text' => [
-//                                                     'title' => $classType,
-//                                                     'badge' => $badgeText,
-//                                                     'label' => $coh->name,
-//                                                     'color' => $cohortcolor
-//                                                 ],
-//                                                 'url' => $googleMeet->url,
-//                                                 'type' => 'group',
-//                                                 'image' => '',
-//                                                 'user' => ''
-//                                             ]
-//                                         ];
-//                                 }
-
-
-
-
-                                // ==== Build next 10 future classes for this Google Meet ====
-
-                            $today          = new DateTime();                // now (server TZ or set user TZ if needed)
-                            $todayYmd       = $today->format('Y-m-d');
-                            //$currentHM      = (int)$today->format('Hi');     // e.g. 1345
-                            $currentHM  = (clone $today)->modify('-1 hour')->format('Hi'); // "0755"
-                            $startHM        = (int)sprintf('%02d%02d', (int)$googleMeet->starthour, (int)$googleMeet->startminute);
-                            $starthour      = (int)$googleMeet->starthour;
-                            $startminute    = (int)$googleMeet->startminute;
-                            $endhour        = isset($googleMeet->endhour) ? (int)$googleMeet->endhour : $starthour;
-                            $endminute      = isset($googleMeet->endminute) ? (int)$googleMeet->endminute : $startminute;
-                            $durationSecs   = max(60, (($endhour * 60 + $endminute) - ($starthour * 60 + $startminute)) * 60);
-                            if ($durationSecs <= 0) { $durationSecs = 3600; } // fallback 1h
-
-                            // Map weekdays
-                            $dayMap = ['Sun'=>0,'Mon'=>1,'Tue'=>2,'Wed'=>3,'Thu'=>4,'Fri'=>5,'Sat'=>6];
-                            $fullDayMap = ['Sun'=>'Sunday','Mon'=>'Monday','Tue'=>'Tuesday','Wed'=>'Wednesday','Thu'=>'Thursday','Fri'=>'Friday','Sat'=>'Saturday'];
-
-                            // Collect active days as numeric 0..6 and sort
-                            $activeDows = [];
-                            foreach (($recurringDays ?? []) as $d => $isActive) {
-                                if ($isActive === "1" && isset($dayMap[$d])) {
-                                    $activeDows[] = $dayMap[$d];
-                                }
-                            }
-                            sort($activeDows);
-                            if (!$activeDows) {
-                                // no active days → nothing to add
+                            $modinfo = $DB->get_record('modules', ['id' => $module->module]);
+                            if (!$modinfo || $modinfo->name !== 'googlemeet') {
                                 continue;
                             }
-
-                            $baseDow = (int)$today->format('w'); // 0..6
-                            $needed  = 10;
-                            $made    = 0;
-                            $weekOffset = 0;
-
-                            while ($made < $needed) {
-                                foreach ($activeDows as $targetDow) {
-                                    // Days ahead from *this* week
-                                    $daysAhead0 = ($targetDow - $baseDow + 7) % 7;
-
-                                    // For week 0, if today is the target day but start time already passed, push to next week
-                                    $daysAhead = $daysAhead0 + 7 * $weekOffset;
-                                    if ($weekOffset === 0 && $daysAhead0 === 0 && $currentHM >= $startHM) {
-                                        $daysAhead += 7;
-                                    }
-
-                                    // Build start/end DateTimes
-                                    $startDT = (clone $today)->setTime($starthour, $startminute, 0)->modify("+{$daysAhead} days");
-                                    $endDT   = (clone $startDT)->modify("+{$durationSecs} seconds");
-
-                                    // Human labels
-                                    $fullDayName   = $startDT->format('l'); // Monday, ...
-                                    $dateLabel     = ($startDT->format('Y-m-d') === $todayYmd) ? 'Today' : $startDT->format('F j');
-                                    $formattedTime = $startDT->format('g:i A') . ' - ' . $endDT->format('g:i A');
-
-                                    // Class type (as you had)
-                                    $classType = 'Group Class';
-                                    if (strpos($googleMeet->name, 'Main') !== false)     { $classType = 'Main Class'; }
-                                    elseif (strpos($googleMeet->name, 'Practice') !== false) { $classType = 'Practice Class'; }
-
-                                    // Push into your target array
-                                    $allMeetFutureDatess[] = [
-                                        'date' => $startDT->format('Y-m-d'),
-                                        'class_display' => [
-                                            'date'       => $dateLabel,
-                                            'day_time'   => $fullDayName . ' at ' . $formattedTime,
-                                            'short_text' => [
-                                                'title' => $classType,
-                                                'badge' => $badgeText,         // from your earlier code
-                                                'label' => $coh->name,         // from your earlier code
-                                                'color' => $cohortcolor        // from your earlier code
-                                            ],
-                                            'url'   => $googleMeet->url,        // <-- use the activity URL you built earlier
-                                            'type'  => 'group',
-                                            'image' => '',
-                                            'user'  => ''
-                                        ]
-                                    ];
-
-                                    $made++;
-                                    if ($made >= $needed) { break 2; }
-                                }
-                                $weekOffset++; // move to the next week and loop the days again
-                            }
-                                                            
-                               
-                                
-                             
                             
+                            
+               
+                            $googleMeetActivity = $DB->get_record('googlemeet', ['id' => $module->instance]);
+                            
+                            if (!$googleMeetActivity) {
+                                continue;
+                            }
+               
+                             if ($googleMeetActivity) {
+                                $role = strtolower($section->role); // Convert role to lowercase
+                                $name = strtolower($googleMeetActivity->name); // Convert name to lowercase
+               
+                                // if (strpos($name, $role) !== false) {
+                                //     // Role matches activity name
+                                //     // Proceed with your logic here
+                                // } else {
+                                //     // Role doesn't match the name, skip
+                                //     continue;
+                                // }
+               
+               
+                              
+               
+               if (strpos($role, '_') !== false) {
+               // Case: main_practice → ["main", "practice"]
+               $roles = explode('_', $role);
+               $found = false;
+               
+               foreach ($roles as $r) {
+               if (strpos($name, $r) !== false) {
+                $found = true;
+                break;
+               }
+               }
+               
+               if (!$found) {
+               continue; // none matched, skip
+               }
+               
+               } else {
+               // Case: main OR practice
+               if (strpos($name, $role) === false) {
+               continue;
+               }
+               }
+               
+                            }
+               
+               
+                            
+                         
+                            
+               
+                            // For first iteration only: add to $schedules
+                            if ($i === 0) {
+                                $schedules[] = [
+                                    'starthour' => $googleMeetActivity->starthour,
+                                    'startminute' => $googleMeetActivity->startminute,
+                                    'days' => $googleMeetActivity->days,
+                                ];
+               
+                                                if (!empty($section->availability)) {
+                                $availability = json_decode($section->availability, true);
+                                if (isset($availability['c']) && is_array($availability['c'])) {
+                                    foreach ($availability['c'] as $condition) {
+                                        if (isset($condition['type']) && $condition['type'] === 'cohort' && isset($condition['id'])) {
+                                            $ccid = $condition['id'];
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            }
+               
+                            // Always fetch upcoming schedule
+                            $sql = "SELECT *
+                                    FROM {googlemeet_events}
+                                    WHERE googlemeetid = :googlemeetid 
+                                    AND eventdate > :currenttime 
+                                    ORDER BY eventdate ASC
+                                    LIMIT 1";
+               
+                                    // $sql = "SELECT *
+                                    // FROM {googlemeet_events}
+                                    // WHERE googlemeetid = :googlemeetid 
+                                    // AND ( eventdate >= :currenttime OR (:currenttime1 >= eventdate AND :currenttime2 <= (eventdate + 3600)) )
+                                    // ORDER BY eventdate ASC
+                                    // LIMIT 1";
+               
+                                
+               
+                            $params = [
+                                'googlemeetid' => $googleMeetActivity->id,
+                                'currenttime' => time() 
+                            ];
+               
+               
+               
+               
+               
+               
+                            
+               
+                            $upcomingSchedule = $DB->get_record_sql($sql, $params);
+                            
+               
+                            // Store activity info for all
+                            $googleMeetActivities[] = (object)[
+                                'name' => $googleMeetActivity->name,
+                                'section' => $section->section,
+                                'module_id' => $module->id,
+                                'upcoming_schedule' => $upcomingSchedule
+                            ];
                         }
-                    } 
-                } else {
-                    //echo "No topics are restricted to cohort ID $cohortid in this course.";
-                }
-
-                if (!empty($allMeetFutureDatess)) {
-
-                        usort($allMeetFutureDatess, function($a, $b) {
-            // Convert 'date' field to timestamp
-            $dateA = strtotime($a['date']);
-            $dateB = strtotime($b['date']);
-
-            // If dates are different, sort by date
-            if ($dateA !== $dateB) {
-                return $dateA - $dateB;
-            }
-
-            // Extract time from 'day_time' (e.g., "Tuesday at 5:00 AM - 6:00 AM")
-            preg_match('/at ([\d:]+ [APMapm]+) -/', $a['class_display']['day_time'], $matchA);
-            preg_match('/at ([\d:]+ [APMapm]+) -/', $b['class_display']['day_time'], $matchB);
-
-            $timeA = isset($matchA[1]) ? strtotime($matchA[1]) : 0;
-            $timeB = isset($matchB[1]) ? strtotime($matchB[1]) : 0;
-
-            return $timeA - $timeB;
-        });
-                }
-
-                if (!empty($allMeetFutureDatess)) {
-// Take first 12 sorted entries
-$upcoming12 = array_slice($allMeetFutureDatess, 0, 40);
-                }
-
-// Extract only 'class_display'
-// $finalUpcoming12 = array_map(function($entry) {
-//     return $entry['class_display'];
-// }, $upcoming12);
-
-$finalUpcoming12 = [];
-
-if (is_array($upcoming12)) {
-    $finalUpcoming12 = array_map(function($entry) {
-        return $entry['class_display'];
-    }, $upcoming12);
-}
-
-
-
-
-$cohortIds = [];
-
-if (is_array($cohortData)) {
-    $cohortIds = array_map(function($c) {
-        return (int)$c['id'];
-    }, $cohortData);
-}
-
-
-
-                
-                
-                
-                // Fetch the Google Meet activity record
-                if($mostUpcomingSchedule){
-                    $googleMeet = $DB->get_record('googlemeet', ['id' => $mostUpcomingSchedule->googlemeetid], '*', MUST_EXIST);
-                
+                      
+                        // Only the first section should populate $schedules
+                        $i++;
+                        //if ($i > 11) break; // No need to loop more if only first section is needed for schedules
+                    }
+                    
+                    
+               
+                        $classes = []; // Initialize the array for storing remaining Google Meet activities
+                        $today = new DateTime();
+                    
+                    
+                        // Final Output
+                        if (!empty($googleMeetActivities)) {
+                            $mostUpcomingSchedule = null;
+                            //echo "<br>Final Google Meet Activities with Upcoming Schedules:<br>";
+                            foreach ($googleMeetActivities as $activity) {
+                                //echo "- " . $activity->name . " (Section: " . $activity->section . ")<br>";
+                        
+                                if ($activity->upcoming_schedule) {
+                                    
+                    
+                                // Directly compare eventdate for each activity to find the most upcoming one
+                                if (!$mostUpcomingSchedule || $activity->upcoming_schedule->eventdate < $mostUpcomingSchedule->eventdate) {
+                                    $d = $activity->upcoming_schedule->eventdate;
+                                    $s = $mostUpcomingSchedule?->eventdate ?? null;
+                                    $mostUpcomingSchedule = $activity->upcoming_schedule;
+                                }
+                                } else {
+                                    //echo "-- No upcoming schedule found.<br>";
+                                }
+                            }
+               
+                            $allMeetFutureDates = []; // Step 1: Store future dates per Google Meet (with name)
+               
+                        
+               
+                             // Step 2: Loop over other meets and extract classes
+                          foreach ($googleMeetActivities as $index => $activity) {
+               
+                                    if($activity->upcoming_schedule == false)
+                                    {
+                                        continue;
+                                    }
+                                
+                                    $googleMeet = $DB->get_record('googlemeet', ['id' => $activity->upcoming_schedule->googlemeetid], '*', MUST_EXIST);
+               
+                                    $daysJson = $googleMeet->days ?? '{}';
+                                    $recurringDays = json_decode($daysJson, true);
+                                
+                                    $dayMap = [
+                                        'Sun' => 0, 'Mon' => 1, 'Tue' => 2, 'Wed' => 3,
+                                        'Thu' => 4, 'Fri' => 5, 'Sat' => 6
+                                    ];
+                                
+                                    $fullDayMap = [
+                                        'Sun' => 'Sunday', 'Mon' => 'Monday', 'Tue' => 'Tuesday',
+                                        'Wed' => 'Wednesday', 'Thu' => 'Thursday',
+                                        'Fri' => 'Friday', 'Sat' => 'Saturday'
+                                    ];
+                                
+                                    $activeDays = [];
+                                    foreach ($recurringDays as $day => $isActive) {
+                                        if ($isActive === "1") {
+                                            $activeDays[] = $day;
+                                        }
+                                    }
+               
+                                    if (!empty($activeDays)) {
+                                
+                                    usort($activeDays, function($a, $b) use ($dayMap) {
+                                        return $dayMap[$a] - $dayMap[$b];
+                                    });
+                                }
+                                
+                                    // Collect formatted classes
+                                    $today = new DateTime();
+                                    $classCount = 0;
+                                    $maxClasses = 500;
+                                    $weekOffset = 1;
+                                
+                                    //while ($classCount < $maxClasses) {
+                                        foreach ($activeDays as $dayKey) {
+                                            if ($classCount >= $maxClasses) break;
+                                
+                                            $nextDate = new DateTime("next " . $fullDayMap[$dayKey]);
+                                            $nextDate->modify("+".($weekOffset - 1)." week");
+                                
+                                            $fullDayName = $nextDate->format('l'); // e.g., Thursday
+                                            $formattedTime = date('g:i A', strtotime(sprintf('%02d:%02d', $googleMeet->starthour, $googleMeet->startminute)));
+                                
+               
+                                            $namePrefix = explode('-', $googleMeet->name)[0] ?? '';
+                                            $badgeText = strtoupper(substr($namePrefix, 0, 4)); // E.g., FL1
+                                            $parts = preg_split('/\s+/',$googleMeet->originalname);
+                                            if (!empty($parts)) {
+                                            $fullname = implode(' ', array_slice($parts, 0, 2));
+                                            }
+               
+                                            //$coh = $DB->get_record('cohort', ['shortname' => $namePrefix], '*', MUST_EXIST);
+                                            
+                                            $coh = $DB->get_record('cohort', ['shortname' => $namePrefix], '*', IGNORE_MISSING);
+               
+                                            if (!$coh) {
+                                                // Skip if cohort doesn't exist
+                                                continue;
+                                            }
+                                                                                   
+                                            $cohortcolor = $coh->cohortcolor ?? 'Green'; // fallback color
+               
+               
+                                            $classType = 'Group Class';
+                                            if (strpos($googleMeet->name, 'Main') !== false) {
+                                                $classType = 'Main Class';
+                                            } elseif (strpos($googleMeet->name, 'Practice') !== false) {
+                                                $classType = 'Practice Class';
+                                            }
+                                
+               
+                                            $allMeetFutureDates[] = [
+                                                'date' => $nextDate->format('Y-m-d'),
+                                                'class_display' => [
+                                                    'date' => $nextDate->format('F j'),
+                                                    'day_time' => $fullDayName . ' at ' . $formattedTime,
+                                                    'short_text' => [
+                                                        'title' => $classType,
+                                                        'badge' => $badgeText,
+                                                        'label' => $coh->name,
+                                                        'color' => $cohortcolor
+                                                    ],
+                                                    'type' => 'group',
+                                                    'image' => '',
+                                                    'user' => ''
+                                                ]
+                                            ];
+                                
+                                            $classCount++;
+                                        }
+                                        $weekOffset++;
+                                    //}
+                                    
+                                    
+                                
+                                
+               
+                                    $daysJson = $googleMeet->days ?? '{}';
+                                    $recurringDays = json_decode($daysJson, true);
+               
+                                    // Time format
+                                    $startTime = sprintf('%02d:%02d', $googleMeet->starthour, $googleMeet->startminute);
+                                    $endTime   = sprintf('%02d:%02d', $googleMeet->endhour, $googleMeet->endminute);
+                                    $formattedTime = date('g:i A', strtotime($startTime)) . ' - ' . date('g:i A', strtotime($endTime));
+                                    $formattedTimee = date('g:i A', strtotime($startTime));
+               
+                                    // Map weekday short names to PHP constants
+                                    $dayMap = [
+                                        'Sun' => 0,
+                                        'Mon' => 1,
+                                        'Tue' => 2,
+                                        'Wed' => 3,
+                                        'Thu' => 4,
+                                        'Fri' => 5,
+                                        'Sat' => 6
+                                    ];
+               
+                                    $fullDayMap = [
+                                        'Sun' => 'Sunday',
+                                        'Mon' => 'Monday',
+                                        'Tue' => 'Tuesday',
+                                        'Wed' => 'Wednesday',
+                                        'Thu' => 'Thursday',
+                                        'Fri' => 'Friday',
+                                        'Sat' => 'Saturday'
+                                    ];
+                                    
+                                    
+                                    
+               
+               //                                 foreach ($recurringDays as $dayName => $isActive) {
+               //                                     if ($isActive !== "1") continue;
+               
+               //                                      $fullDayName = $fullDayMap[$dayName];
+               //     $targetWeekday = $dayMap[$dayName];
+               //     $nextDate = clone $today;
+               
+               
+               //     $currentWeekday = (int)$today->format('w'); // 0 (Sun) to 6 (Sat)
+               
+               //     // Time comparison values
+               //     $currentTime = (int)date('Hi'); // e.g., 1345 for 1:45 PM
+               //     $startTimeStr = sprintf('%02d%02d', $googleMeet->starthour, $googleMeet->startminute); // e.g., 1400
+               
+               // // Build end by adding 1 hour to the start time
+               // $endTimeStr    = (int)date(
+               //     'Hi',
+               //     strtotime(sprintf('%02d:%02d', $googleMeet->starthour, $googleMeet->startminute) . ' +1 hour')
+               // );
+               
+               //     if ($currentWeekday === $targetWeekday) {
+               //         if ($currentTime >= (int)$startTimeStr && !($currentTime >= $startTimeStr && $currentTime <= $endTimeStr)) {
+               //             // Today is the target day, but time has passed — move to next week's same day
+               //             $nextDate->modify('+7 days');
+               //         }  else {
+               //         // Today is the target day and the meeting time is still upcoming — keep today
+               //         $daysToAdd = 0;
+               //         $nextDate->modify("+$daysToAdd days"); // Optional but clear
+               //     }
+               //         // else: Today is the day and time has not yet come → no modification needed
+               //     } elseif ($currentWeekday > $targetWeekday) {
+               //         // Target day already passed this week → go to next week's day
+               //         $daysToAdd = 7 - ($currentWeekday - $targetWeekday);
+               //         $nextDate->modify("+$daysToAdd days");
+               //     } else {
+               //         // Target day is upcoming this week
+               //         $daysToAdd = $targetWeekday - $currentWeekday;
+               //         $nextDate->modify("+$daysToAdd days");
+               //     }
+                                        
+               
+               //                                     //$nextDate->modify("+$daysToAdd days");
+               
+               //                                     // Determine class type based on name
+               //                                     $classType = 'Group Class'; // default fallback
+               
+               //                                     if (strpos($googleMeet->name, 'Main') !== false) {
+               //                                         $classType = 'Main Class';
+               //                                     } elseif (strpos($googleMeet->name, 'Practice') !== false) {
+               //                                         $classType = 'Practice Class';
+               //                                     }
+                                        
+               
+               //                                     // Build entry
+               //                                     $classes[] = [
+               //                                         'date' => $nextDate->format('F j'), // Ex: April 4
+               //                                         'day_time' => $fullDayName . ' at ' . $formattedTimee,
+               //                                         'short_text' => $classType,
+               //                                         'type' => 'group',
+               //                                         'image' => '',
+               //                                         'user' => '' // You can add teacher's name here later
+               //                                     ];
+               
+               //                                     $dateLabel = ($nextDate->format('Y-m-d') === date('Y-m-d')) 
+               //     ? 'Today' 
+               //     : $nextDate->format('F j');
+               
+               
+               //                                      $allMeetFutureDatess[] = [
+               //                                             'date' => $nextDate->format('Y-m-d'),
+               //                                             'class_display' => [
+               //                                                 'date' => $dateLabel,
+               //                                                 'day_time' => $fullDayName . ' at ' . $formattedTime,
+               //                                                 'short_text' => [
+               //                                                     'title' => $classType,
+               //                                                     'badge' => $badgeText,
+               //                                                     'label' => $coh->name,
+               //                                                     'color' => $cohortcolor
+               //                                                 ],
+               //                                                 'url' => $googleMeet->url,
+               //                                                 'type' => 'group',
+               //                                                 'image' => '',
+               //                                                 'user' => ''
+               //                                             ]
+               //                                         ];
+               //                                 }
+               
+               
+               
+               
+                                    // ==== Build next 10 future classes for this Google Meet ====
+               
+                                $today          = new DateTime();                // now (server TZ or set user TZ if needed)
+                                $todayYmd       = $today->format('Y-m-d');
+                                //$currentHM      = (int)$today->format('Hi');     // e.g. 1345
+                                $currentHM  = (clone $today)->modify('-1 hour')->format('Hi'); // "0755"
+                                $startHM        = (int)sprintf('%02d%02d', (int)$googleMeet->starthour, (int)$googleMeet->startminute);
+                                $starthour      = (int)$googleMeet->starthour;
+                                $startminute    = (int)$googleMeet->startminute;
+                                $endhour        = isset($googleMeet->endhour) ? (int)$googleMeet->endhour : $starthour;
+                                $endminute      = isset($googleMeet->endminute) ? (int)$googleMeet->endminute : $startminute;
+                                $durationSecs   = max(60, (($endhour * 60 + $endminute) - ($starthour * 60 + $startminute)) * 60);
+                                if ($durationSecs <= 0) { $durationSecs = 3600; } // fallback 1h
+               
+                                // Map weekdays
+                                $dayMap = ['Sun'=>0,'Mon'=>1,'Tue'=>2,'Wed'=>3,'Thu'=>4,'Fri'=>5,'Sat'=>6];
+                                $fullDayMap = ['Sun'=>'Sunday','Mon'=>'Monday','Tue'=>'Tuesday','Wed'=>'Wednesday','Thu'=>'Thursday','Fri'=>'Friday','Sat'=>'Saturday'];
+               
+                                // Collect active days as numeric 0..6 and sort
+                                $activeDows = [];
+                                foreach (($recurringDays ?? []) as $d => $isActive) {
+                                    if ($isActive === "1" && isset($dayMap[$d])) {
+                                        $activeDows[] = $dayMap[$d];
+                                    }
+                                }
+                                sort($activeDows);
+                                if (!$activeDows) {
+                                    // no active days → nothing to add
+                                    continue;
+                                }
+               
+                                $baseDow = (int)$today->format('w'); // 0..6
+                                $needed  = 10;
+                                $made    = 0;
+                                $weekOffset = 0;
+               
+                                while ($made < $needed) {
+                                    foreach ($activeDows as $targetDow) {
+                                        // Days ahead from *this* week
+                                        $daysAhead0 = ($targetDow - $baseDow + 7) % 7;
+               
+                                        // For week 0, if today is the target day but start time already passed, push to next week
+                                        $daysAhead = $daysAhead0 + 7 * $weekOffset;
+                                        if ($weekOffset === 0 && $daysAhead0 === 0 && $currentHM >= $startHM) {
+                                            $daysAhead += 7;
+                                        }
+               
+                                        // Build start/end DateTimes
+                                        $startDT = (clone $today)->setTime($starthour, $startminute, 0)->modify("+{$daysAhead} days");
+                                        $endDT   = (clone $startDT)->modify("+{$durationSecs} seconds");
+               
+                                        // Human labels
+                                        $fullDayName   = $startDT->format('l'); // Monday, ...
+                                        $dateLabel     = ($startDT->format('Y-m-d') === $todayYmd) ? 'Today' : $startDT->format('F j');
+                                        $formattedTime = $startDT->format('g:i A') . ' - ' . $endDT->format('g:i A');
+               
+                                        // Class type (as you had)
+                                        $classType = 'Group Class';
+                                        if (strpos($googleMeet->name, 'Main') !== false)     { $classType = 'Main Class'; }
+                                        elseif (strpos($googleMeet->name, 'Practice') !== false) { $classType = 'Practice Class'; }
+               
+                                        // Push into your target array
+                                        $allMeetFutureDatess[] = [
+                                            'date' => $startDT->format('Y-m-d'),
+                                            'class_display' => [
+                                                'date'       => $dateLabel,
+                                                'day_time'   => $fullDayName . ' at ' . $formattedTime,
+                                                'short_text' => [
+                                                    'title' => $classType,
+                                                    'badge' => $badgeText,         // from your earlier code
+                                                    'label' => $coh->name,         // from your earlier code
+                                                    'color' => $cohortcolor        // from your earlier code
+                                                ],
+                                                'url'   => $googleMeet->url,        // <-- use the activity URL you built earlier
+                                                'type'  => 'group',
+                                                'image' => '',
+                                                'user'  => ''
+                                            ]
+                                        ];
+               
+                                        $made++;
+                                        if ($made >= $needed) { break 2; }
+                                    }
+                                    $weekOffset++; // move to the next week and loop the days again
+                                }
+                                                                
+                                   
+                                    
+                                 
+                                
+                            }
+                        } 
+                    } else {
+                        //echo "No topics are restricted to cohort ID $cohortid in this course.";
+                    }
+               
+                    if (!empty($allMeetFutureDatess)) {
+               
+                            usort($allMeetFutureDatess, function($a, $b) {
+                // Convert 'date' field to timestamp
+                $dateA = strtotime($a['date']);
+                $dateB = strtotime($b['date']);
+               
+                // If dates are different, sort by date
+                if ($dateA !== $dateB) {
+                    return $dateA - $dateB;
                 }
                
-                // Extract the URL from the record
-                //$googleMeetURL = $googleMeet->url;
-                $dayOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-                // Master array to store sorted data across schedules
-                $allDaysWithHours = [];
-
-                // Collect available days and their timings
-                foreach ($schedules as $schedule) {
-                    // Convert starthour and startminute to a 12-hour format with AM/PM
-                    $hour24 = $schedule['starthour'];
-                    $minute = str_pad($schedule['startminute'], 2, "0", STR_PAD_LEFT); // Ensure 2 digits for minutes
-                    $formattedHour = date("g:i A", strtotime("$hour24:$minute"));
-
-                    // Decode the JSON data in 'days'
-                    $days = json_decode($schedule['days'], true); // Decoded as associative array
-
-                    // Sort and add available days to the master array
-                    foreach ($dayOrder as $day) {
-                        if (isset($days[$day]) && $days[$day] === "1") {
-                            $allDaysWithHours[$day][] = $formattedHour; // Group timings by day
-                        }
+                // Extract time from 'day_time' (e.g., "Tuesday at 5:00 AM - 6:00 AM")
+                preg_match('/at ([\d:]+ [APMapm]+) -/', $a['class_display']['day_time'], $matchA);
+                preg_match('/at ([\d:]+ [APMapm]+) -/', $b['class_display']['day_time'], $matchB);
+               
+                $timeA = isset($matchA[1]) ? strtotime($matchA[1]) : 0;
+                $timeB = isset($matchB[1]) ? strtotime($matchB[1]) : 0;
+               
+                return $timeA - $timeB;
+               });
                     }
-                }
-
-                // Ensure all days are present and in sorted order
-                foreach ($dayOrder as $day) {
-                    if (!isset($allDaysWithHours[$day])) {
-                        $allDaysWithHours[$day] = []; // Add empty entry for non-available days
+               
+                    if (!empty($allMeetFutureDatess)) {
+               // Take first 12 sorted entries
+               $upcoming12 = array_slice($allMeetFutureDatess, 0, 40);
                     }
-                }
-
-
-
-
-
-                    //Videocalling section merging schedules
-
-                    $cohortids = [];
-
-                    foreach ($cohorts as $cohort) {
-                        $cohortids[] = $cohort->id;
-                    }
-
-                    $idplanificactions = [];
-
-                    if (!empty($cohortids)) {
-                        list($in, $params) = $DB->get_in_or_equal($cohortids, SQL_PARAMS_NAMED);
-
-                        // Replace 'your_table_name' with the actual name, like 'local_sometable'
-                        $sql = "SELECT DISTINCT idplanificaction 
-                                FROM {assignamentcohortforclass}
-                                WHERE idcohort $in AND idplanificaction IS NOT NULL";
-
-                        $idplanificactions = $DB->get_fieldset_sql($sql, $params);
-                    }
-
-
-// Step 1: Fetch all idplanificaction records for the current user
-$user_idplanificactions = $DB->get_records('assignamentteachearforclass', ['iduserteacher' => $user->id], '', 'idplanificaction');
-
-// Step 2: Compare and merge the user's idplanificaction with the $idplanificactions array
-if (!empty($user_idplanificactions)) {
-    // Extract the idplanificaction values from the user's records
-    $user_idplanificactions = array_map(function($record) {
-        return $record->idplanificaction;
-    }, $user_idplanificactions);
-
-    // Step 3: Compare and merge the values (add missing ones to $idplanificactions)
-    foreach ($user_idplanificactions as $id) {
-        // Only add if it's not already in the $idplanificactions array
-        if (!in_array($id, $idplanificactions)) {
-            $idplanificactions[] = $id;
-        }
-    }
-}
-
-
-                    // Step 3: Get full records from planification_meta table using those IDs
-                    $planificationrecords = [];
-
-                    if (!empty($idplanificactions)) {
-                        list($in2, $params2) = $DB->get_in_or_equal($idplanificactions, SQL_PARAMS_NAMED);
-                        
-                        $sql2 = "SELECT *
-                                FROM {planificationclass}
-                                WHERE id $in2";
-
-                        $planificationrecords = $DB->get_records_sql($sql2, $params2);
-                    }
-
-$allMeetFuturevideocalling = [];
-
-foreach ($planificationrecords as $record) {
-    $recurrence = $DB->get_record('optionsrepeat', ['idplanificaction' => $record->id]);
-    //if (!$recurrence) continue;
-
-
-    if($recurrence)
-    {
-
-        if($recurrence->type == 'week')
-        {
-            $repeatevery = (int)($recurrence->repeatevery ?? 1);
-                $repeatUntil = (int)($recurrence->repeaton ?? PHP_INT_MAX);
-                $currentTime = time();
-
-                $weekdayMap = [
-                    'sunday' => 0, 'monday' => 1, 'tuesday' => 2,
-                    'wednesday' => 3, 'thursday' => 4,
-                    'friday' => 5, 'saturday' => 6
-                ];
-
-                $recurrenceDays = [];
-                foreach ($weekdayMap as $day => $num) {
-                    if (!empty($recurrence->$day)) {
-                        $recurrenceDays[$num] = $day;
-                    }
-                }
-
-                // ✅ Loop for each weekday recurrence in this record
-                foreach ($recurrenceDays as $weekday => $dayname) {
-                    $nextDate = new DateTime(); // start from now
-                    $currentWeekday = (int)$nextDate->format('w');
-
-                    // Calculate how many days ahead this weekday is
-                    $daysToAdd = ($weekday - $currentWeekday + 7) % 7;
-                    if ($daysToAdd === 0) {
-                // Today's session: check if it's still ongoing
-                $startTime = (int)date('Hi', strtotime(date('H:i', $record->startdate)));
-                
-                // Add 1 hour to the start time
-                $startPlusOneHour = (int)date('Hi', strtotime(date('H:i', $record->startdate) . ' +1 hour'));
-
-                $nowTime = (int)date('Hi');
-
-                if ($nowTime > $startPlusOneHour) {
-                    // Session has fully passed, move to next week
-                    $daysToAdd = 7;
-                }
-                // else: current time is within session or just before it → keep today
-            }
-
-                    $nextDate->modify("+$daysToAdd days");
-
-                    $dateStr = $nextDate->format('Y-m-d');
-                    $sessionStart = strtotime($dateStr . ' ' . date('H:i', $record->startdate));
-                    $sessionEnd = strtotime($dateStr . ' ' . date('H:i', $record->finishdate));
-
-                    if ($sessionEnd >= $currentTime && $sessionStart <= $repeatUntil) {
-                        $fullDayName = date('l', $sessionStart);
-                        $formattedTime = date('g:i A', $sessionStart) . ' - ' . date('g:i A', $sessionEnd);
-
-                        $dt = new DateTime();
-                        $dt->setTimestamp($sessionStart);
-
-                        $dateLabel = ($dt->format('Y-m-d') === date('Y-m-d')) 
-    ? 'Today' 
-    : $dt->format('F j');
-
-                        $allMeetFuturevideocalling[] = [
-                            'timestamp' => $sessionStart,
-                            'class_display' => [
-                                'date' => $dateLabel,
-                                'day_time' => $fullDayName . ' at ' . $formattedTime,
-                                'short_text' => [
-                                    'title' => 'Quick Talk',
-                                    'badge' => 'VI',
-                                    'label' => 'Peers',
-                                    'color' => 'Blue'
-                                ],
-                                'url' => 'https://courses.latingles.com/local/videocalling',
-                                'type' => 'group',
-                                'image' => '',
-                                'user' => ''
-                            ]
-                        ];
-                    }
-                }
-        }
-
-         if ($recurrence->type == 'day') {
-    $repeatevery = (int)($recurrence->repeatevery ?? 1);
-    $repeatUntil = $recurrence->repeaton ? (int)$recurrence->repeaton : PHP_INT_MAX; // unlimited
-    $currentTime = time();
-
-    $loopDate = max($record->startdate, $currentTime);
-
-    // Round loopDate to start-of-day (optional, for cleaner matching)
-    $loopDate = strtotime(date('Y-m-d 00:00:00', $loopDate));
-
-    // Find the first next session from start date that is in future
-    for ($i = 0; $i < 100; $i++) { // limit to avoid infinite loop
-        $sessionStart = strtotime("+".($i * $repeatevery)." days", $record->startdate);
-        $sessionEnd = strtotime(date('Y-m-d', $sessionStart) . ' ' . date('H:i', $record->finishdate));
-
-        if ($sessionStart >= $currentTime || ($currentTime >= $sessionStart && $currentTime <= strtotime('+1 hour', $sessionStart))) {
-            if ($sessionStart <= $repeatUntil) {
-                $dt = new DateTime();
-                $dt->setTimestamp($sessionStart);
-
-                $fullDayName = date('l', $sessionStart);
-                $formattedTime = date('g:i A', $sessionStart) . ' - ' . date('g:i A', $sessionEnd);
-
-                $dt = new DateTime();
-                        $dt->setTimestamp($sessionStart);
-
-                        $dateLabel = ($dt->format('Y-m-d') === date('Y-m-d')) 
-    ? 'Today' 
-    : $dt->format('F j');
-
-                $allMeetFuturevideocalling[] = [
-                    'timestamp' => $sessionStart,
-                    'class_display' => [
-                        'date' => $dateLabel,
-                        'day_time' => $fullDayName . ' at ' . $formattedTime,
-                        'short_text' => [
-                            'title' => 'Quick Talk',
-                            'badge' => 'VI',
-                            'label' => 'Peers',
-                            'color' => 'Blue'
-                        ],
-                        'url' => 'https://courses.latingles.com/local/videocalling',
-                        'type' => 'group',
-                        'image' => '',
-                        'user' => ''
-                    ]
-                ];
-            }
-            //break; // only add one upcoming instance
-        }
-    }
-}
-    
-
-
-
-    }else{
-         // Handle one-time session
-    $currentTime = time();
-    $startTime = strtotime(date('Y-m-d', $record->startdate) . ' ' . date('H:i', $record->startdate));
-    $endTime = strtotime(date('Y-m-d', $record->finishdate) . ' ' . date('H:i', $record->finishdate));
-
-    // If session is upcoming or currently ongoing (within 1 hour window)
-    if ($startTime >= $currentTime || ($currentTime >= $startTime && $currentTime <= strtotime('+1 hour', $startTime))) {
-        $dt = new DateTime();
-        $dt->setTimestamp($startTime);
-
-        $fullDayName = date('l', $startTime);
-        $formattedTime = date('g:i A', $startTime) . ' - ' . date('g:i A', $endTime);
-
-         $dt = new DateTime();
-                        $dt->setTimestamp($startTime);
-
-                        $dateLabel = ($dt->format('Y-m-d') === date('Y-m-d')) 
-    ? 'Today' 
-    : $dt->format('F j');
-
-        $allMeetFuturevideocalling[] = [
-            'timestamp' => $startTime,
-            'class_display' => [
-                'date' => $dateLabel,
-                'day_time' => $fullDayName . ' at ' . $formattedTime,
-                'short_text' => [
-                    'title' => 'Quick Talk',
-                    'badge' => 'VI',
-                    'label' => 'Peers',
-                    'color' => 'Blue'
-                ],
-                'url' => 'https://courses.latingles.com/local/videocalling',
-                'type' => 'group',
-                'image' => '',
-                'user' => ''
-            ]
-        ];
-    }
-    }
-    
-}
-
-// ✅ Sort all next sessions by timestamp (across all plans)
-usort($allMeetFuturevideocalling, function ($a, $b) {
-    return $a['timestamp'] <=> $b['timestamp'];
-});
-
-// ✅ Keep only first 10 earliest
-$allMeetFuturevideocalling = array_slice($allMeetFuturevideocalling, 0, 40);
-
-// ✅ Extract only class_display
-$finalClassDisplays = array_map(function ($entry) {
-    return $entry['class_display'];
-}, $allMeetFuturevideocalling);
-
-
-
-//One on One
-
-function user_in_cohort(int $userid, int $cohortid): bool {
-    return cohort_is_member($cohortid, $userid); // true/false
-}
-
-// Example:
-if (user_in_cohort($user->id, 163) && !$isteacher) {
-    // user is a member
-    //echo 'found';
-
-    // --- begin added code ---
-    $googleMeetActivities = []; // For all activities
-    $schedules = [];            // Only from the first section (kept from your code)
-    $i = 0;
-    $ccid = null;
-
-    // Get module id for googlemeet once
-    $googlemeetmodid = (int)$DB->get_field('modules', 'id', ['name' => 'googlemeet'], IGNORE_MISSING);
-    if (!$googlemeetmodid) {
-        echo ' (googlemeet module not installed)';
-    } else {
-        // Fetch all sections in the course
-        $sections_one_on_one = $DB->get_records('course_sections', ['course' => 24], 'section ASC');
-
-        foreach ($sections_one_on_one as $section) {
-            // Fetch only googlemeet modules in this section
-            $modules = $DB->get_records('course_modules',
-                ['section' => $section->id, 'module' => $googlemeetmodid],
-                'id ASC',
-                'id,instance,availability'
-            );
-
-            if (empty($modules)) {
-                continue;
-            }
-
-            foreach ($modules as $module) {
-                if (empty($module->availability)) {
-                    continue; // no restrictions set
-                }
-
-                $tree = json_decode($module->availability, true);
-                if (!is_array($tree)) {
-                    continue; // invalid availability JSON
-                }
-
-                // Look for a profile rule where field=email and value == user's email
-                $match = false;
-                $targetEmail = mb_strtolower(trim($user->email));
-                $stack = [$tree];
-
-                while (!$match && ($node = array_pop($stack))) {
-                    if (isset($node['type']) && $node['type'] === 'profile') {
-                        $isEmailField = (isset($node['sf']) && $node['sf'] === 'email'); // standard field
-                        if ($isEmailField) {
-                            $val = isset($node['v']) ? mb_strtolower(trim($node['v'])) : null;
-                            if ($val !== null && $val === $targetEmail) {
-                                $match = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (!empty($node['c']) && is_array($node['c'])) {
-                        foreach ($node['c'] as $child) {
-                            if (is_array($child)) {
-                                $stack[] = $child;
-                            }
-                        }
-                    }
-                }
-
-                if (!$match) {
-                    continue; // this googlemeet does not target this user by email
-                }
-
-                // Collect basic info
-                $gm = $DB->get_record('googlemeet', ['id' => $module->instance], 'id,name,url', IGNORE_MISSING);
-                $name = ($gm && !empty($gm->name)) ? $gm->name : 'Google Meet';
-                $url  = (new moodle_url('/mod/googlemeet/view.php', ['id' => $module->id]))->out(false);
-
-                $isStudent = (
-    is_only_student($user->id)
-);
-
-            if ($isStudent) {
-                // e.g. "1:1 Sandra Ayala with Teacher Jessica Smith" -> "Jessica Smith"
-                if (preg_match('/\bTeacher\b[[:space:]:\-–—]*(.+)\z/ui', $name, $m)) {
-                    $name = trim($m[1]);                 // "Jessica Smith"
-                    // Optional: normalize inner whitespace
-                    $name = preg_replace('/\s+/', ' ', $name);
-
-                    // $name currently holds either first name OR last name (single token).
-                        global $DB;
-
-                        $name = trim(preg_replace('/\s+/', ' ', $name)); // normalize spaces
-
-                        if ($name !== '' && strpos($name, ' ') === false) { // only try if it's a single token
-                            $lc = core_text::strtolower($name);
-
-                            $sql = "SELECT id, firstname, lastname
-                                    FROM {user}
-                                    WHERE deleted = 0 AND suspended = 0
-                                    AND (LOWER(firstname) = ? OR LOWER(lastname) = ?)";
-                            $matches = $DB->get_records_sql($sql, [$lc, $lc]);
-
-                            if (count($matches) === 1) {
-                                $u = reset($matches);
-                                $name = fullname($u); // e.g., "Jessica Smith"
-                            }
-                            // If 0 or >1 matches, keep original $name unchanged.
-                        }
+               
+               // Extract only 'class_display'
+               // $finalUpcoming12 = array_map(function($entry) {
+               //     return $entry['class_display'];
+               // }, $upcoming12);
+               
+               $finalUpcoming12 = [];
+               
+               if (is_array($upcoming12)) {
+               $finalUpcoming12 = array_map(function($entry) {
+               return $entry['class_display'];
+               }, $upcoming12);
+               }
+               
+               
+               
+               
+               $cohortIds = [];
+               
+               if (is_array($cohortData)) {
+               $cohortIds = array_map(function($c) {
+               return (int)$c['id'];
+               }, $cohortData);
+               }
+               
+               
+               
                     
-                }
-            }else {
-    // Extract text after "1:1" and before "with"
-    if (preg_match('/\b1\s*:\s*1\b\s*(.*?)\s+with\b/ui', $name, $m)) {
-        $name = preg_replace('/\s+/', ' ', trim($m[1])); // "Sandra Ayala"
-
-        // $name currently holds either first name OR last name (single token).
-                        global $DB;
-
-                        $name = trim(preg_replace('/\s+/', ' ', $name)); // normalize spaces
-
-                        if ($name !== '' && strpos($name, ' ') === false) { // only try if it's a single token
-                            $lc = core_text::strtolower($name);
-
-                            $sql = "SELECT id, firstname, lastname
-                                    FROM {user}
-                                    WHERE deleted = 0 AND suspended = 0
-                                    AND (LOWER(firstname) = ? OR LOWER(lastname) = ?)";
-                            $matches = $DB->get_records_sql($sql, [$lc, $lc]);
-
-                            if (count($matches) === 1) {
-                                $u = reset($matches);
-                                $name = fullname($u); // e.g., "Jessica Smith"
+                    
+                    
+                    // Fetch the Google Meet activity record
+                    if($mostUpcomingSchedule){
+                        $googleMeet = $DB->get_record('googlemeet', ['id' => $mostUpcomingSchedule->googlemeetid], '*', MUST_EXIST);
+                    
+                    }
+                   
+                    // Extract the URL from the record
+                    //$googleMeetURL = $googleMeet->url;
+                    $dayOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+                    // Master array to store sorted data across schedules
+                    $allDaysWithHours = [];
+               
+                    // Collect available days and their timings
+                    foreach ($schedules as $schedule) {
+                        // Convert starthour and startminute to a 12-hour format with AM/PM
+                        $hour24 = $schedule['starthour'];
+                        $minute = str_pad($schedule['startminute'], 2, "0", STR_PAD_LEFT); // Ensure 2 digits for minutes
+                        $formattedHour = date("g:i A", strtotime("$hour24:$minute"));
+               
+                        // Decode the JSON data in 'days'
+                        $days = json_decode($schedule['days'], true); // Decoded as associative array
+               
+                        // Sort and add available days to the master array
+                        foreach ($dayOrder as $day) {
+                            if (isset($days[$day]) && $days[$day] === "1") {
+                                $allDaysWithHours[$day][] = $formattedHour; // Group timings by day
                             }
-                            // If 0 or >1 matches, keep original $name unchanged.
                         }
-    }
-}
-
-
-// Build profile image URL from $name by matching firstname OR lastname
-require_once($CFG->libdir . '/filelib.php'); // for moodle_url & file serving
-$profile_url = '';
-
-$target = trim($name);
-if ($target !== '') {
-    // Split the display name into tokens ("Jessica Smith" -> ["Jessica","Smith"])
-    $parts = preg_split('/\s+/', $target, -1, PREG_SPLIT_NO_EMPTY);
-
-    if (!empty($parts)) {
-        // Prepare IN (...) placeholders for a case-insensitive match on firstname/lastname
-        $params = ['deleted' => 0, 'suspended' => 0];
-        $fnph = [];
-        $lnph = [];
-        $i = 0;
-        foreach ($parts as $p) {
-            $p = mb_strtolower($p);
-            $fnph[] = ":fn{$i}";
-            $lnph[] = ":ln{$i}";
-            $params["fn{$i}"] = $p;
-            $params["ln{$i}"] = $p;
-            $i++;
-        }
-
-        $sql = "
-            SELECT id, firstname, lastname, picture, imagealt
-              FROM {user}
-             WHERE deleted = :deleted
-               AND suspended = :suspended
-               AND (
-                     LOWER(firstname) IN (" . implode(',', $fnph) . ")
-                  OR LOWER(lastname)  IN (" . implode(',', $lnph) . ")
-               )
-             ORDER BY lastaccess DESC, id DESC
-        ";
-
-        // Get the best candidate (most recently active)
-        $candidates = $DB->get_records_sql($sql, $params, 0, 1);
-        if ($candidates) {
-            $u = reset($candidates);
-            $userpic = new user_picture($u);
-            $userpic->size = 100; // pick your size (0, 35, 100)
-            $profile_url = $userpic->get_url($PAGE)->out(false);
-        }
-    }
-}
-                $googleMeetActivities[] = (object)[
-                    'sectionid' => $section->id,
-                    'cmid'      => $module->id,
-                    'name'      => $name,
-                    'url'       => $gm->url,
-                    'profile_url'  => $profile_url, // <-- added
-                ];
-            }
-        }
-    
-    }
-    // --- end added code ---
-
-
-    // Build "future videocalling" cards from Google Meet activities
-$allMeetFuturevideocallingg = [];
-
-foreach ($googleMeetActivities as $act) {
-    // Get the activity instance id from cmid (needed to locate its calendar events)
-    $instanceid = (int)$DB->get_field('course_modules', 'instance', ['id' => $act->cmid], IGNORE_MISSING);
-    if (!$instanceid) {
-        continue;
-    }
-
-    // Fetch FUTURE calendar events for this activity
-    // Most modules (incl. googlemeet) create calendar events with modulename='googlemeet'
-    $now = time();
-
-$events = $DB->get_records_select(
-    'event',
-    "modulename = :mod
-     AND instance = :instance
-     AND visible = 1
-     AND (
-           timestart >= :now1
-        OR (:now2 >= timestart AND :now3 <= (timestart + 3600))
-     )",
-    [
-        'mod' => 'googlemeet',
-        'instance' => $instanceid,
-        'now1' => $now,
-        'now2' => $now,
-        'now3' => $now
-    ],
-    'timestart ASC',
-    'id,name,timestart,timeduration'
-);
-
-
-// $now = time();
-//     $events = $DB->get_records_select(
-//         'event',
-//         "modulename = :mod AND instance = :instance AND visible = 1 AND timestart >= :now",
-//         ['mod' => 'googlemeet', 'instance' => $instanceid, 'now' => $now],
-//         'timestart ASC',
-//         'id,name,timestart,timeduration'
-//     );
-
-    if (empty($events)) {
-        continue; // no upcoming sessions found for this meet
-    }
-
-    foreach ($events as $ev) {
-        $sessionStart = (int)$ev->timestart;
-        $sessionEnd   = $sessionStart + (int)($ev->timeduration ?? 0);
-        if ($sessionEnd <= $sessionStart) {
-            // Fallback: assume 60 minutes if duration is 0/empty
-            $sessionEnd = $sessionStart + 3600;
-        }
-
-        // User-timezone friendly formatting
-        $fullDayName    = userdate($sessionStart, '%A');                  // e.g. Monday
-        $displayDate    = userdate($sessionStart, '%B %e');               // e.g. August 23
-        $formattedStart = userdate($sessionStart, '%l:%M %p');            // e.g. 3:15 PM
-        $formattedEnd   = userdate($sessionEnd,   '%l:%M %p');            // e.g. 4:15 PM
-        $formattedTime  = trim($formattedStart) . ' - ' . trim($formattedEnd);
-
-
-        $dt = new DateTime();
-                        $dt->setTimestamp($sessionStart);
-
-                        $dateLabel = ($dt->format('Y-m-d') === date('Y-m-d')) 
-    ? 'Today' 
-    : $dt->format('F j');
-
-        // Push in your required shape
-        $allMeetFuturevideocallingg[] = [
-            'timestamp' => $sessionStart,
-            'class_display' => [
-                'date'       => $dateLabel,                                 // "F j"
-                'day_time'   => $fullDayName . ' at ' . $formattedTime,       // "Monday at 3:15 PM - 4:15 PM"
-                'short_text' => [
-                    'title' => '1 on 1',
-                    'badge' => $act->profile_url,
-                    'label' => $act->name,
-                    'color' => 'Blue',
-                ],
-                'url'   => $act->url,         // e.g. /mod/googlemeet/view.php?id=CMID
-                'type'  => 'group',
-                'image' => '',
-                'user'  => '',
-            ],
-        ];
-
-        // If you only want the *next* upcoming session per activity, uncomment:
-        // break;
-    }
-}
-
-// Optional: sort all cards by soonest first
-usort($allMeetFuturevideocallingg, function($a, $b) {
-    return $a['timestamp'] <=> $b['timestamp'];
-});
-
-// Keep only the first 12
-$allMeetFuturevideocallingg = array_slice($allMeetFuturevideocallingg, 0, 40);
-
-$allMeetFuturevideocallingg = array_values(
-    array_column($allMeetFuturevideocallingg, 'class_display')
-);
-
-} else {
-    // not a member
-
-    // Get module id for googlemeet once
-    $googlemeetmodid = (int)$DB->get_field('modules', 'id', ['name' => 'googlemeet'], IGNORE_MISSING);
-    if (!$googlemeetmodid) {
-        echo ' (googlemeet module not installed)';
-    } else {
-        $allMeetFuturevideocallingg = [];
-        // Fetch all sections in the course
-        $sections_one_on_one = $DB->get_records('course_sections', ['course' => 24], 'section ASC');
-
-         $fname = $user->firstname;
-            $lname = $user->lastname;
-
-        // Iterate sections that belong to this teacher.
-foreach ($sections_one_on_one as $section) {
-    if (!section_is_for_teacher($section->name ?? '', $fname, $lname)) {
-        continue;
-    }
-
-    // Only googlemeet activities in this section
-    $modules = $DB->get_records('course_modules',
-        ['section' => $section->id, 'module' => $googlemeetmodid],
-        'id ASC',
-        'id,instance,availability'
-    );
-
-    if (!$modules) {
-        continue;
-    }
-
-    foreach ($modules as $cm) {
-        $student = availability_extract_user($cm->availability ?? '');
-        if (!$student) {
-            // must be restricted to a student email; skip otherwise
-            continue;
-        }
-
-       $userpic = new user_picture($student);
-$userpic->size = 100; // 0, 35, or 100 are common sizes
-$profile_img_url = $userpic->get_url($PAGE)->out(false);
-
-
-
-        // Instance info (meet name)
-        $gm = $DB->get_record('googlemeet', ['id' => $cm->instance], 'id,name,url', IGNORE_MISSING);
-        $meetname = $gm && !empty($gm->name) ? $gm->name : fullname($student);
-
-        // Future events tied to this activity
-        // $now = time();
-        // $events = $DB->get_records_select(
-        //     'event',
-        //     "modulename = :mod AND instance = :instance AND visible = 1 AND timestart >= :now",
-        //     ['mod' => 'googlemeet', 'instance' => (int)$cm->instance, 'now' => $now],
-        //     'timestart ASC',
-        //     'id,name,timestart,timeduration'
-        // );
-
-$now = time();
-
-$events = $DB->get_records_select(
-    'event',
-    "modulename = :mod
-     AND instance = :instance
-     AND visible = 1
-     AND (
-           timestart >= :now1
-        OR (:now2 >= timestart AND :now3 <= (timestart + 3600))
-     )",
-    [
-        'mod' => 'googlemeet',
-        'instance' => (int)$cm->instance,
-        'now1' => $now,
-        'now2' => $now,
-        'now3' => $now
-    ],
-    'timestart ASC',
-    'id,name,timestart,timeduration'
-);
-
-        
-        if (empty($events)) {
-            continue;
-        }
-
-
-        foreach ($events as $ev) {
-            $sessionStart = (int)$ev->timestart;
-            $sessionEnd   = $sessionStart + (int)($ev->timeduration ?? 0);
-            [$displayDate, $dayTime] = format_session_times($sessionStart, $sessionEnd);
-
-            $dt = new DateTime();
-                        $dt->setTimestamp($sessionStart);
-
-                        $dateLabel = ($dt->format('Y-m-d') === date('Y-m-d')) 
-    ? 'Today' 
-    : $dt->format('F j');
-
-            // Push in your required shape
-            $allMeetFuturevideocallingg[] = [
-                'timestamp'     => $sessionStart,
+                    }
+               
+                    // Ensure all days are present and in sorted order
+                    foreach ($dayOrder as $day) {
+                        if (!isset($allDaysWithHours[$day])) {
+                            $allDaysWithHours[$day] = []; // Add empty entry for non-available days
+                        }
+                    }
+               
+               
+               
+               
+               
+                        //Videocalling section merging schedules
+               
+                        $cohortids = [];
+               
+                        foreach ($cohorts as $cohort) {
+                            $cohortids[] = $cohort->id;
+                        }
+               
+                        $idplanificactions = [];
+               
+                        if (!empty($cohortids)) {
+                            list($in, $params) = $DB->get_in_or_equal($cohortids, SQL_PARAMS_NAMED);
+               
+                            // Replace 'your_table_name' with the actual name, like 'local_sometable'
+                            $sql = "SELECT DISTINCT idplanificaction 
+                                    FROM {assignamentcohortforclass}
+                                    WHERE idcohort $in AND idplanificaction IS NOT NULL";
+               
+                            $idplanificactions = $DB->get_fieldset_sql($sql, $params);
+                        }
+               
+               
+               // Step 1: Fetch all idplanificaction records for the current user
+               $user_idplanificactions = $DB->get_records('assignamentteachearforclass', ['iduserteacher' => $user->id], '', 'idplanificaction');
+               
+               // Step 2: Compare and merge the user's idplanificaction with the $idplanificactions array
+               if (!empty($user_idplanificactions)) {
+               // Extract the idplanificaction values from the user's records
+               $user_idplanificactions = array_map(function($record) {
+               return $record->idplanificaction;
+               }, $user_idplanificactions);
+               
+               // Step 3: Compare and merge the values (add missing ones to $idplanificactions)
+               foreach ($user_idplanificactions as $id) {
+               // Only add if it's not already in the $idplanificactions array
+               if (!in_array($id, $idplanificactions)) {
+                $idplanificactions[] = $id;
+               }
+               }
+               }
+               
+               
+                        // Step 3: Get full records from planification_meta table using those IDs
+                        $planificationrecords = [];
+               
+                        if (!empty($idplanificactions)) {
+                            list($in2, $params2) = $DB->get_in_or_equal($idplanificactions, SQL_PARAMS_NAMED);
+                            
+                            $sql2 = "SELECT *
+                                    FROM {planificationclass}
+                                    WHERE id $in2";
+               
+                            $planificationrecords = $DB->get_records_sql($sql2, $params2);
+                        }
+               
+               $allMeetFuturevideocalling = [];
+               
+               foreach ($planificationrecords as $record) {
+               $recurrence = $DB->get_record('optionsrepeat', ['idplanificaction' => $record->id]);
+               //if (!$recurrence) continue;
+               
+               
+               if($recurrence)
+               {
+               
+               if($recurrence->type == 'week')
+               {
+                $repeatevery = (int)($recurrence->repeatevery ?? 1);
+                    $repeatUntil = (int)($recurrence->repeaton ?? PHP_INT_MAX);
+                    $currentTime = time();
+               
+                    $weekdayMap = [
+                        'sunday' => 0, 'monday' => 1, 'tuesday' => 2,
+                        'wednesday' => 3, 'thursday' => 4,
+                        'friday' => 5, 'saturday' => 6
+                    ];
+               
+                    $recurrenceDays = [];
+                    foreach ($weekdayMap as $day => $num) {
+                        if (!empty($recurrence->$day)) {
+                            $recurrenceDays[$num] = $day;
+                        }
+                    }
+               
+                    // ✅ Loop for each weekday recurrence in this record
+                    foreach ($recurrenceDays as $weekday => $dayname) {
+                        $nextDate = new DateTime(); // start from now
+                        $currentWeekday = (int)$nextDate->format('w');
+               
+                        // Calculate how many days ahead this weekday is
+                        $daysToAdd = ($weekday - $currentWeekday + 7) % 7;
+                        if ($daysToAdd === 0) {
+                    // Today's session: check if it's still ongoing
+                    $startTime = (int)date('Hi', strtotime(date('H:i', $record->startdate)));
+                    
+                    // Add 1 hour to the start time
+                    $startPlusOneHour = (int)date('Hi', strtotime(date('H:i', $record->startdate) . ' +1 hour'));
+               
+                    $nowTime = (int)date('Hi');
+               
+                    if ($nowTime > $startPlusOneHour) {
+                        // Session has fully passed, move to next week
+                        $daysToAdd = 7;
+                    }
+                    // else: current time is within session or just before it → keep today
+                }
+               
+                        $nextDate->modify("+$daysToAdd days");
+               
+                        $dateStr = $nextDate->format('Y-m-d');
+                        $sessionStart = strtotime($dateStr . ' ' . date('H:i', $record->startdate));
+                        $sessionEnd = strtotime($dateStr . ' ' . date('H:i', $record->finishdate));
+               
+                        if ($sessionEnd >= $currentTime && $sessionStart <= $repeatUntil) {
+                            $fullDayName = date('l', $sessionStart);
+                            $formattedTime = date('g:i A', $sessionStart) . ' - ' . date('g:i A', $sessionEnd);
+               
+                            $dt = new DateTime();
+                            $dt->setTimestamp($sessionStart);
+               
+                            $dateLabel = ($dt->format('Y-m-d') === date('Y-m-d')) 
+               ? 'Today' 
+               : $dt->format('F j');
+               
+                            $allMeetFuturevideocalling[] = [
+                                'timestamp' => $sessionStart,
+                                'class_display' => [
+                                    'date' => $dateLabel,
+                                    'day_time' => $fullDayName . ' at ' . $formattedTime,
+                                    'short_text' => [
+                                        'title' => 'Quick Talk',
+                                        'badge' => 'VI',
+                                        'label' => 'Peers',
+                                        'color' => 'Blue'
+                                    ],
+                                    'url' => 'https://courses.latingles.com/local/videocalling',
+                                    'type' => 'group',
+                                    'image' => '',
+                                    'user' => ''
+                                ]
+                            ];
+                        }
+                    }
+               }
+               
+               if ($recurrence->type == 'day') {
+               $repeatevery = (int)($recurrence->repeatevery ?? 1);
+               $repeatUntil = $recurrence->repeaton ? (int)$recurrence->repeaton : PHP_INT_MAX; // unlimited
+               $currentTime = time();
+               
+               $loopDate = max($record->startdate, $currentTime);
+               
+               // Round loopDate to start-of-day (optional, for cleaner matching)
+               $loopDate = strtotime(date('Y-m-d 00:00:00', $loopDate));
+               
+               // Find the first next session from start date that is in future
+               for ($i = 0; $i < 100; $i++) { // limit to avoid infinite loop
+               $sessionStart = strtotime("+".($i * $repeatevery)." days", $record->startdate);
+               $sessionEnd = strtotime(date('Y-m-d', $sessionStart) . ' ' . date('H:i', $record->finishdate));
+               
+               if ($sessionStart >= $currentTime || ($currentTime >= $sessionStart && $currentTime <= strtotime('+1 hour', $sessionStart))) {
+                if ($sessionStart <= $repeatUntil) {
+                    $dt = new DateTime();
+                    $dt->setTimestamp($sessionStart);
+               
+                    $fullDayName = date('l', $sessionStart);
+                    $formattedTime = date('g:i A', $sessionStart) . ' - ' . date('g:i A', $sessionEnd);
+               
+                    $dt = new DateTime();
+                            $dt->setTimestamp($sessionStart);
+               
+                            $dateLabel = ($dt->format('Y-m-d') === date('Y-m-d')) 
+               ? 'Today' 
+               : $dt->format('F j');
+               
+                    $allMeetFuturevideocalling[] = [
+                        'timestamp' => $sessionStart,
+                        'class_display' => [
+                            'date' => $dateLabel,
+                            'day_time' => $fullDayName . ' at ' . $formattedTime,
+                            'short_text' => [
+                                'title' => 'Quick Talk',
+                                'badge' => 'VI',
+                                'label' => 'Peers',
+                                'color' => 'Blue'
+                            ],
+                            'url' => 'https://courses.latingles.com/local/videocalling',
+                            'type' => 'group',
+                            'image' => '',
+                            'user' => ''
+                        ]
+                    ];
+                }
+                //break; // only add one upcoming instance
+               }
+               }
+               }
+               
+               
+               
+               
+               }else{
+               // Handle one-time session
+               $currentTime = time();
+               $startTime = strtotime(date('Y-m-d', $record->startdate) . ' ' . date('H:i', $record->startdate));
+               $endTime = strtotime(date('Y-m-d', $record->finishdate) . ' ' . date('H:i', $record->finishdate));
+               
+               // If session is upcoming or currently ongoing (within 1 hour window)
+               if ($startTime >= $currentTime || ($currentTime >= $startTime && $currentTime <= strtotime('+1 hour', $startTime))) {
+               $dt = new DateTime();
+               $dt->setTimestamp($startTime);
+               
+               $fullDayName = date('l', $startTime);
+               $formattedTime = date('g:i A', $startTime) . ' - ' . date('g:i A', $endTime);
+               
+               $dt = new DateTime();
+                            $dt->setTimestamp($startTime);
+               
+                            $dateLabel = ($dt->format('Y-m-d') === date('Y-m-d')) 
+               ? 'Today' 
+               : $dt->format('F j');
+               
+               $allMeetFuturevideocalling[] = [
+                'timestamp' => $startTime,
                 'class_display' => [
-                    'date'       => $dateLabel,            // "F j"
-                    'day_time'   => $dayTime,                // "Monday at 3:15 PM - 4:15 PM"
+                    'date' => $dateLabel,
+                    'day_time' => $fullDayName . ' at ' . $formattedTime,
+                    'short_text' => [
+                        'title' => 'Quick Talk',
+                        'badge' => 'VI',
+                        'label' => 'Peers',
+                        'color' => 'Blue'
+                    ],
+                    'url' => 'https://courses.latingles.com/local/videocalling',
+                    'type' => 'group',
+                    'image' => '',
+                    'user' => ''
+                ]
+               ];
+               }
+               }
+               
+               }
+               
+               // ✅ Sort all next sessions by timestamp (across all plans)
+               usort($allMeetFuturevideocalling, function ($a, $b) {
+               return $a['timestamp'] <=> $b['timestamp'];
+               });
+               
+               // ✅ Keep only first 10 earliest
+               $allMeetFuturevideocalling = array_slice($allMeetFuturevideocalling, 0, 40);
+               
+               // ✅ Extract only class_display
+               $finalClassDisplays = array_map(function ($entry) {
+               return $entry['class_display'];
+               }, $allMeetFuturevideocalling);
+               
+               
+               
+               //One on One
+               
+               function user_in_cohort(int $userid, int $cohortid): bool {
+               return cohort_is_member($cohortid, $userid); // true/false
+               }
+               
+               // Example:
+               if (user_in_cohort($user->id, 163) && !$isteacher) {
+               // user is a member
+               //echo 'found';
+               
+               // --- begin added code ---
+               $googleMeetActivities = []; // For all activities
+               $schedules = [];            // Only from the first section (kept from your code)
+               $i = 0;
+               $ccid = null;
+               
+               // Get module id for googlemeet once
+               $googlemeetmodid = (int)$DB->get_field('modules', 'id', ['name' => 'googlemeet'], IGNORE_MISSING);
+               if (!$googlemeetmodid) {
+               echo ' (googlemeet module not installed)';
+               } else {
+               // Fetch all sections in the course
+               $sections_one_on_one = $DB->get_records('course_sections', ['course' => 24], 'section ASC');
+               
+               foreach ($sections_one_on_one as $section) {
+                // Fetch only googlemeet modules in this section
+                $modules = $DB->get_records('course_modules',
+                    ['section' => $section->id, 'module' => $googlemeetmodid],
+                    'id ASC',
+                    'id,instance,availability'
+                );
+               
+                if (empty($modules)) {
+                    continue;
+                }
+               
+                foreach ($modules as $module) {
+                    if (empty($module->availability)) {
+                        continue; // no restrictions set
+                    }
+               
+                    $tree = json_decode($module->availability, true);
+                    if (!is_array($tree)) {
+                        continue; // invalid availability JSON
+                    }
+               
+                    // Look for a profile rule where field=email and value == user's email
+                    $match = false;
+                    $targetEmail = mb_strtolower(trim($user->email));
+                    $stack = [$tree];
+               
+                    while (!$match && ($node = array_pop($stack))) {
+                        if (isset($node['type']) && $node['type'] === 'profile') {
+                            $isEmailField = (isset($node['sf']) && $node['sf'] === 'email'); // standard field
+                            if ($isEmailField) {
+                                $val = isset($node['v']) ? mb_strtolower(trim($node['v'])) : null;
+                                if ($val !== null && $val === $targetEmail) {
+                                    $match = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!empty($node['c']) && is_array($node['c'])) {
+                            foreach ($node['c'] as $child) {
+                                if (is_array($child)) {
+                                    $stack[] = $child;
+                                }
+                            }
+                        }
+                    }
+               
+                    if (!$match) {
+                        continue; // this googlemeet does not target this user by email
+                    }
+               
+                    // Collect basic info
+                    $gm = $DB->get_record('googlemeet', ['id' => $module->instance], 'id,name,url', IGNORE_MISSING);
+                    $name = ($gm && !empty($gm->name)) ? $gm->name : 'Google Meet';
+                    $url  = (new moodle_url('/mod/googlemeet/view.php', ['id' => $module->id]))->out(false);
+               
+                    $isStudent = (
+               is_only_student($user->id)
+               );
+               
+                if ($isStudent) {
+                    // e.g. "1:1 Sandra Ayala with Teacher Jessica Smith" -> "Jessica Smith"
+                    if (preg_match('/\bTeacher\b[[:space:]:\-–—]*(.+)\z/ui', $name, $m)) {
+                        $name = trim($m[1]);                 // "Jessica Smith"
+                        // Optional: normalize inner whitespace
+                        $name = preg_replace('/\s+/', ' ', $name);
+               
+                        // $name currently holds either first name OR last name (single token).
+                            global $DB;
+               
+                            $name = trim(preg_replace('/\s+/', ' ', $name)); // normalize spaces
+               
+                            if ($name !== '' && strpos($name, ' ') === false) { // only try if it's a single token
+                                $lc = core_text::strtolower($name);
+               
+                                $sql = "SELECT id, firstname, lastname
+                                        FROM {user}
+                                        WHERE deleted = 0 AND suspended = 0
+                                        AND (LOWER(firstname) = ? OR LOWER(lastname) = ?)";
+                                $matches = $DB->get_records_sql($sql, [$lc, $lc]);
+               
+                                if (count($matches) === 1) {
+                                    $u = reset($matches);
+                                    $name = fullname($u); // e.g., "Jessica Smith"
+                                }
+                                // If 0 or >1 matches, keep original $name unchanged.
+                            }
+                        
+                    }
+                }else {
+               // Extract text after "1:1" and before "with"
+               if (preg_match('/\b1\s*:\s*1\b\s*(.*?)\s+with\b/ui', $name, $m)) {
+               $name = preg_replace('/\s+/', ' ', trim($m[1])); // "Sandra Ayala"
+               
+               // $name currently holds either first name OR last name (single token).
+                            global $DB;
+               
+                            $name = trim(preg_replace('/\s+/', ' ', $name)); // normalize spaces
+               
+                            if ($name !== '' && strpos($name, ' ') === false) { // only try if it's a single token
+                                $lc = core_text::strtolower($name);
+               
+                                $sql = "SELECT id, firstname, lastname
+                                        FROM {user}
+                                        WHERE deleted = 0 AND suspended = 0
+                                        AND (LOWER(firstname) = ? OR LOWER(lastname) = ?)";
+                                $matches = $DB->get_records_sql($sql, [$lc, $lc]);
+               
+                                if (count($matches) === 1) {
+                                    $u = reset($matches);
+                                    $name = fullname($u); // e.g., "Jessica Smith"
+                                }
+                                // If 0 or >1 matches, keep original $name unchanged.
+                            }
+               }
+               }
+               
+               
+               // Build profile image URL from $name by matching firstname OR lastname
+               require_once($CFG->libdir . '/filelib.php'); // for moodle_url & file serving
+               $profile_url = '';
+               
+               $target = trim($name);
+               if ($target !== '') {
+               // Split the display name into tokens ("Jessica Smith" -> ["Jessica","Smith"])
+               $parts = preg_split('/\s+/', $target, -1, PREG_SPLIT_NO_EMPTY);
+               
+               if (!empty($parts)) {
+               // Prepare IN (...) placeholders for a case-insensitive match on firstname/lastname
+               $params = ['deleted' => 0, 'suspended' => 0];
+               $fnph = [];
+               $lnph = [];
+               $i = 0;
+               foreach ($parts as $p) {
+                $p = mb_strtolower($p);
+                $fnph[] = ":fn{$i}";
+                $lnph[] = ":ln{$i}";
+                $params["fn{$i}"] = $p;
+                $params["ln{$i}"] = $p;
+                $i++;
+               }
+               
+               $sql = "
+                SELECT id, firstname, lastname, picture, imagealt
+                  FROM {user}
+                 WHERE deleted = :deleted
+                   AND suspended = :suspended
+                   AND (
+                         LOWER(firstname) IN (" . implode(',', $fnph) . ")
+                      OR LOWER(lastname)  IN (" . implode(',', $lnph) . ")
+                   )
+                 ORDER BY lastaccess DESC, id DESC
+               ";
+               
+               // Get the best candidate (most recently active)
+               $candidates = $DB->get_records_sql($sql, $params, 0, 1);
+               if ($candidates) {
+                $u = reset($candidates);
+                $userpic = new user_picture($u);
+                $userpic->size = 100; // pick your size (0, 35, 100)
+                $profile_url = $userpic->get_url($PAGE)->out(false);
+               }
+               }
+               }
+                    $googleMeetActivities[] = (object)[
+                        'sectionid' => $section->id,
+                        'cmid'      => $module->id,
+                        'name'      => $name,
+                        'url'       => $gm->url,
+                        'profile_url'  => $profile_url, // <-- added
+                    ];
+                }
+               }
+               
+               }
+               // --- end added code ---
+               
+               
+               // Build "future videocalling" cards from Google Meet activities
+               $allMeetFuturevideocallingg = [];
+               
+               foreach ($googleMeetActivities as $act) {
+               // Get the activity instance id from cmid (needed to locate its calendar events)
+               $instanceid = (int)$DB->get_field('course_modules', 'instance', ['id' => $act->cmid], IGNORE_MISSING);
+               if (!$instanceid) {
+               continue;
+               }
+               
+               // Fetch FUTURE calendar events for this activity
+               // Most modules (incl. googlemeet) create calendar events with modulename='googlemeet'
+               $now = time();
+               
+               $events = $DB->get_records_select(
+               'event',
+               "modulename = :mod
+               AND instance = :instance
+               AND visible = 1
+               AND (
+               timestart >= :now1
+               OR (:now2 >= timestart AND :now3 <= (timestart + 3600))
+               )",
+               [
+               'mod' => 'googlemeet',
+               'instance' => $instanceid,
+               'now1' => $now,
+               'now2' => $now,
+               'now3' => $now
+               ],
+               'timestart ASC',
+               'id,name,timestart,timeduration'
+               );
+               
+               
+               // $now = time();
+               //     $events = $DB->get_records_select(
+               //         'event',
+               //         "modulename = :mod AND instance = :instance AND visible = 1 AND timestart >= :now",
+               //         ['mod' => 'googlemeet', 'instance' => $instanceid, 'now' => $now],
+               //         'timestart ASC',
+               //         'id,name,timestart,timeduration'
+               //     );
+               
+               if (empty($events)) {
+               continue; // no upcoming sessions found for this meet
+               }
+               
+               foreach ($events as $ev) {
+               $sessionStart = (int)$ev->timestart;
+               $sessionEnd   = $sessionStart + (int)($ev->timeduration ?? 0);
+               if ($sessionEnd <= $sessionStart) {
+                // Fallback: assume 60 minutes if duration is 0/empty
+                $sessionEnd = $sessionStart + 3600;
+               }
+               
+               // User-timezone friendly formatting
+               $fullDayName    = userdate($sessionStart, '%A');                  // e.g. Monday
+               $displayDate    = userdate($sessionStart, '%B %e');               // e.g. August 23
+               $formattedStart = userdate($sessionStart, '%l:%M %p');            // e.g. 3:15 PM
+               $formattedEnd   = userdate($sessionEnd,   '%l:%M %p');            // e.g. 4:15 PM
+               $formattedTime  = trim($formattedStart) . ' - ' . trim($formattedEnd);
+               
+               
+               $dt = new DateTime();
+                            $dt->setTimestamp($sessionStart);
+               
+                            $dateLabel = ($dt->format('Y-m-d') === date('Y-m-d')) 
+               ? 'Today' 
+               : $dt->format('F j');
+               
+               // Push in your required shape
+               $allMeetFuturevideocallingg[] = [
+                'timestamp' => $sessionStart,
+                'class_display' => [
+                    'date'       => $dateLabel,                                 // "F j"
+                    'day_time'   => $fullDayName . ' at ' . $formattedTime,       // "Monday at 3:15 PM - 4:15 PM"
                     'short_text' => [
                         'title' => '1 on 1',
-                        // use the student's profile (or just email if you prefer)
-                        'badge' => $profile_img_url,              // or $student->email
-                        'label' => fullname($student),        // student name
+                        'badge' => $act->profile_url,
+                        'label' => $act->name,
                         'color' => 'Blue',
                     ],
-                    'url'   => $gm->url,                     // /mod/googlemeet/view.php?id=CMID
+                    'url'   => $act->url,         // e.g. /mod/googlemeet/view.php?id=CMID
                     'type'  => 'group',
                     'image' => '',
-                    'user'  => $student->id,                 // the student for this 1:1
+                    'user'  => '',
                 ],
-                // Optional extras if you want:
-                // 'teacher' => fullname($user),
-                // 'student_email' => $student->email,
-                // 'cmid' => $cm->id,
-            ];
-        }
-    }
-}
-
-// Sort by start time (ascending)
-usort($allMeetFuturevideocallingg, static function($a, $b) {
-    return $a['timestamp'] <=> $b['timestamp'];
-});
-
-// Keep only the first 12
-$allMeetFuturevideocallingg = array_slice($allMeetFuturevideocallingg, 0, 40);
-
-$allMeetFuturevideocallingg = array_values(
-    array_column($allMeetFuturevideocallingg, 'class_display')
-);
-
-
-
-
-        }
-}
-
-// Combine the two arrays
-// $finalCombined = array_merge($finalUpcoming12, $finalClassDisplays, $allMeetFuturevideocallingg);
-// //$finalCombined = array_merge($finalUpcoming12, $finalClassDisplays);
-
-// // Sort by full datetime: date + start time
-// usort($finalCombined, function($a, $b) {
-//     // Extract time portion from 'day_time' (e.g., "Monday at 9:00 AM - 10:00 AM")
-//     preg_match('/at\s+([\d:]+\s[AP]M)/i', $a['day_time'] ?? $a['class_display']['day_time'], $matchA);
-//     preg_match('/at\s+([\d:]+\s[AP]M)/i', $b['day_time'] ?? $b['class_display']['day_time'], $matchB);
-
-//     $timeA = $matchA[1] ?? '12:00 AM';
-//     $timeB = $matchB[1] ?? '12:00 AM';
-
-//     $datetimeA = strtotime($a['date'] . ' ' . $timeA);
-//     $datetimeB = strtotime($b['date'] . ' ' . $timeB);
-
-//     return $datetimeA <=> $datetimeB;
-// });
-
-
-
-// Combine the two arrays
-$finalCombined = array_merge($finalUpcoming12, $finalClassDisplays, $allMeetFuturevideocallingg);
-
-// Sort by full datetime: date + start time, with year rollover if missing.
-// usort($finalCombined, function ($a, $b) {
-//     $now = time();
-
-//     // Pull date from either root or class_display
-//     $dateA = $a['date'] ?? ($a['class_display']['date'] ?? '');
-//     $dateB = $b['date'] ?? ($b['class_display']['date'] ?? '');
-
-//     // Pull the "start" time from day_time-like fields (e.g., "Monday at 9:00 AM - 10:00 AM")
-//     $dayTimeA = $a['day_time'] ?? ($a['class_display']['day_time'] ?? '');
-//     $dayTimeB = $b['day_time'] ?? ($b['class_display']['day_time'] ?? '');
-
-//     // More forgiving time matcher: "9 AM" or "9:00 AM"
-//     $timeA = (preg_match('/\b(\d{1,2}(?::\d{2})?\s*[AP]M)\b/i', $dayTimeA, $mA)) ? strtoupper($mA[1]) : '12:00 AM';
-//     $timeB = (preg_match('/\b(\d{1,2}(?::\d{2})?\s*[AP]M)\b/i', $dayTimeB, $mB)) ? strtoupper($mB[1]) : '12:00 AM';
-
-//     // Build timestamps
-//     $tsA = strtotime(trim("$dateA $timeA"));
-//     $tsB = strtotime(trim("$dateB $timeB"));
-
-//     // If date string has NO 4-digit year and is in the past, push it to next year
-//     $hasYearA = is_string($dateA) && preg_match('/\b\d{4}\b/', $dateA);
-//     $hasYearB = is_string($dateB) && preg_match('/\b\d{4}\b/', $dateB);
-
-//     if ($tsA !== false && !$hasYearA && $tsA < $now) {
-//         $tsA = strtotime('+1 year', $tsA);
-//     }
-//     if ($tsB !== false && !$hasYearB && $tsB < $now) {
-//         $tsB = strtotime('+1 year', $tsB);
-//     }
-
-//     // Push unparseable items to the end
-//     if ($tsA === false) $tsA = PHP_INT_MAX;
-//     if ($tsB === false) $tsB = PHP_INT_MAX;
-
-//     return $tsA <=> $tsB;
-// });
-
-
-// Sort by full datetime: date + start time, with year rollover if missing.
-// Also treat events as "ongoing" if they started within the last 60 minutes.
-usort($finalCombined, function ($a, $b) {
-    $now = time();
-
-    // Pull date from either root or class_display
-    $dateA = $a['date'] ?? ($a['class_display']['date'] ?? '');
-    $dateB = $b['date'] ?? ($b['class_display']['date'] ?? '');
-
-    // Pull "start" time text (e.g., "Monday at 9:00 AM - 10:00 AM")
-    $dayTimeA = $a['day_time'] ?? ($a['class_display']['day_time'] ?? '');
-    $dayTimeB = $b['day_time'] ?? ($b['class_display']['day_time'] ?? '');
-
-    // More forgiving time matcher: "9 AM" or "9:00 AM"
-    $timeA = (preg_match('/\b(\d{1,2}(?::\d{2})?\s*[AP]M)\b/i', $dayTimeA, $mA)) ? strtoupper($mA[1]) : '12:00 AM';
-    $timeB = (preg_match('/\b(\d{1,2}(?::\d{2})?\s*[AP]M)\b/i', $dayTimeB, $mB)) ? strtoupper($mB[1]) : '12:00 AM';
-
-    // Build timestamps
-    $tsA = strtotime(trim("$dateA $timeA"));
-    $tsB = strtotime(trim("$dateB $timeB"));
-
-    // Duration (fallback to 3600s = 1h)
-    $durA = (int)($a['timeduration'] ?? ($a['duration'] ?? ($a['class_display']['timeduration'] ?? 3600)));
-    $durB = (int)($b['timeduration'] ?? ($b['duration'] ?? ($b['class_display']['timeduration'] ?? 3600)));
-    if ($durA <= 0) $durA = 3600;
-    if ($durB <= 0) $durB = 3600;
-
-    // Ongoing if now is between start and start+duration (default 1h)
-    $ongoingA = ($tsA !== false && $now >= $tsA && $now <= $tsA + $durA);
-    $ongoingB = ($tsB !== false && $now >= $tsB && $now <= $tsB + $durB);
-
-    // If date has NO 4-digit year and is in the past, push to next year (but not if ongoing)
-    $hasYearA = is_string($dateA) && preg_match('/\b\d{4}\b/', $dateA);
-    $hasYearB = is_string($dateB) && preg_match('/\b\d{4}\b/', $dateB);
-
-    if ($tsA !== false && !$hasYearA && !$ongoingA && $tsA < $now) {
-        $tsA = strtotime('+1 year', $tsA);
-    }
-    if ($tsB !== false && !$hasYearB && !$ongoingB && $tsB < $now) {
-        $tsB = strtotime('+1 year', $tsB);
-    }
-
-    // Push unparseable items to the end
-    if ($tsA === false) $tsA = PHP_INT_MAX;
-    if ($tsB === false) $tsB = PHP_INT_MAX;
-
-    // Effective sort key: treat ongoing as "now" so they appear near the top
-    $keyA = $ongoingA ? $now : $tsA;
-    $keyB = $ongoingB ? $now : $tsB;
-
-    $cmp = $keyA <=> $keyB;
-    if ($cmp !== 0) return $cmp;
-
-    // Tie-breaker: older start first
-    return $tsA <=> $tsB;
-});
-
-// Keep only first 15 upcoming
-$finalUpcoming12 = array_slice($finalCombined, 0, 41);
-
-// Reset array indexes
-$finalUpcoming12 = array_values($finalUpcoming12);
-
-
-
-
-
-
-                //  if($savedDate === 'today')
-                // {
-                   $todayDate = date('Y-m-d'); // e.g., '2025-07-29'
-                   $unixTimeToday = strtotime("$todayDate $startTimeFormatted"); 
-                    $unixTimeTodayPlus1Hour = $unixTimeToday + 3600;
-
-                    if ($unixTimeTodayPlus1Hour < time()) {
-
-// ──────────────────────────────────────────────────────────────────────────────
-// PRIORITIZE: 1:1 & Group over Videocalling (Quick Talk) for overlapping/same-time
-// Keeps lower-priority sessions (e.g., Videocalling) in the list so they can
-// appear again AFTER the higher-priority session finishes.
-// Priority: 1) 1:1  2) Main Class  3) Practice Class  4) Other non-VC  5) Videocalling
-// ──────────────────────────────────────────────────────────────────────────────
-// if (!empty($finalUpcoming12) && is_array($finalUpcoming12)) {
-
-//     $now = time();
-
-//     $parseWindow = static function(array $entry) {
-//         // Normalize date (e.g., "Today" -> "F j")
-//         $dateStr = trim($entry['date'] ?? '');
-//         if (strcasecmp($dateStr, 'Today') === 0) {
-//             $dateStr = date('F j');
-//         }
-//         $year = date('Y');
-
-//         $dayTime = $entry['day_time'] ?? '';
-//         $start = $end = false;
-
-//         // Try "at 9:00 AM - 10:00 AM"
-//         if (preg_match('/at\s+(\d{1,2}(?::\d{2})?\s*[AP]M)\s*-\s*(\d{1,2}(?::\d{2})?\s*[AP]M)/i', $dayTime, $m)) {
-//             $start = strtotime("$dateStr $year " . strtoupper(trim($m[1])));
-//             $end   = strtotime("$dateStr $year " . strtoupper(trim($m[2])));
-//         } elseif (preg_match('/\b(\d{1,2}(?::\d{2})?\s*[AP]M)\b/i', $dayTime, $m1)) {
-//             // Fallback: one time only → assume 1h duration
-//             $start = strtotime("$dateStr $year " . strtoupper(trim($m1[1])));
-//             $end   = ($start !== false) ? $start + 3600 : false;
-//         }
-
-//         if ($start !== false && ($end === false || $end <= $start)) {
-//             $end = $start + 3600; // default 1h
-//         }
-
-//         // Priority detection
-//         $title = strtolower($entry['short_text']['title'] ?? '');
-//         $url   = strtolower($entry['url'] ?? '');
-
-//         // Highest: 1:1
-//         if (strpos($title, '1 on 1') !== false || strpos($title, '1:1') !== false) {
-//             $prio = 1;
-//         }
-//         // Group classes
-//         elseif (strpos($title, 'main') !== false) {
-//             $prio = 2;
-//         } elseif (strpos($title, 'practice') !== false) {
-//             $prio = 3;
-//         }
-//         // Videocalling (Quick Talk) = lowest
-//         elseif (strpos($title, 'quick talk') !== false || strpos($url, '/local/videocalling') !== false) {
-//             $prio = 5;
-//         }
-//         // Any other non-VC thing goes above VC by default
-//         else {
-//             $prio = 4;
-//         }
-
-//         return [$start, $end, $prio];
-//     };
-
-//     // Build windows
-//     $windows = [];
-//     foreach ($finalUpcoming12 as $i => $entry) {
-//         [$s, $e, $p] = $parseWindow($entry);
-//         $windows[] = ['i' => $i, 'start' => $s, 'end' => $e, 'prio' => $p];
-//     }
-
-//     // 1) If anything is active *now*, pick the highest priority among those
-//     $active = array_values(array_filter($windows, function($w) use ($now) {
-//         return ($w['start'] !== false && $w['end'] !== false && $now >= $w['start'] && $now <= $w['end']);
-//     }));
-
-//     if (!empty($active)) {
-//         usort($active, function($a, $b) {
-//             // lower prio number wins; then earlier start; then stable by index
-//             return ($a['prio'] <=> $b['prio']) ?: ($a['start'] <=> $b['start']) ?: ($a['i'] <=> $b['i']);
-//         });
-//         $keepIndex = $active[0]['i'];
-//     } else {
-//         // 2) Otherwise pick the earliest upcoming; if multiple start at the same time,
-//         //    choose higher priority (non-VC wins over VC).
-//         $upcoming = array_values(array_filter($windows, fn($w) => $w['start'] !== false));
-//         if (!empty($upcoming)) {
-//             usort($upcoming, function($a, $b) {
-//                 return ($a['start'] <=> $b['start']) ?: ($a['prio'] <=> $b['prio']) ?: ($a['i'] <=> $b['i']);
-//             });
-//             $keepIndex = $upcoming[0]['i'];
-//         } else {
-//             $keepIndex = 0; // fallback
-//         }
-//     }
-
-//     // Move the chosen one to the FRONT, do not delete others (so VC can appear later).
-//     if (isset($finalUpcoming12[$keepIndex]) && $keepIndex !== 0) {
-//         $chosen = $finalUpcoming12[$keepIndex];
-//         array_splice($finalUpcoming12, $keepIndex, 1);
-//         array_unshift($finalUpcoming12, $chosen);
-//     }
-// }
-
-
-
-
-if (!empty($finalUpcoming12) && is_array($finalUpcoming12)) {
-
-    $now = time();
-
-    $parseWindow = static function(array $entry) use ($now) {
-        // Normalize date (e.g., "Today" -> "F j")
-        $rawDate = trim($entry['date'] ?? '');
-        $dateStr = $rawDate;
-        if (strcasecmp($dateStr, 'Today') === 0) {
-            $dateStr = date('F j', $now);
-        }
-        $year = date('Y', $now);
-
-        $dayTime = $entry['day_time'] ?? '';
-        $start = $end = false;
-
-        // Try "at 9:00 AM - 10:00 AM"
-        if (preg_match('/at\s+(\d{1,2}(?::\d{2})?\s*[AP]M)\s*-\s*(\d{1,2}(?::\d{2})?\s*[AP]M)/i', $dayTime, $m)) {
-            $start = strtotime("$dateStr $year " . strtoupper(trim($m[1])));
-            $end   = strtotime("$dateStr $year " . strtoupper(trim($m[2])));
-        } elseif (preg_match('/\b(\d{1,2}(?::\d{2})?\s*[AP]M)\b/i', $dayTime, $m1)) {
-            // Fallback: one time only → assume 1h duration
-            $start = strtotime("$dateStr $year " . strtoupper(trim($m1[1])));
-            $end   = ($start !== false) ? $start + 3600 : false;
-        }
-
-        if ($start !== false && ($end === false || $end <= $start)) {
-            $end = $start + 3600; // default 1h
-        }
-
-        // ── Year roll-over: if no explicit year and it's already past, push to next year ──
-        $hasExplicitYear = (bool) preg_match('/\b\d{4}\b/', $rawDate);
-        $isTodayWord     = (strcasecmp($rawDate, 'Today') === 0);
-        if (!$hasExplicitYear && !$isTodayWord && $end !== false && $end < $now) {
-            $start = strtotime('+1 year', $start);
-            $end   = strtotime('+1 year', $end);
-        }
-
-        // Priority detection
-        $title = strtolower($entry['short_text']['title'] ?? '');
-        $url   = strtolower($entry['url'] ?? '');
-        if (strpos($title, '1 on 1') !== false || strpos($title, '1:1') !== false) {
-            $prio = 1;
-        } elseif (strpos($title, 'main') !== false) {
-            $prio = 2;
-        } elseif (strpos($title, 'practice') !== false) {
-            $prio = 3;
-        } elseif (strpos($title, 'quick talk') !== false || strpos($url, '/local/videocalling') !== false) {
-            $prio = 5;
-        } else {
-            $prio = 4;
-        }
-
-        return [$start, $end, $prio];
-    };
-
-    // Build windows
-    $windows = [];
-    foreach ($finalUpcoming12 as $i => $entry) {
-        [$s, $e, $p] = $parseWindow($entry);
-        $windows[] = ['i' => $i, 'start' => $s, 'end' => $e, 'prio' => $p];
-    }
-
-    // 1) If anything is active now, pick the highest priority among those
-    $active = array_values(array_filter($windows, function($w) use ($now) {
-        return ($w['start'] !== false && $w['end'] !== false && $now >= $w['start'] && $now <= $w['end']);
-    }));
-
-    if (!empty($active)) {
-        usort($active, function($a, $b) {
-            return ($a['prio'] <=> $b['prio']) ?: ($a['start'] <=> $b['start']) ?: ($a['i'] <=> $b['i']);
-        });
-        $keepIndex = $active[0]['i'];
-    } else {
-        // 2) Otherwise pick the earliest UPCOMING (future only); tie-break by priority.
-        $upcoming = array_values(array_filter($windows, fn($w) => $w['start'] !== false && $w['start'] >= $now));
-        if (!empty($upcoming)) {
-            usort($upcoming, function($a, $b) {
-                return ($a['start'] <=> $b['start']) ?: ($a['prio'] <=> $b['prio']) ?: ($a['i'] <=> $b['i']);
-            });
-            $keepIndex = $upcoming[0]['i'];
-        } else {
-            $keepIndex = 0; // fallback
-        }
-    }
-
-    // Move chosen one to FRONT; keep others (so VC can appear later)
-    if (isset($finalUpcoming12[$keepIndex]) && $keepIndex !== 0) {
-        $chosen = $finalUpcoming12[$keepIndex];
-        array_splice($finalUpcoming12, $keepIndex, 1);
-        array_unshift($finalUpcoming12, $chosen);
-    }
-}
-// ──────────────────────────────────────────────────────────────────────────────
-
-
-                         $googleMeetURL = $finalUpcoming12[0]['url'];
-
-                         // It's a past time
-                            $savedDate = $finalUpcoming12[0]['date'];
-                            $meetingSchedule = $finalUpcoming12[0]['day_time'];
-                            if(str_contains($finalUpcoming12[0]['short_text']['title'], '1 on 1'))
-                            {
-                                $customTitle = 'Weekly English with '.$finalUpcoming12[0]['short_text']['label'];
-
-                            }else{
-                             $customTitle = $finalUpcoming12[0]['short_text']['title'].' with '.$finalUpcoming12[0]['short_text']['label'];
-                            }
-                            
-
-                            $sessionMessage = 'Your '.$finalUpcoming12[0]['short_text']['title']. ' Starts Soon';
-
-                            
-                            if(empty($finalUpcoming12[0]['short_text']['color']))
-                            {
-                              $cohortcolorx = 'Green';
-                            }else{
-                              $cohortcolorx = $finalUpcoming12[0]['short_text']['color'];
-                            }
-                            $badgeTextx = $finalUpcoming12[0]['short_text']['badge'];
-
-                            // Extract the time part and ensure it only includes the first time (e.g., "8:00 PM")
-                            $meetingScheduleParts = explode(' at ', $meetingSchedule);
-                            if (isset($meetingScheduleParts[1])) {
-                                // Split the second time using the dash and take only the first part
-                                $timePart = explode(' - ', $meetingScheduleParts[1])[0]; 
-                                $meetingSchedule = $meetingScheduleParts[0] . ' at ' . $timePart;
-                           }
-                             // Remove the used first element and shift the array (reindex)
-                        array_shift($finalUpcoming12);
-
-
-                        // Get today's date
-                    $todayDate = date('Y-m-d'); // e.g., '2025-07-31'
-                    // Append current year
-$currentYear = date('Y');
-$dateString = $savedDate . ' ' . $currentYear; // "August 1 2025"
-
-// Convert to Y-m-d format
-$formattedDate = date('Y-m-d', strtotime($dateString));
-
-                    // Convert start time into Unix timestamp for today
-                    $unixStart = strtotime("$formattedDate  $timePart");
-
-                    // Add 1 hour
-                    $unixStartPlus1Hour = $unixStart + 3600;
-
-                    // Get current time
-                    $now = time();
-                    } else {
-                        // It's a future time
-                        // echo "The time (plus 1 hour) is still upcoming.";
-                    }
-                // }
-
-                $currently_running = 0;
-
-                if ($now >= $unixStart && $now <= $unixStartPlus1Hour) {
-                        $currently_running = 1;
-                    }
-
-
-
-
-
-
-                
-                ?>
+               ];
+               
+               // If you only want the *next* upcoming session per activity, uncomment:
+               // break;
+               }
+               }
+               
+               // Optional: sort all cards by soonest first
+               usort($allMeetFuturevideocallingg, function($a, $b) {
+               return $a['timestamp'] <=> $b['timestamp'];
+               });
+               
+               // Keep only the first 12
+               $allMeetFuturevideocallingg = array_slice($allMeetFuturevideocallingg, 0, 40);
+               
+               $allMeetFuturevideocallingg = array_values(
+               array_column($allMeetFuturevideocallingg, 'class_display')
+               );
+               
+               } else {
+               // not a member
+               
+               // Get module id for googlemeet once
+               $googlemeetmodid = (int)$DB->get_field('modules', 'id', ['name' => 'googlemeet'], IGNORE_MISSING);
+               if (!$googlemeetmodid) {
+               echo ' (googlemeet module not installed)';
+               } else {
+               $allMeetFuturevideocallingg = [];
+               // Fetch all sections in the course
+               $sections_one_on_one = $DB->get_records('course_sections', ['course' => 24], 'section ASC');
+               
+               $fname = $user->firstname;
+                $lname = $user->lastname;
+               
+               // Iterate sections that belong to this teacher.
+               foreach ($sections_one_on_one as $section) {
+               if (!section_is_for_teacher($section->name ?? '', $fname, $lname)) {
+               continue;
+               }
+               
+               // Only googlemeet activities in this section
+               $modules = $DB->get_records('course_modules',
+               ['section' => $section->id, 'module' => $googlemeetmodid],
+               'id ASC',
+               'id,instance,availability'
+               );
+               
+               if (!$modules) {
+               continue;
+               }
+               
+               foreach ($modules as $cm) {
+               $student = availability_extract_user($cm->availability ?? '');
+               if (!$student) {
+                // must be restricted to a student email; skip otherwise
+                continue;
+               }
+               
+               $userpic = new user_picture($student);
+               $userpic->size = 100; // 0, 35, or 100 are common sizes
+               $profile_img_url = $userpic->get_url($PAGE)->out(false);
+               
+               
+               
+               // Instance info (meet name)
+               $gm = $DB->get_record('googlemeet', ['id' => $cm->instance], 'id,name,url', IGNORE_MISSING);
+               $meetname = $gm && !empty($gm->name) ? $gm->name : fullname($student);
+               
+               // Future events tied to this activity
+               // $now = time();
+               // $events = $DB->get_records_select(
+               //     'event',
+               //     "modulename = :mod AND instance = :instance AND visible = 1 AND timestart >= :now",
+               //     ['mod' => 'googlemeet', 'instance' => (int)$cm->instance, 'now' => $now],
+               //     'timestart ASC',
+               //     'id,name,timestart,timeduration'
+               // );
+               
+               $now = time();
+               
+               $events = $DB->get_records_select(
+               'event',
+               "modulename = :mod
+               AND instance = :instance
+               AND visible = 1
+               AND (
+               timestart >= :now1
+               OR (:now2 >= timestart AND :now3 <= (timestart + 3600))
+               )",
+               [
+               'mod' => 'googlemeet',
+               'instance' => (int)$cm->instance,
+               'now1' => $now,
+               'now2' => $now,
+               'now3' => $now
+               ],
+               'timestart ASC',
+               'id,name,timestart,timeduration'
+               );
+               
+               
+               if (empty($events)) {
+                continue;
+               }
+               
+               
+               foreach ($events as $ev) {
+                $sessionStart = (int)$ev->timestart;
+                $sessionEnd   = $sessionStart + (int)($ev->timeduration ?? 0);
+                [$displayDate, $dayTime] = format_session_times($sessionStart, $sessionEnd);
+               
+                $dt = new DateTime();
+                            $dt->setTimestamp($sessionStart);
+               
+                            $dateLabel = ($dt->format('Y-m-d') === date('Y-m-d')) 
+               ? 'Today' 
+               : $dt->format('F j');
+               
+                // Push in your required shape
+                $allMeetFuturevideocallingg[] = [
+                    'timestamp'     => $sessionStart,
+                    'class_display' => [
+                        'date'       => $dateLabel,            // "F j"
+                        'day_time'   => $dayTime,                // "Monday at 3:15 PM - 4:15 PM"
+                        'short_text' => [
+                            'title' => '1 on 1',
+                            // use the student's profile (or just email if you prefer)
+                            'badge' => $profile_img_url,              // or $student->email
+                            'label' => fullname($student),        // student name
+                            'color' => 'Blue',
+                        ],
+                        'url'   => $gm->url,                     // /mod/googlemeet/view.php?id=CMID
+                        'type'  => 'group',
+                        'image' => '',
+                        'user'  => $student->id,                 // the student for this 1:1
+                    ],
+                    // Optional extras if you want:
+                    // 'teacher' => fullname($user),
+                    // 'student_email' => $student->email,
+                    // 'cmid' => $cm->id,
+                ];
+               }
+               }
+               }
+               
+               // Sort by start time (ascending)
+               usort($allMeetFuturevideocallingg, static function($a, $b) {
+               return $a['timestamp'] <=> $b['timestamp'];
+               });
+               
+               // Keep only the first 12
+               $allMeetFuturevideocallingg = array_slice($allMeetFuturevideocallingg, 0, 40);
+               
+               $allMeetFuturevideocallingg = array_values(
+               array_column($allMeetFuturevideocallingg, 'class_display')
+               );
+               
+               
+               
+               
+               }
+               }
+               
+               // Combine the two arrays
+               // $finalCombined = array_merge($finalUpcoming12, $finalClassDisplays, $allMeetFuturevideocallingg);
+               // //$finalCombined = array_merge($finalUpcoming12, $finalClassDisplays);
+               
+               // // Sort by full datetime: date + start time
+               // usort($finalCombined, function($a, $b) {
+               //     // Extract time portion from 'day_time' (e.g., "Monday at 9:00 AM - 10:00 AM")
+               //     preg_match('/at\s+([\d:]+\s[AP]M)/i', $a['day_time'] ?? $a['class_display']['day_time'], $matchA);
+               //     preg_match('/at\s+([\d:]+\s[AP]M)/i', $b['day_time'] ?? $b['class_display']['day_time'], $matchB);
+               
+               //     $timeA = $matchA[1] ?? '12:00 AM';
+               //     $timeB = $matchB[1] ?? '12:00 AM';
+               
+               //     $datetimeA = strtotime($a['date'] . ' ' . $timeA);
+               //     $datetimeB = strtotime($b['date'] . ' ' . $timeB);
+               
+               //     return $datetimeA <=> $datetimeB;
+               // });
+               
+               
+               
+               // Combine the two arrays
+               $finalCombined = array_merge($finalUpcoming12, $finalClassDisplays, $allMeetFuturevideocallingg);
+               
+               // Sort by full datetime: date + start time, with year rollover if missing.
+               // usort($finalCombined, function ($a, $b) {
+               //     $now = time();
+               
+               //     // Pull date from either root or class_display
+               //     $dateA = $a['date'] ?? ($a['class_display']['date'] ?? '');
+               //     $dateB = $b['date'] ?? ($b['class_display']['date'] ?? '');
+               
+               //     // Pull the "start" time from day_time-like fields (e.g., "Monday at 9:00 AM - 10:00 AM")
+               //     $dayTimeA = $a['day_time'] ?? ($a['class_display']['day_time'] ?? '');
+               //     $dayTimeB = $b['day_time'] ?? ($b['class_display']['day_time'] ?? '');
+               
+               //     // More forgiving time matcher: "9 AM" or "9:00 AM"
+               //     $timeA = (preg_match('/\b(\d{1,2}(?::\d{2})?\s*[AP]M)\b/i', $dayTimeA, $mA)) ? strtoupper($mA[1]) : '12:00 AM';
+               //     $timeB = (preg_match('/\b(\d{1,2}(?::\d{2})?\s*[AP]M)\b/i', $dayTimeB, $mB)) ? strtoupper($mB[1]) : '12:00 AM';
+               
+               //     // Build timestamps
+               //     $tsA = strtotime(trim("$dateA $timeA"));
+               //     $tsB = strtotime(trim("$dateB $timeB"));
+               
+               //     // If date string has NO 4-digit year and is in the past, push it to next year
+               //     $hasYearA = is_string($dateA) && preg_match('/\b\d{4}\b/', $dateA);
+               //     $hasYearB = is_string($dateB) && preg_match('/\b\d{4}\b/', $dateB);
+               
+               //     if ($tsA !== false && !$hasYearA && $tsA < $now) {
+               //         $tsA = strtotime('+1 year', $tsA);
+               //     }
+               //     if ($tsB !== false && !$hasYearB && $tsB < $now) {
+               //         $tsB = strtotime('+1 year', $tsB);
+               //     }
+               
+               //     // Push unparseable items to the end
+               //     if ($tsA === false) $tsA = PHP_INT_MAX;
+               //     if ($tsB === false) $tsB = PHP_INT_MAX;
+               
+               //     return $tsA <=> $tsB;
+               // });
+               
+               
+               // Sort by full datetime: date + start time, with year rollover if missing.
+               // Also treat events as "ongoing" if they started within the last 60 minutes.
+               usort($finalCombined, function ($a, $b) {
+               $now = time();
+               
+               // Pull date from either root or class_display
+               $dateA = $a['date'] ?? ($a['class_display']['date'] ?? '');
+               $dateB = $b['date'] ?? ($b['class_display']['date'] ?? '');
+               
+               // Pull "start" time text (e.g., "Monday at 9:00 AM - 10:00 AM")
+               $dayTimeA = $a['day_time'] ?? ($a['class_display']['day_time'] ?? '');
+               $dayTimeB = $b['day_time'] ?? ($b['class_display']['day_time'] ?? '');
+               
+               // More forgiving time matcher: "9 AM" or "9:00 AM"
+               $timeA = (preg_match('/\b(\d{1,2}(?::\d{2})?\s*[AP]M)\b/i', $dayTimeA, $mA)) ? strtoupper($mA[1]) : '12:00 AM';
+               $timeB = (preg_match('/\b(\d{1,2}(?::\d{2})?\s*[AP]M)\b/i', $dayTimeB, $mB)) ? strtoupper($mB[1]) : '12:00 AM';
+               
+               // Build timestamps
+               $tsA = strtotime(trim("$dateA $timeA"));
+               $tsB = strtotime(trim("$dateB $timeB"));
+               
+               // Duration (fallback to 3600s = 1h)
+               $durA = (int)($a['timeduration'] ?? ($a['duration'] ?? ($a['class_display']['timeduration'] ?? 3600)));
+               $durB = (int)($b['timeduration'] ?? ($b['duration'] ?? ($b['class_display']['timeduration'] ?? 3600)));
+               if ($durA <= 0) $durA = 3600;
+               if ($durB <= 0) $durB = 3600;
+               
+               // Ongoing if now is between start and start+duration (default 1h)
+               $ongoingA = ($tsA !== false && $now >= $tsA && $now <= $tsA + $durA);
+               $ongoingB = ($tsB !== false && $now >= $tsB && $now <= $tsB + $durB);
+               
+               // If date has NO 4-digit year and is in the past, push to next year (but not if ongoing)
+               $hasYearA = is_string($dateA) && preg_match('/\b\d{4}\b/', $dateA);
+               $hasYearB = is_string($dateB) && preg_match('/\b\d{4}\b/', $dateB);
+               
+               if ($tsA !== false && !$hasYearA && !$ongoingA && $tsA < $now) {
+               $tsA = strtotime('+1 year', $tsA);
+               }
+               if ($tsB !== false && !$hasYearB && !$ongoingB && $tsB < $now) {
+               $tsB = strtotime('+1 year', $tsB);
+               }
+               
+               // Push unparseable items to the end
+               if ($tsA === false) $tsA = PHP_INT_MAX;
+               if ($tsB === false) $tsB = PHP_INT_MAX;
+               
+               // Effective sort key: treat ongoing as "now" so they appear near the top
+               $keyA = $ongoingA ? $now : $tsA;
+               $keyB = $ongoingB ? $now : $tsB;
+               
+               $cmp = $keyA <=> $keyB;
+               if ($cmp !== 0) return $cmp;
+               
+               // Tie-breaker: older start first
+               return $tsA <=> $tsB;
+               });
+               
+               // Keep only first 15 upcoming
+               $finalUpcoming12 = array_slice($finalCombined, 0, 41);
+               
+               // Reset array indexes
+               $finalUpcoming12 = array_values($finalUpcoming12);
+               
+               
+               
+               
+               
+               
+                    //  if($savedDate === 'today')
+                    // {
+                       $todayDate = date('Y-m-d'); // e.g., '2025-07-29'
+                       $unixTimeToday = strtotime("$todayDate $startTimeFormatted"); 
+                        $unixTimeTodayPlus1Hour = $unixTimeToday + 3600;
+               
+                        if ($unixTimeTodayPlus1Hour < time()) {
+               
+               // ──────────────────────────────────────────────────────────────────────────────
+               // PRIORITIZE: 1:1 & Group over Videocalling (Quick Talk) for overlapping/same-time
+               // Keeps lower-priority sessions (e.g., Videocalling) in the list so they can
+               // appear again AFTER the higher-priority session finishes.
+               // Priority: 1) 1:1  2) Main Class  3) Practice Class  4) Other non-VC  5) Videocalling
+               // ──────────────────────────────────────────────────────────────────────────────
+               // if (!empty($finalUpcoming12) && is_array($finalUpcoming12)) {
+               
+               //     $now = time();
+               
+               //     $parseWindow = static function(array $entry) {
+               //         // Normalize date (e.g., "Today" -> "F j")
+               //         $dateStr = trim($entry['date'] ?? '');
+               //         if (strcasecmp($dateStr, 'Today') === 0) {
+               //             $dateStr = date('F j');
+               //         }
+               //         $year = date('Y');
+               
+               //         $dayTime = $entry['day_time'] ?? '';
+               //         $start = $end = false;
+               
+               //         // Try "at 9:00 AM - 10:00 AM"
+               //         if (preg_match('/at\s+(\d{1,2}(?::\d{2})?\s*[AP]M)\s*-\s*(\d{1,2}(?::\d{2})?\s*[AP]M)/i', $dayTime, $m)) {
+               //             $start = strtotime("$dateStr $year " . strtoupper(trim($m[1])));
+               //             $end   = strtotime("$dateStr $year " . strtoupper(trim($m[2])));
+               //         } elseif (preg_match('/\b(\d{1,2}(?::\d{2})?\s*[AP]M)\b/i', $dayTime, $m1)) {
+               //             // Fallback: one time only → assume 1h duration
+               //             $start = strtotime("$dateStr $year " . strtoupper(trim($m1[1])));
+               //             $end   = ($start !== false) ? $start + 3600 : false;
+               //         }
+               
+               //         if ($start !== false && ($end === false || $end <= $start)) {
+               //             $end = $start + 3600; // default 1h
+               //         }
+               
+               //         // Priority detection
+               //         $title = strtolower($entry['short_text']['title'] ?? '');
+               //         $url   = strtolower($entry['url'] ?? '');
+               
+               //         // Highest: 1:1
+               //         if (strpos($title, '1 on 1') !== false || strpos($title, '1:1') !== false) {
+               //             $prio = 1;
+               //         }
+               //         // Group classes
+               //         elseif (strpos($title, 'main') !== false) {
+               //             $prio = 2;
+               //         } elseif (strpos($title, 'practice') !== false) {
+               //             $prio = 3;
+               //         }
+               //         // Videocalling (Quick Talk) = lowest
+               //         elseif (strpos($title, 'quick talk') !== false || strpos($url, '/local/videocalling') !== false) {
+               //             $prio = 5;
+               //         }
+               //         // Any other non-VC thing goes above VC by default
+               //         else {
+               //             $prio = 4;
+               //         }
+               
+               //         return [$start, $end, $prio];
+               //     };
+               
+               //     // Build windows
+               //     $windows = [];
+               //     foreach ($finalUpcoming12 as $i => $entry) {
+               //         [$s, $e, $p] = $parseWindow($entry);
+               //         $windows[] = ['i' => $i, 'start' => $s, 'end' => $e, 'prio' => $p];
+               //     }
+               
+               //     // 1) If anything is active *now*, pick the highest priority among those
+               //     $active = array_values(array_filter($windows, function($w) use ($now) {
+               //         return ($w['start'] !== false && $w['end'] !== false && $now >= $w['start'] && $now <= $w['end']);
+               //     }));
+               
+               //     if (!empty($active)) {
+               //         usort($active, function($a, $b) {
+               //             // lower prio number wins; then earlier start; then stable by index
+               //             return ($a['prio'] <=> $b['prio']) ?: ($a['start'] <=> $b['start']) ?: ($a['i'] <=> $b['i']);
+               //         });
+               //         $keepIndex = $active[0]['i'];
+               //     } else {
+               //         // 2) Otherwise pick the earliest upcoming; if multiple start at the same time,
+               //         //    choose higher priority (non-VC wins over VC).
+               //         $upcoming = array_values(array_filter($windows, fn($w) => $w['start'] !== false));
+               //         if (!empty($upcoming)) {
+               //             usort($upcoming, function($a, $b) {
+               //                 return ($a['start'] <=> $b['start']) ?: ($a['prio'] <=> $b['prio']) ?: ($a['i'] <=> $b['i']);
+               //             });
+               //             $keepIndex = $upcoming[0]['i'];
+               //         } else {
+               //             $keepIndex = 0; // fallback
+               //         }
+               //     }
+               
+               //     // Move the chosen one to the FRONT, do not delete others (so VC can appear later).
+               //     if (isset($finalUpcoming12[$keepIndex]) && $keepIndex !== 0) {
+               //         $chosen = $finalUpcoming12[$keepIndex];
+               //         array_splice($finalUpcoming12, $keepIndex, 1);
+               //         array_unshift($finalUpcoming12, $chosen);
+               //     }
+               // }
+               
+               
+               
+               
+               if (!empty($finalUpcoming12) && is_array($finalUpcoming12)) {
+               
+               $now = time();
+               
+               $parseWindow = static function(array $entry) use ($now) {
+               // Normalize date (e.g., "Today" -> "F j")
+               $rawDate = trim($entry['date'] ?? '');
+               $dateStr = $rawDate;
+               if (strcasecmp($dateStr, 'Today') === 0) {
+                $dateStr = date('F j', $now);
+               }
+               $year = date('Y', $now);
+               
+               $dayTime = $entry['day_time'] ?? '';
+               $start = $end = false;
+               
+               // Try "at 9:00 AM - 10:00 AM"
+               if (preg_match('/at\s+(\d{1,2}(?::\d{2})?\s*[AP]M)\s*-\s*(\d{1,2}(?::\d{2})?\s*[AP]M)/i', $dayTime, $m)) {
+                $start = strtotime("$dateStr $year " . strtoupper(trim($m[1])));
+                $end   = strtotime("$dateStr $year " . strtoupper(trim($m[2])));
+               } elseif (preg_match('/\b(\d{1,2}(?::\d{2})?\s*[AP]M)\b/i', $dayTime, $m1)) {
+                // Fallback: one time only → assume 1h duration
+                $start = strtotime("$dateStr $year " . strtoupper(trim($m1[1])));
+                $end   = ($start !== false) ? $start + 3600 : false;
+               }
+               
+               if ($start !== false && ($end === false || $end <= $start)) {
+                $end = $start + 3600; // default 1h
+               }
+               
+               // ── Year roll-over: if no explicit year and it's already past, push to next year ──
+               $hasExplicitYear = (bool) preg_match('/\b\d{4}\b/', $rawDate);
+               $isTodayWord     = (strcasecmp($rawDate, 'Today') === 0);
+               if (!$hasExplicitYear && !$isTodayWord && $end !== false && $end < $now) {
+                $start = strtotime('+1 year', $start);
+                $end   = strtotime('+1 year', $end);
+               }
+               
+               // Priority detection
+               $title = strtolower($entry['short_text']['title'] ?? '');
+               $url   = strtolower($entry['url'] ?? '');
+               if (strpos($title, '1 on 1') !== false || strpos($title, '1:1') !== false) {
+                $prio = 1;
+               } elseif (strpos($title, 'main') !== false) {
+                $prio = 2;
+               } elseif (strpos($title, 'practice') !== false) {
+                $prio = 3;
+               } elseif (strpos($title, 'quick talk') !== false || strpos($url, '/local/videocalling') !== false) {
+                $prio = 5;
+               } else {
+                $prio = 4;
+               }
+               
+               return [$start, $end, $prio];
+               };
+               
+               // Build windows
+               $windows = [];
+               foreach ($finalUpcoming12 as $i => $entry) {
+               [$s, $e, $p] = $parseWindow($entry);
+               $windows[] = ['i' => $i, 'start' => $s, 'end' => $e, 'prio' => $p];
+               }
+               
+               // 1) If anything is active now, pick the highest priority among those
+               $active = array_values(array_filter($windows, function($w) use ($now) {
+               return ($w['start'] !== false && $w['end'] !== false && $now >= $w['start'] && $now <= $w['end']);
+               }));
+               
+               if (!empty($active)) {
+               usort($active, function($a, $b) {
+                return ($a['prio'] <=> $b['prio']) ?: ($a['start'] <=> $b['start']) ?: ($a['i'] <=> $b['i']);
+               });
+               $keepIndex = $active[0]['i'];
+               } else {
+               // 2) Otherwise pick the earliest UPCOMING (future only); tie-break by priority.
+               $upcoming = array_values(array_filter($windows, fn($w) => $w['start'] !== false && $w['start'] >= $now));
+               if (!empty($upcoming)) {
+                usort($upcoming, function($a, $b) {
+                    return ($a['start'] <=> $b['start']) ?: ($a['prio'] <=> $b['prio']) ?: ($a['i'] <=> $b['i']);
+                });
+                $keepIndex = $upcoming[0]['i'];
+               } else {
+                $keepIndex = 0; // fallback
+               }
+               }
+               
+               // Move chosen one to FRONT; keep others (so VC can appear later)
+               if (isset($finalUpcoming12[$keepIndex]) && $keepIndex !== 0) {
+               $chosen = $finalUpcoming12[$keepIndex];
+               array_splice($finalUpcoming12, $keepIndex, 1);
+               array_unshift($finalUpcoming12, $chosen);
+               }
+               }
+               // ──────────────────────────────────────────────────────────────────────────────
+               
+               
+                             $googleMeetURL = $finalUpcoming12[0]['url'];
+               
+                             // It's a past time
+                                $savedDate = $finalUpcoming12[0]['date'];
+                                $meetingSchedule = $finalUpcoming12[0]['day_time'];
+                                if(str_contains($finalUpcoming12[0]['short_text']['title'], '1 on 1'))
+                                {
+                                    $customTitle = 'Weekly English with '.$finalUpcoming12[0]['short_text']['label'];
+               
+                                }else{
+                                 $customTitle = $finalUpcoming12[0]['short_text']['title'].' with '.$finalUpcoming12[0]['short_text']['label'];
+                                }
+                                
+               
+                                $sessionMessage = 'Your '.$finalUpcoming12[0]['short_text']['title']. ' Starts Soon';
+               
+                                
+                                if(empty($finalUpcoming12[0]['short_text']['color']))
+                                {
+                                  $cohortcolorx = 'Green';
+                                }else{
+                                  $cohortcolorx = $finalUpcoming12[0]['short_text']['color'];
+                                }
+                                $badgeTextx = $finalUpcoming12[0]['short_text']['badge'];
+               
+                                // Extract the time part and ensure it only includes the first time (e.g., "8:00 PM")
+                                $meetingScheduleParts = explode(' at ', $meetingSchedule);
+                                if (isset($meetingScheduleParts[1])) {
+                                    // Split the second time using the dash and take only the first part
+                                    $timePart = explode(' - ', $meetingScheduleParts[1])[0]; 
+                                    $meetingSchedule = $meetingScheduleParts[0] . ' at ' . $timePart;
+                               }
+                                 // Remove the used first element and shift the array (reindex)
+                            array_shift($finalUpcoming12);
+               
+               
+                            // Get today's date
+                        $todayDate = date('Y-m-d'); // e.g., '2025-07-31'
+                        // Append current year
+               $currentYear = date('Y');
+               $dateString = $savedDate . ' ' . $currentYear; // "August 1 2025"
+               
+               // Convert to Y-m-d format
+               $formattedDate = date('Y-m-d', strtotime($dateString));
+               
+                        // Convert start time into Unix timestamp for today
+                        $unixStart = strtotime("$formattedDate  $timePart");
+               
+                        // Add 1 hour
+                        $unixStartPlus1Hour = $unixStart + 3600;
+               
+                        // Get current time
+                        $now = time();
+                        } else {
+                            // It's a future time
+                            // echo "The time (plus 1 hour) is still upcoming.";
+                        }
+                    // }
+               
+                    $currently_running = 0;
+               
+                    if ($now >= $unixStart && $now <= $unixStartPlus1Hour) {
+                            $currently_running = 1;
+                        }
+               
+               
+               
+               
+               
+               
+                    
+                    ?>
                 <div class="rightSide">
                     <div class="row01">
-
                         <div class="row01_01">
                             <h1 class="selectGroup_titleChange" style="margin-right:8px;"><?php echo $sessionMessage?>
                             </h1>
@@ -2243,7 +2234,6 @@ $formattedDate = date('Y-m-d', strtotime($dateString));
                             </svg>
                         </div>
                     </div>
-
                     <div class="row02">
                         <div class="row02_leftSide">
                             <div class="row02_leftSide_01">
@@ -2251,42 +2241,42 @@ $formattedDate = date('Y-m-d', strtotime($dateString));
                                     <?php if (trim($customTitle) === 'Quick Talk with Peers'): ?>
                                     <!-- ✅ Show image from same folder -->
                                     <img src="quicktalk.jpeg" alt="Quick Talk" style="
-                                            width: 100%;
-                                            height: 100%;
-                                            object-fit: cover;
-                                            border-radius: 4px;
-                                        ">
+                              width: 100%;
+                              height: 100%;
+                              object-fit: cover;
+                              border-radius: 4px;
+                              ">
                                     <?php elseif(trim(str_contains($customTitle, 'Weekly English with'))):?>
                                     <img src="<?php echo $badgeTextx ?>" alt="Quick Talk" style="
-                                            width: 100%;
-                                            height: 100%;
-                                            object-fit: cover;
-                                            border-radius: 4px;
-                                        ">
+                              width: 100%;
+                              height: 100%;
+                              object-fit: cover;
+                              border-radius: 4px;
+                              ">
                                     <?php else: ?>
                                     <!-- ✅ Default colored box with badge -->
                                     <div class="selectGroup_changeImage" style="
-                                            width: 100%;
-                                            height: 100%;
-                                            background-color: <?php echo htmlspecialchars($cohortcolorx ?? '#888'); ?>;
-                                            border-radius: 4px;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                        ">
+                              width: 100%;
+                              height: 100%;
+                              background-color: <?php echo htmlspecialchars($cohortcolorx ?? '#888'); ?>;
+                              border-radius: 4px;
+                              display: flex;
+                              align-items: center;
+                              justify-content: center;
+                              ">
                                         <span style="
-                                                display: flex;
-                                                width: 100%;
-                                                height: 100%;
-                                                color: #fff;
-                                                font-weight: bold;
-                                                font-size: 130%;
-                                                line-height: 1;
-                                                text-transform: uppercase;
-                                                text-align: center;
-                                                align-items: center;
-                                                justify-content: center;
-                                            ">
+                                 display: flex;
+                                 width: 100%;
+                                 height: 100%;
+                                 color: #fff;
+                                 font-weight: bold;
+                                 font-size: 130%;
+                                 line-height: 1;
+                                 text-transform: uppercase;
+                                 text-align: center;
+                                 align-items: center;
+                                 justify-content: center;
+                                 ">
                                             <?php echo htmlspecialchars($badgeTextx); ?>
                                         </span>
                                     </div>
@@ -2315,32 +2305,32 @@ $formattedDate = date('Y-m-d', strtotime($dateString));
                                     <?php else: ?>
                                     <?php if ($now < $unixStart): ?>
                                     <?php
-                                            $diff = max(0, $unixStart - $now); // seconds until start
-                                
-                                            if ($diff >= 3600) {
-                                                $h = ceil($diff / 3600);
-                                                $timeLeft = $h . ' hour' . ($h === 1 ? '' : 's');
-                                            } else {
-                                                $m = ceil($diff / 60);
-                                                $timeLeft = $m . ' minute' . ($m === 1 ? '' : 's');
-                                            }
-                                            //$googleMeetURL = 'https://meet.google.com/mnm-txoc-wcd';
-                                        ?>
+                              $diff = max(0, $unixStart - $now); // seconds until start
+                              
+                              if ($diff >= 3600) {
+                                  $h = ceil($diff / 3600);
+                                  $timeLeft = $h . ' hour' . ($h === 1 ? '' : 's');
+                              } else {
+                                  $m = ceil($diff / 60);
+                                  $timeLeft = $m . ' minute' . ($m === 1 ? '' : 's');
+                              }
+                              //$googleMeetURL = 'https://meet.google.com/mnm-txoc-wcd';
+                              ?>
                                     <button class="joinLesson" style="background:#ccc; 
-                                                   color:#666; 
-                                                   cursor:not-allowed; 
-                                                   border:1px solid #555; 
-                                                   border-radius:6px;
-                                                    white-space: nowrap;" disabled>
+                              color:#666; 
+                              cursor:not-allowed; 
+                              border:1px solid #555; 
+                              border-radius:6px;
+                              white-space: nowrap;" disabled>
                                         Join in <?php echo htmlspecialchars($timeLeft, ENT_QUOTES, 'UTF-8'); ?>
                                     </button>
                                     <?php else: ?>
                                     <button class="joinLesson" style="background:#ccc; 
-                                                   color:#666; 
-                                                   cursor:not-allowed; 
-                                                   border:1px solid #555; 
-                                                   border-radius:6px;
-                                                   white-space: nowrap;" disabled>
+                              color:#666; 
+                              cursor:not-allowed; 
+                              border:1px solid #555; 
+                              border-radius:6px;
+                              white-space: nowrap;" disabled>
                                         Meeting ended
                                     </button>
                                     <?php endif; ?>
@@ -2348,11 +2338,7 @@ $formattedDate = date('Y-m-d', strtotime($dateString));
                                 </div>
                             </div>
                         </div>
-
                         <div class="row02_rightSide desktop">
-
-
-
                             <?php if ($currently_running === 1): ?>
                             <button class="joinLesson" style="white-space: nowrap;"
                                 onclick='joinClass(<?php echo json_encode($googleMeetURL, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT); ?>)'>
@@ -2361,134 +2347,124 @@ $formattedDate = date('Y-m-d', strtotime($dateString));
                             <?php else: ?>
                             <?php if ($now < $unixStart): ?>
                             <?php
-            $diff = max(0, $unixStart - $now); // seconds until start
-
-            if ($diff >= 3600) {
-                $h = ceil($diff / 3600);
-                $timeLeft = $h . ' hour' . ($h === 1 ? '' : 's');
-            } else {
-                $m = ceil($diff / 60);
-                $timeLeft = $m . ' minute' . ($m === 1 ? '' : 's');
-            }
-            //$googleMeetURL = 'https://meet.google.com/mnm-txoc-wcd';
-        ?>
+                        $diff = max(0, $unixStart - $now); // seconds until start
+                        
+                        if ($diff >= 3600) {
+                            $h = ceil($diff / 3600);
+                            $timeLeft = $h . ' hour' . ($h === 1 ? '' : 's');
+                        } else {
+                            $m = ceil($diff / 60);
+                            $timeLeft = $m . ' minute' . ($m === 1 ? '' : 's');
+                        }
+                        //$googleMeetURL = 'https://meet.google.com/mnm-txoc-wcd';
+                        ?>
                             <button class="joinLesson" style="background:#ccc; 
-                   color:#666; 
-                   cursor:not-allowed; 
-                   border:1px solid #555; 
-                   border-radius:6px;
-                    white-space: nowrap;" disabled>
+                        color:#666; 
+                        cursor:not-allowed; 
+                        border:1px solid #555; 
+                        border-radius:6px;
+                        white-space: nowrap;" disabled>
                                 Join in <?php echo htmlspecialchars($timeLeft, ENT_QUOTES, 'UTF-8'); ?>
                             </button>
                             <?php else: ?>
                             <button class="joinLesson" style="background:#ccc; 
-                   color:#666; 
-                   cursor:not-allowed; 
-                   border:1px solid #555; 
-                   border-radius:6px;
-                   white-space: nowrap;" disabled>
+                        color:#666; 
+                        cursor:not-allowed; 
+                        border:1px solid #555; 
+                        border-radius:6px;
+                        white-space: nowrap;" disabled>
                                 Meeting ended
                             </button>
                             <?php endif; ?>
                             <?php endif; ?>
-
                         </div>
                     </div>
-
                     <div class="row03">
                         <div class="top">
                             <h5>Up Next</h5>
-
                             <?php if (!empty($finalUpcoming12) && is_array($finalUpcoming12)) : ?>
                             <a href="">See all (<?php echo count($finalUpcoming12); ?>)</a>
                             <?php endif; ?>
                         </div>
-
                         <div class="bottom">
                             <?php
-                       $d = (!empty($finalUpcoming12) && is_array($finalUpcoming12)) ? count($finalUpcoming12) : 0;
-                        if ($d > 1) { // Ensure there are at least 2 elements to run the loop safely
-                        for ($i = 0; $i < $d; $i++) { ?>
+                        $d = (!empty($finalUpcoming12) && is_array($finalUpcoming12)) ? count($finalUpcoming12) : 0;
+                         if ($d > 1) { // Ensure there are at least 2 elements to run the loop safely
+                         for ($i = 0; $i < $d; $i++) { ?>
                             <div class="card">
                                 <div class="content">
                                     <div class="card_leftSide selectGroupBTN">
-
                                         <h1><?php echo $finalUpcoming12[$i]['date']; ?>
-                                            <?php echo $finalUpcoming12[$i]['day_time']; ?></h1>
+                                            <?php echo $finalUpcoming12[$i]['day_time']; ?>
+                                        </h1>
                                         <p style="font-size: 1rem; color: #555; margin: 0;">
-
-
                                         <p style="
-    font-size: 0.85rem;
-    color: #666;
-    margin: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    flex-wrap: wrap;
-">
+                                 font-size: 0.85rem;
+                                 color: #666;
+                                 margin: 0;
+                                 display: inline-flex;
+                                 align-items: center;
+                                 gap: 4px;
+                                 flex-wrap: wrap;
+                                 ">
                                             <span style="display: inline-flex; align-items: center;">
                                                 <?php echo htmlspecialchars($finalUpcoming12[$i]['short_text']['title']); ?>
                                                 with
                                             </span>
-
                                             <span style="
-        display: inline-flex;
-        align-items: center;
-        background-color: #f5f5f5;
-        border-radius: 4px;
-        padding: 4px 6px;
-        height: 28px;
-    ">
+                                    display: inline-flex;
+                                    align-items: center;
+                                    background-color: #f5f5f5;
+                                    border-radius: 4px;
+                                    padding: 4px 6px;
+                                    height: 28px;
+                                    ">
                                                 <?php if (trim($finalUpcoming12[$i]['short_text']['title']) === 'Quick Talk'): ?>
                                                 <!-- ✅ Image instead of badge -->
                                                 <img src="quicktalk.jpeg" alt="Quick Talk" style="
-                width: auto;
-                height: 28px;
-                border-radius: 4px;
-                margin-right: 6px;
-                display: inline-block;
-                object-fit: cover;
-            ">
-
+                                       width: auto;
+                                       height: 28px;
+                                       border-radius: 4px;
+                                       margin-right: 6px;
+                                       display: inline-block;
+                                       object-fit: cover;
+                                       ">
                                                 <?php elseif (
-    !empty($finalUpcoming12[$i]['short_text']['title']) &&
-    str_contains($finalUpcoming12[$i]['short_text']['title'], '1 on 1')
-): ?>
+                                       !empty($finalUpcoming12[$i]['short_text']['title']) &&
+                                       str_contains($finalUpcoming12[$i]['short_text']['title'], '1 on 1')
+                                       ): ?>
                                                 <!-- ✅ Image instead of badge -->
                                                 <img src="<?php echo $finalUpcoming12[$i]['short_text']['badge']; ?>"
                                                     alt="1 on 1" style="
-                width: auto;
-                height: 25px;
-                border-radius: 4px;
-                margin-right: 6px;
-                display: inline-block;
-                object-fit: cover;
-            ">
+                                       width: auto;
+                                       height: 25px;
+                                       border-radius: 4px;
+                                       margin-right: 6px;
+                                       display: inline-block;
+                                       object-fit: cover;
+                                       ">
                                                 <?php else: ?>
                                                 <!-- ✅ Badge -->
                                                 <span style="
-                display: inline-block;
-                background-color: <?php echo htmlspecialchars($finalUpcoming12[$i]['short_text']['color'] ?? '#888'); ?>;
-                color: #fff;
-                font-weight: 600;
-                border-radius: 4px;
-                padding: 2px 6px;
-                font-size: 0.7rem;
-                margin-right: 6px;
-                line-height: 1;
-            ">
+                                       display: inline-block;
+                                       background-color: <?php echo htmlspecialchars($finalUpcoming12[$i]['short_text']['color'] ?? '#888'); ?>;
+                                       color: #fff;
+                                       font-weight: 600;
+                                       border-radius: 4px;
+                                       padding: 2px 6px;
+                                       font-size: 0.7rem;
+                                       margin-right: 6px;
+                                       line-height: 1;
+                                       ">
                                                     <?php echo htmlspecialchars($finalUpcoming12[$i]['short_text']['badge']); ?>
                                                 </span>
                                                 <?php endif; ?>
-
                                                 <span style="font-size: 0.8rem; color: #333;">
                                                     <?php echo htmlspecialchars($finalUpcoming12[$i]['short_text']['label']); ?>
                                                 </span>
                                             </span>
                                         </p>
                                     </div>
-
                                     <div class="threeDots userOptionOpen">
                                         <svg width="18" height="4" viewBox="0 0 18 4" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
@@ -2505,10 +2481,9 @@ $formattedDate = date('Y-m-d', strtotime($dateString));
                         </div>
                     </div>
                 </div>
-
                 <?php
-                // Left COntent
-                ?>
+               // Left COntent
+               ?>
                 <div class="leftSide">
                     <div class="leftside-content">
                         <div class="leftside-content_01">
@@ -2529,7 +2504,6 @@ $formattedDate = date('Y-m-d', strtotime($dateString));
                                     d="M14.1869 0.662109V3.64478H17.19L14.1869 0.662109ZM13.1745 17.2508L15.2508 16.5567L13.8686 15.1745L13.1745 17.2508ZM16.0803 16.1173L21.7601 10.425L20.0003 8.66521L14.3081 14.345L16.0803 16.1173ZM23.7527 8.42779L21.9973 6.67265L20.6353 8.03151L22.3938 9.78979L23.7527 8.42779Z"
                                     fill="black" />
                             </svg>
-
                             <section id="popup-menu-section">
                                 <div class="popup-menu-container">
                                     <ul class="popup-menu-list">
@@ -2539,7 +2513,6 @@ $formattedDate = date('Y-m-d', strtotime($dateString));
                                                 <div class="">
                                                     <img src="../img/subs/report.svg" alt="Feedback icon"
                                                         class="icon-image">
-
                                                 </div>
                                                 <span class="popup-menu-text">Give feedback to Group</span>
                                             </a>
@@ -2569,34 +2542,33 @@ $formattedDate = date('Y-m-d', strtotime($dateString));
                             </section>
                         </div>
                         <?php 
-                // Determine selected cohort: from GET or default to first in list
-                $selectedcohortid = null;
-
-                if (!empty($_GET['cohortid'])) {
-                    $selectedcohortid = (int)$_GET['cohortid'];
-                } elseif (!empty($cohorts)) {
-                    $firstCohort = reset($cohorts);
-                    $selectedcohortid = $firstCohort->id;
-                }
-
-                if ($isteacher): ?>
+                     // Determine selected cohort: from GET or default to first in list
+                     $selectedcohortid = null;
+                     
+                     if (!empty($_GET['cohortid'])) {
+                         $selectedcohortid = (int)$_GET['cohortid'];
+                     } elseif (!empty($cohorts)) {
+                         $firstCohort = reset($cohorts);
+                         $selectedcohortid = $firstCohort->id;
+                     }
+                     
+                     if ($isteacher): ?>
                         <select id="cohortDropdown" style="
-                        padding: 0.5rem 2rem 0.5rem 0.5rem;
-                        font-size: 1rem;
-                        border: none;
-                        outline: none;
-                        background-color: transparent;
-                        appearance: none;
-                        -webkit-appearance: none;
-                        -moz-appearance: none;
-                        cursor: pointer;
-                        background-image: url('data:image/svg+xml;utf8,<svg fill=\'gray\' height=\'16\' viewBox=\'0 0 24 24\' width=\'16\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/></svg>');
-                        background-repeat: no-repeat;
-                        background-position: right 0.5rem center;
-                        background-size: 26px;
-                    ">
+                     padding: 0.5rem 2rem 0.5rem 0.5rem;
+                     font-size: 1rem;
+                     border: none;
+                     outline: none;
+                     background-color: transparent;
+                     appearance: none;
+                     -webkit-appearance: none;
+                     -moz-appearance: none;
+                     cursor: pointer;
+                     background-image: url('data:image/svg+xml;utf8,<svg fill=\'gray\' height=\'16\' viewBox=\'0 0 24 24\' width=\'16\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/></svg>');
+                     background-repeat: no-repeat;
+                     background-position: right 0.5rem center;
+                     background-size: 26px;
+                     ">
                             <?php 
-                       
                         foreach ($cohorts as $cohort): ?>
                             <option value="<?php echo $cohort->id; ?>"
                                 <?php if ($ccid == $cohort->id) echo 'selected'; ?>>
@@ -2604,7 +2576,6 @@ $formattedDate = date('Y-m-d', strtotime($dateString));
                             </option>
                             <?php endforeach; ?>
                         </select>
-
                         <script>
                         document.addEventListener('DOMContentLoaded', () => {
                             const dd = document.getElementById('cohortDropdown');
@@ -2651,9 +2622,9 @@ $formattedDate = date('Y-m-d', strtotime($dateString));
                                                     'div');
                                                 div.className = 'date';
                                                 div.innerHTML = `
-              <div class='day'><h1>${day}</h1></div>
-              <p>${hour}</p>
-            `;
+                     <div class='day'><h1>${day}</h1></div>
+                     <p>${hour}</p>
+                     `;
                                                 scheduleContainer.appendChild(div);
                                             });
                                         } else {
@@ -2725,82 +2696,82 @@ $formattedDate = date('Y-m-d', strtotime($dateString));
                                     const actUrl = soonest && soonest.url ? soonest.url : '#';
 
                                     const cardsHtml = `
-  <a href="${topic_url}" class="card">
-    <p><span class="desktop">Current</span> Topic</p>
-    <h2>
-      <span class="desktop">${escapeHTML(topic)}</span>
-      <span class="mobile">${escapeHTML(topic)}</span>
-    </h2>
-  </a>
-
-  <div id="activities-card" style="cursor:pointer"
-       onclick="redirectToActivities(${respCohortId}, ${courseId})"
-       class="card">
-                        <p>
-                        <span class="">${escapeHTML(dueText)}</span>
-                        <span class="">${escapeHTML(dueText)}</span>
-                        </p>
-                        <h2>
-                        <span
-                            ><span class="">${escapeHTML(actName)}</span>
-                            <span class="">${escapeHTML(actName)}</span></span
-                        >
-                        </h2>
-                    </div>
-
-  <a href="${slides}" class="card">
-                        <p><span class="desktop">See</span> Slides</p>
-                        <svg
-                        width="34"
-                        height="33"
-                        viewBox="0 0 34 33"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        >
-                        <g clip-path="url(#clip0_2444_52879)">
-                            <path
-                            d="M28.661 9.19295V30.5716C28.661 31.72 27.7271 32.6539 26.5787 32.6539H7.33917C6.19073 32.6539 5.25684 31.72 5.25684 30.5716V2.42852C5.25684 1.28009 6.19073 0.346191 7.33917 0.346191H19.8079L28.661 9.19295Z"
-                            fill="#001CB1"
-                            />
-                            <path
-                            d="M21.2656 15.0803H12.7785C11.9897 15.0803 11.3524 15.7176 11.3524 16.5064V24.9935C11.3524 25.7822 11.9897 26.4195 12.7785 26.4195H21.2656C22.0543 26.4195 22.6917 25.7822 22.6917 24.9935V16.5001C22.6917 15.7176 22.0543 15.0803 21.2656 15.0803ZM21.2214 23.8829H12.829V18.1722H21.2214V23.8829Z"
-                            fill="white"
-                            />
-                            <path
-                            d="M21.0132 8.82699L28.6547 15.0172V9.19928L24.3197 6.68787L21.0132 8.82699Z"
-                            fill="black"
-                            fill-opacity="0.0980392"
-                            />
-                            <path
-                            d="M28.6989 9.19298H21.9345C20.7861 9.19298 19.8522 8.25908 19.8522 7.11064V0.346222L28.6989 9.19298Z"
-                            fill="#9E87FA"
-                            />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_2444_52879">
-                            <rect
-                                width="32.3077"
-                                height="32.3077"
-                                fill="white"
-                                transform="translate(0.846191 0.346161)"
-                            />
-                            </clipPath>
-                        </defs>
-                        </svg>
-                    </a>
-
-  <div id="recording-card" style="cursor:pointer"
-       onclick="redirectToRecordings(${respCohortId}, ${courseId})"
-       class="card">
-    <p><span class="desktop">Previous</span> Recording</p>
-    <svg width="32" height="19" viewBox="0 0 32 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M18.1007 0.0995483H3.50109C1.57549 0.0995483 0 1.67504 0 3.60064V15.3993C0 17.3249 1.57549 18.9004 3.50109 18.9004H18.1007C20.0263 18.9004 21.6017 17.3249 21.6017 15.3993V3.60064C21.6017 1.64003 20.0263 0.0995483 18.1007 0.0995483ZM29.4092 2.02515C29.1991 2.06016 28.9891 2.16519 28.814 2.27023L23.3523 5.42121V13.5437L28.849 16.6947C29.8643 17.2899 31.1247 16.9398 31.7199 15.9245C31.895 15.6094 32 15.2593 32 14.8742V4.05578C32 2.76038 30.7746 1.71005 29.4092 2.02515Z"
-        fill="#001CB1"/>
-    </svg>
-  </div>
-  
-`;
+                     <a href="${topic_url}" class="card">
+                     <p><span class="desktop">Current</span> Topic</p>
+                     <h2>
+                     <span class="desktop">${escapeHTML(topic)}</span>
+                     <span class="mobile">${escapeHTML(topic)}</span>
+                     </h2>
+                     </a>
+                     
+                     <div id="activities-card" style="cursor:pointer"
+                     onclick="redirectToActivities(${respCohortId}, ${courseId})"
+                     class="card">
+                     <p>
+                     <span class="">${escapeHTML(dueText)}</span>
+                     <span class="">${escapeHTML(dueText)}</span>
+                     </p>
+                     <h2>
+                     <span
+                         ><span class="">${escapeHTML(actName)}</span>
+                         <span class="">${escapeHTML(actName)}</span></span
+                     >
+                     </h2>
+                     </div>
+                     
+                     <a href="${slides}" class="card">
+                     <p><span class="desktop">See</span> Slides</p>
+                     <svg
+                     width="34"
+                     height="33"
+                     viewBox="0 0 34 33"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg"
+                     >
+                     <g clip-path="url(#clip0_2444_52879)">
+                         <path
+                         d="M28.661 9.19295V30.5716C28.661 31.72 27.7271 32.6539 26.5787 32.6539H7.33917C6.19073 32.6539 5.25684 31.72 5.25684 30.5716V2.42852C5.25684 1.28009 6.19073 0.346191 7.33917 0.346191H19.8079L28.661 9.19295Z"
+                         fill="#001CB1"
+                         />
+                         <path
+                         d="M21.2656 15.0803H12.7785C11.9897 15.0803 11.3524 15.7176 11.3524 16.5064V24.9935C11.3524 25.7822 11.9897 26.4195 12.7785 26.4195H21.2656C22.0543 26.4195 22.6917 25.7822 22.6917 24.9935V16.5001C22.6917 15.7176 22.0543 15.0803 21.2656 15.0803ZM21.2214 23.8829H12.829V18.1722H21.2214V23.8829Z"
+                         fill="white"
+                         />
+                         <path
+                         d="M21.0132 8.82699L28.6547 15.0172V9.19928L24.3197 6.68787L21.0132 8.82699Z"
+                         fill="black"
+                         fill-opacity="0.0980392"
+                         />
+                         <path
+                         d="M28.6989 9.19298H21.9345C20.7861 9.19298 19.8522 8.25908 19.8522 7.11064V0.346222L28.6989 9.19298Z"
+                         fill="#9E87FA"
+                         />
+                     </g>
+                     <defs>
+                         <clipPath id="clip0_2444_52879">
+                         <rect
+                             width="32.3077"
+                             height="32.3077"
+                             fill="white"
+                             transform="translate(0.846191 0.346161)"
+                         />
+                         </clipPath>
+                     </defs>
+                     </svg>
+                     </a>
+                     
+                     <div id="recording-card" style="cursor:pointer"
+                     onclick="redirectToRecordings(${respCohortId}, ${courseId})"
+                     class="card">
+                     <p><span class="desktop">Previous</span> Recording</p>
+                     <svg width="32" height="19" viewBox="0 0 32 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <path
+                     d="M18.1007 0.0995483H3.50109C1.57549 0.0995483 0 1.67504 0 3.60064V15.3993C0 17.3249 1.57549 18.9004 3.50109 18.9004H18.1007C20.0263 18.9004 21.6017 17.3249 21.6017 15.3993V3.60064C21.6017 1.64003 20.0263 0.0995483 18.1007 0.0995483ZM29.4092 2.02515C29.1991 2.06016 28.9891 2.16519 28.814 2.27023L23.3523 5.42121V13.5437L28.849 16.6947C29.8643 17.2899 31.1247 16.9398 31.7199 15.9245C31.895 15.6094 32 15.2593 32 14.8742V4.05578C32 2.76038 30.7746 1.71005 29.4092 2.02515Z"
+                     fill="#001CB1"/>
+                     </svg>
+                     </div>
+                     
+                     `;
 
                                     document.getElementById('cards').innerHTML = cardsHtml;
 
@@ -2824,662 +2795,655 @@ $formattedDate = date('Y-m-d', strtotime($dateString));
                                 .replace(/'/g, '&#39;');
                         }
                         </script>
-
                         <?php endif; ?>
                     </div>
-
                     <?php if ($isteacher) { ?>
                     <div class="cards" id="cards">
                     </div>
                     <?php } ?>
-
                     <?php if (!$isteacher) { 
-                
-                global $DB;
-
-                    $sql = "
-                        SELECT
-                            tcd.id,
-                            tcd.courseid,
-                            tcd.sectionid,
-                            tcd.cohortid,
-                            tcd.status,
-                            tcd.percentage,
-                            tcd.timecreated,
-                            tcd.timemodified,
-                            cs.name    AS rawsectionname,
-                            cs.section AS sectionnum,
-                            CASE
-                                WHEN tcd.timemodified IS NOT NULL AND tcd.timemodified > 0
-                                    THEN tcd.timemodified
-                                ELSE tcd.timecreated
-                            END AS lastts
-                        FROM {cohorts_topics_completion_data} tcd
-                        LEFT JOIN {course_sections} cs ON cs.id = tcd.sectionid
-                        WHERE tcd.cohortid = :cohortid
-                        AND tcd.percentage < 100
-                        ORDER BY lastts DESC, tcd.id DESC
-                    ";
-                    $params = ['cohortid' => (int)$cohortid];
-
-                    // Limit to 1 most recent record
-                    $rows = $DB->get_records_sql($sql, $params, 0, 1);
-                    $rec  = $rows ? reset($rows) : null;
-                    
-                    
-
-                    if (!$rec) {
-                        
-    // 1) First course where this cohort is enrolled via cohort enrol plugin
-$now = time();
-
-$sql = "
-    SELECT DISTINCT c.id, c.fullname, c.shortname
-      FROM {enrol} e
-      JOIN {course} c ON c.id = e.courseid
-     WHERE e.enrol = :enrol
-       AND e.customint1 = :cohortid
-       AND e.status = :enabled
-       AND EXISTS (
-             SELECT 1 FROM {user_enrolments} ue
-              WHERE ue.enrolid = e.id
-                AND ue.status = :active
-       )
-  ORDER BY c.sortorder, c.id
-";
-
-$params = [
-    'enrol'     => 'cohort',
-    'cohortid'  => $cohortid,
-    'enabled'   => 0, // enrol instance enabled
-    'active'    => 0  // user enrolment active
-];
-
-$first = $DB->get_records_sql($sql, $params, 0, 1);
-
-$firstcourse = $first ? reset($first) : null;
-
-    if ($firstcourse) {
-        // Optional: ensure the course uses Multitopic
-        $format = $DB->get_field('course', 'format', ['id' => $firstcourse->id]);
-        if ($format !== 'multitopic') {
-            $course_sections[$firstcourse->id] = ['course' => $firstcourse, 'sections' => []];
-        }
-
-         // Cross-DB safe cast for format option "level"
-    $castlevel = $DB->sql_cast_char2int('fo.value');
-
-        // Main topics = level 0 (skip section 0 = General)
-        $sqll = "
-            SELECT cs.id, cs.name, cs.section, cs.sequence, cs.visible
-            FROM {course_sections} cs
-            LEFT JOIN {course_format_options} fo
-                   ON fo.sectionid = cs.id
-                  AND fo.format    = 'multitopic'
-                  AND fo.name      = 'level'
-            WHERE cs.course = :courseid
-              AND COALESCE($castlevel, 0) = 0
-              AND cs.visible = 1
-            ORDER BY cs.section
-        ";
-
-        $sections = array_values($DB->get_records_sql($sqll, ['courseid' => $firstcourse->id]));
-
-        // Store per course
-        $course_sections[$firstcourse->id] = [
-            'course'   => $firstcourse,
-            'sections' => $sections
-        ];
-
-
-        if ($sections) {
-            // Compute display name (respect course format if raw name empty)
-            $sectionname = trim((string)($sections[0]->name ?? ''));
-            if ($sectionname === '') {
-                $course      = $DB->get_record('course', ['id' => $firstcourse->id], '*', MUST_EXIST);
-                $modinfo     = get_fast_modinfo($course);
-                $sectioninfo = $modinfo->get_section_info($section->section); // by section number
-                $sectionname = get_section_name($course, $sectioninfo);
-            }
-
-            // Return a "record" shaped like the normal payload so your JS keeps working
-            $fallback = [
-                'id'           => null,
-                'courseid'     => (int)$firstcourse->id,
-                'sectionname'  => (string)$sectionname,
-                'cohortid'     => (int)$cohortid,
-                'status'       => '',
-                'percentage'   => 0,
-                'timecreated'  => 0,
-                'timemodified' => 0,
-                'lastts'       => 0,
-            ];
-
-
-                // --------- Build cross-DB-safe casts ---------
-                $castChild  = $DB->sql_cast_char2int('childfo.value');
-                $castParent = $DB->sql_cast_char2int('parentfo.value');
-                $castNext   = $DB->sql_cast_char2int('nextfo.value');
-
-                // --------- Depth operator ---------
-                $depthop = $immediateOnly
-                    ? "= COALESCE($castParent, 0) + 1"
-                    : "> COALESCE($castParent, 0)";
-
-                // --------- Fetch subsections under the given parent section ---------
-                $sqlSubsections = "
-                    SELECT
-                        childcs.*,
-                        COALESCE($castChild, 0) AS level
-                    FROM {course_sections} parentcs
-                    LEFT JOIN {course_format_options} parentfo
-                        ON parentfo.sectionid = parentcs.id
-                        AND parentfo.format    = 'multitopic'
-                        AND parentfo.name      = 'level'
-                    JOIN {course_sections} childcs
-                    ON childcs.course = parentcs.course
-                    LEFT JOIN {course_format_options} childfo
-                        ON childfo.sectionid = childcs.id
-                        AND childfo.format    = 'multitopic'
-                        AND childfo.name      = 'level'
-                    WHERE parentcs.course = :courseid
-                    AND parentcs.id     = :parentsectionid
-                    -- only sections after the parent and before the next top-level (level=0) section
-                    AND childcs.section > parentcs.section
-                    AND childcs.section < COALESCE((
-                            SELECT MIN(nextcs.section)
-                            FROM {course_sections} nextcs
-                            LEFT JOIN {course_format_options} nextfo
-                                ON nextfo.sectionid = nextcs.id
-                                AND nextfo.format    = 'multitopic'
-                                AND nextfo.name      = 'level'
-                            WHERE nextcs.course = parentcs.course
-                            AND nextcs.section > parentcs.section
-                            AND COALESCE($castNext, 0) = 0
-                        ), 1000000000)
-                    -- depth filter
-                    AND COALESCE($castChild, 0) $depthop
-                    ORDER BY childcs.section
-                ";
-
-                $params = [
-                    'courseid'        => $firstcourse->id,
-                    'parentsectionid' => $sections[0]->id,
-                ];
-
-                $subsections = array_values($DB->get_records_sql($sqlSubsections, $params));
-
-                // --------- For each subsection, fetch modules ---------
-                //foreach ($subsections as &$subsection) {
+                  global $DB;
                   
-                    $sqlModules = "
-                        SELECT cm.id,
-                            CASE
-                                WHEN m.name = 'page'  THEN (SELECT name FROM {page}  WHERE id = cm.instance)
-                                -- Add more modules as needed:
-                                -- WHEN m.name = 'page'  THEN (SELECT name FROM {page}   WHERE id = cm.instance)
-                                -- WHEN m.name = 'url'   THEN (SELECT name FROM {url}    WHERE id = cm.instance)
-                                ELSE 'Unknown Activity'
-                            END AS module_name,
-                            cm.instance
-                        FROM {course_modules} cm
-                        JOIN {modules} m ON cm.module = m.id
-                        WHERE cm.section = :sectionid
-                        AND cm.deletioninprogress = 0
-                    ";
-                    $modules = $DB->get_records_sql($sqlModules, ['sectionid' => $subsections[0]->id]);
-
-                    $slides_url = null;
-                    foreach ($modules as $rec) {
-                       
-                            $slides_url = (new moodle_url('/mod/page/view.php', ['id' => $rec->id]))->out(false);
-                            break;
-                        
-                    }
-
-                    $topic_url = (new moodle_url('/course/view.php', ['id' => (int)$firstcourse->id]))->out(false);
-
-                //}
-            
-        }
-    }
-
-}else{
-    
-    $idd = $rec->courseid;
-    
-    // Compute a display name if the raw section name is empty.
-$sectionname = trim((string)($rec->rawsectionname ?? ''));
-if ($sectionname === '') {
-    // Use Moodle’s section naming (e.g., “Topic 1”, “Week 2”, or format-specific)
-    $course = $DB->get_record('course', ['id' => $rec->courseid], '*', MUST_EXIST);
-    $modinfo = get_fast_modinfo($course);
-    $sectioninfo = $modinfo->get_section_info_by_id($rec->sectionid); // by sectionid
-    $sectionname = get_section_name($course, $sectioninfo);
-}
-
-// Build response (replace sectionid with sectionname)
-$record = [
-    'id'           => (int)$rec->id,
-    'courseid'     => (int)$rec->courseid,
-    'sectionid'     => (int)$rec->sectionid,
-    'sectionname'  => (string)$sectionname,   // ← requested field
-    'cohortid'     => (int)$rec->cohortid,
-    'status'       => (string)$rec->status,
-    'percentage'   => (int)$rec->percentage,
-    'timecreated'  => (int)$rec->timecreated,
-    'timemodified' => (int)$rec->timemodified,
-    'lastts'       => (int)$rec->lastts,
-];
-
-
-
-
-                // --------- Build cross-DB-safe casts ---------
-                $castChild  = $DB->sql_cast_char2int('childfo.value');
-                $castParent = $DB->sql_cast_char2int('parentfo.value');
-                $castNext   = $DB->sql_cast_char2int('nextfo.value');
-
-                // --------- Depth operator ---------
-                $depthop = $immediateOnly
-                    ? "= COALESCE($castParent, 0) + 1"
-                    : "> COALESCE($castParent, 0)";
-
-                // --------- Fetch subsections under the given parent section ---------
-                $sqlSubsections = "
-                    SELECT
-                        childcs.*,
-                        COALESCE($castChild, 0) AS level
-                    FROM {course_sections} parentcs
-                    LEFT JOIN {course_format_options} parentfo
-                        ON parentfo.sectionid = parentcs.id
-                        AND parentfo.format    = 'multitopic'
-                        AND parentfo.name      = 'level'
-                    JOIN {course_sections} childcs
-                    ON childcs.course = parentcs.course
-                    LEFT JOIN {course_format_options} childfo
-                        ON childfo.sectionid = childcs.id
-                        AND childfo.format    = 'multitopic'
-                        AND childfo.name      = 'level'
-                    WHERE parentcs.course = :courseid
-                    AND parentcs.id     = :parentsectionid
-                    -- only sections after the parent and before the next top-level (level=0) section
-                    AND childcs.section > parentcs.section
-                    AND childcs.section < COALESCE((
-                            SELECT MIN(nextcs.section)
-                            FROM {course_sections} nextcs
-                            LEFT JOIN {course_format_options} nextfo
-                                ON nextfo.sectionid = nextcs.id
-                                AND nextfo.format    = 'multitopic'
-                                AND nextfo.name      = 'level'
-                            WHERE nextcs.course = parentcs.course
-                            AND nextcs.section > parentcs.section
-                            AND COALESCE($castNext, 0) = 0
-                        ), 1000000000)
-                    -- depth filter
-                    AND COALESCE($castChild, 0) $depthop
-                    ORDER BY childcs.section
-                ";
-
-                $params = [
-                    'courseid'        => $rec->courseid,
-                    'parentsectionid' => $rec->sectionid,
-                ];
-
-                $subsections = array_values($DB->get_records_sql($sqlSubsections, $params));
-
-                // --------- For each subsection, fetch modules ---------
-                //foreach ($subsections as &$subsection) {
+                      $sql = "
+                          SELECT
+                              tcd.id,
+                              tcd.courseid,
+                              tcd.sectionid,
+                              tcd.cohortid,
+                              tcd.status,
+                              tcd.percentage,
+                              tcd.timecreated,
+                              tcd.timemodified,
+                              cs.name    AS rawsectionname,
+                              cs.section AS sectionnum,
+                              CASE
+                                  WHEN tcd.timemodified IS NOT NULL AND tcd.timemodified > 0
+                                      THEN tcd.timemodified
+                                  ELSE tcd.timecreated
+                              END AS lastts
+                          FROM {cohorts_topics_completion_data} tcd
+                          LEFT JOIN {course_sections} cs ON cs.id = tcd.sectionid
+                          WHERE tcd.cohortid = :cohortid
+                          AND tcd.percentage < 100
+                          ORDER BY lastts DESC, tcd.id DESC
+                      ";
+                      $params = ['cohortid' => (int)$cohortid];
                   
-                    $sqlModules = "
-                        SELECT cm.id,
-                            CASE
-                                WHEN m.name = 'page'  THEN (SELECT name FROM {page}  WHERE id = cm.instance)
-                                -- Add more modules as needed:
-                                -- WHEN m.name = 'page'  THEN (SELECT name FROM {page}   WHERE id = cm.instance)
-                                -- WHEN m.name = 'url'   THEN (SELECT name FROM {url}    WHERE id = cm.instance)
-                                ELSE 'Unknown Activity'
-                            END AS module_name,
-                            cm.instance
-                        FROM {course_modules} cm
-                        JOIN {modules} m ON cm.module = m.id
-                        WHERE cm.section = :sectionid
-                        AND cm.deletioninprogress = 0
-                    ";
-                    $modules = $DB->get_records_sql($sqlModules, ['sectionid' => $subsections[0]->id]);
-
-                    $slides_url = null;
-                    foreach ($modules as $rec) {
+                      // Limit to 1 most recent record
+                      $rows = $DB->get_records_sql($sql, $params, 0, 1);
+                      $rec  = $rows ? reset($rows) : null;
+                      
+                      
+                  
+                      if (!$rec) {
+                          
+                  // 1) First course where this cohort is enrolled via cohort enrol plugin
+                  $now = time();
+                  
+                  $sql = "
+                  SELECT DISTINCT c.id, c.fullname, c.shortname
+                  FROM {enrol} e
+                  JOIN {course} c ON c.id = e.courseid
+                  WHERE e.enrol = :enrol
+                  AND e.customint1 = :cohortid
+                  AND e.status = :enabled
+                  AND EXISTS (
+                  SELECT 1 FROM {user_enrolments} ue
+                  WHERE ue.enrolid = e.id
+                  AND ue.status = :active
+                  )
+                  ORDER BY c.sortorder, c.id
+                  ";
+                  
+                  $params = [
+                  'enrol'     => 'cohort',
+                  'cohortid'  => $cohortid,
+                  'enabled'   => 0, // enrol instance enabled
+                  'active'    => 0  // user enrolment active
+                  ];
+                  
+                  $first = $DB->get_records_sql($sql, $params, 0, 1);
+                  
+                  $firstcourse = $first ? reset($first) : null;
+                  
+                  if ($firstcourse) {
+                  // Optional: ensure the course uses Multitopic
+                  $format = $DB->get_field('course', 'format', ['id' => $firstcourse->id]);
+                  if ($format !== 'multitopic') {
+                  $course_sections[$firstcourse->id] = ['course' => $firstcourse, 'sections' => []];
+                  }
+                  
+                  // Cross-DB safe cast for format option "level"
+                  $castlevel = $DB->sql_cast_char2int('fo.value');
+                  
+                  // Main topics = level 0 (skip section 0 = General)
+                  $sqll = "
+                  SELECT cs.id, cs.name, cs.section, cs.sequence, cs.visible
+                  FROM {course_sections} cs
+                  LEFT JOIN {course_format_options} fo
+                     ON fo.sectionid = cs.id
+                    AND fo.format    = 'multitopic'
+                    AND fo.name      = 'level'
+                  WHERE cs.course = :courseid
+                  AND COALESCE($castlevel, 0) = 0
+                  AND cs.visible = 1
+                  ORDER BY cs.section
+                  ";
+                  
+                  $sections = array_values($DB->get_records_sql($sqll, ['courseid' => $firstcourse->id]));
+                  
+                  // Store per course
+                  $course_sections[$firstcourse->id] = [
+                  'course'   => $firstcourse,
+                  'sections' => $sections
+                  ];
+                  
+                  
+                  if ($sections) {
+                  // Compute display name (respect course format if raw name empty)
+                  $sectionname = trim((string)($sections[0]->name ?? ''));
+                  if ($sectionname === '') {
+                  $course      = $DB->get_record('course', ['id' => $firstcourse->id], '*', MUST_EXIST);
+                  $modinfo     = get_fast_modinfo($course);
+                  $sectioninfo = $modinfo->get_section_info($section->section); // by section number
+                  $sectionname = get_section_name($course, $sectioninfo);
+                  }
+                  
+                  // Return a "record" shaped like the normal payload so your JS keeps working
+                  $fallback = [
+                  'id'           => null,
+                  'courseid'     => (int)$firstcourse->id,
+                  'sectionname'  => (string)$sectionname,
+                  'cohortid'     => (int)$cohortid,
+                  'status'       => '',
+                  'percentage'   => 0,
+                  'timecreated'  => 0,
+                  'timemodified' => 0,
+                  'lastts'       => 0,
+                  ];
+                  
+                  
+                  // --------- Build cross-DB-safe casts ---------
+                  $castChild  = $DB->sql_cast_char2int('childfo.value');
+                  $castParent = $DB->sql_cast_char2int('parentfo.value');
+                  $castNext   = $DB->sql_cast_char2int('nextfo.value');
+                  
+                  // --------- Depth operator ---------
+                  $depthop = $immediateOnly
+                      ? "= COALESCE($castParent, 0) + 1"
+                      : "> COALESCE($castParent, 0)";
+                  
+                  // --------- Fetch subsections under the given parent section ---------
+                  $sqlSubsections = "
+                      SELECT
+                          childcs.*,
+                          COALESCE($castChild, 0) AS level
+                      FROM {course_sections} parentcs
+                      LEFT JOIN {course_format_options} parentfo
+                          ON parentfo.sectionid = parentcs.id
+                          AND parentfo.format    = 'multitopic'
+                          AND parentfo.name      = 'level'
+                      JOIN {course_sections} childcs
+                      ON childcs.course = parentcs.course
+                      LEFT JOIN {course_format_options} childfo
+                          ON childfo.sectionid = childcs.id
+                          AND childfo.format    = 'multitopic'
+                          AND childfo.name      = 'level'
+                      WHERE parentcs.course = :courseid
+                      AND parentcs.id     = :parentsectionid
+                      -- only sections after the parent and before the next top-level (level=0) section
+                      AND childcs.section > parentcs.section
+                      AND childcs.section < COALESCE((
+                              SELECT MIN(nextcs.section)
+                              FROM {course_sections} nextcs
+                              LEFT JOIN {course_format_options} nextfo
+                                  ON nextfo.sectionid = nextcs.id
+                                  AND nextfo.format    = 'multitopic'
+                                  AND nextfo.name      = 'level'
+                              WHERE nextcs.course = parentcs.course
+                              AND nextcs.section > parentcs.section
+                              AND COALESCE($castNext, 0) = 0
+                          ), 1000000000)
+                      -- depth filter
+                      AND COALESCE($castChild, 0) $depthop
+                      ORDER BY childcs.section
+                  ";
+                  
+                  $params = [
+                      'courseid'        => $firstcourse->id,
+                      'parentsectionid' => $sections[0]->id,
+                  ];
+                  
+                  $subsections = array_values($DB->get_records_sql($sqlSubsections, $params));
+                  
+                  // --------- For each subsection, fetch modules ---------
+                  //foreach ($subsections as &$subsection) {
                     
-                            $slides_url = (new moodle_url('/mod/page/view.php', ['id' => $rec->id]))->out(false);
-                            break;
-                        
-                    }
+                      $sqlModules = "
+                          SELECT cm.id,
+                              CASE
+                                  WHEN m.name = 'page'  THEN (SELECT name FROM {page}  WHERE id = cm.instance)
+                                  -- Add more modules as needed:
+                                  -- WHEN m.name = 'page'  THEN (SELECT name FROM {page}   WHERE id = cm.instance)
+                                  -- WHEN m.name = 'url'   THEN (SELECT name FROM {url}    WHERE id = cm.instance)
+                                  ELSE 'Unknown Activity'
+                              END AS module_name,
+                              cm.instance
+                          FROM {course_modules} cm
+                          JOIN {modules} m ON cm.module = m.id
+                          WHERE cm.section = :sectionid
+                          AND cm.deletioninprogress = 0
+                      ";
+                      $modules = $DB->get_records_sql($sqlModules, ['sectionid' => $subsections[0]->id]);
+                  
+                      $slides_url = null;
+                      foreach ($modules as $rec) {
+                         
+                              $slides_url = (new moodle_url('/mod/page/view.php', ['id' => $rec->id]))->out(false);
+                              break;
+                          
+                      }
+                  
+                      $topic_url = (new moodle_url('/course/view.php', ['id' => (int)$firstcourse->id]))->out(false);
+                  
+                  //}
+                  
+                  }
+                  }
+                  
+                  }else{
+                  
+                  $idd = $rec->courseid;
+                  
+                  // Compute a display name if the raw section name is empty.
+                  $sectionname = trim((string)($rec->rawsectionname ?? ''));
+                  if ($sectionname === '') {
+                  // Use Moodle’s section naming (e.g., “Topic 1”, “Week 2”, or format-specific)
+                  $course = $DB->get_record('course', ['id' => $rec->courseid], '*', MUST_EXIST);
+                  $modinfo = get_fast_modinfo($course);
+                  $sectioninfo = $modinfo->get_section_info_by_id($rec->sectionid); // by sectionid
+                  $sectionname = get_section_name($course, $sectioninfo);
+                  }
+                  
+                  // Build response (replace sectionid with sectionname)
+                  $record = [
+                  'id'           => (int)$rec->id,
+                  'courseid'     => (int)$rec->courseid,
+                  'sectionid'     => (int)$rec->sectionid,
+                  'sectionname'  => (string)$sectionname,   // ← requested field
+                  'cohortid'     => (int)$rec->cohortid,
+                  'status'       => (string)$rec->status,
+                  'percentage'   => (int)$rec->percentage,
+                  'timecreated'  => (int)$rec->timecreated,
+                  'timemodified' => (int)$rec->timemodified,
+                  'lastts'       => (int)$rec->lastts,
+                  ];
+                  
+                  
+                  
+                  
+                  // --------- Build cross-DB-safe casts ---------
+                  $castChild  = $DB->sql_cast_char2int('childfo.value');
+                  $castParent = $DB->sql_cast_char2int('parentfo.value');
+                  $castNext   = $DB->sql_cast_char2int('nextfo.value');
+                  
+                  // --------- Depth operator ---------
+                  $depthop = $immediateOnly
+                      ? "= COALESCE($castParent, 0) + 1"
+                      : "> COALESCE($castParent, 0)";
+                  
+                  // --------- Fetch subsections under the given parent section ---------
+                  $sqlSubsections = "
+                      SELECT
+                          childcs.*,
+                          COALESCE($castChild, 0) AS level
+                      FROM {course_sections} parentcs
+                      LEFT JOIN {course_format_options} parentfo
+                          ON parentfo.sectionid = parentcs.id
+                          AND parentfo.format    = 'multitopic'
+                          AND parentfo.name      = 'level'
+                      JOIN {course_sections} childcs
+                      ON childcs.course = parentcs.course
+                      LEFT JOIN {course_format_options} childfo
+                          ON childfo.sectionid = childcs.id
+                          AND childfo.format    = 'multitopic'
+                          AND childfo.name      = 'level'
+                      WHERE parentcs.course = :courseid
+                      AND parentcs.id     = :parentsectionid
+                      -- only sections after the parent and before the next top-level (level=0) section
+                      AND childcs.section > parentcs.section
+                      AND childcs.section < COALESCE((
+                              SELECT MIN(nextcs.section)
+                              FROM {course_sections} nextcs
+                              LEFT JOIN {course_format_options} nextfo
+                                  ON nextfo.sectionid = nextcs.id
+                                  AND nextfo.format    = 'multitopic'
+                                  AND nextfo.name      = 'level'
+                              WHERE nextcs.course = parentcs.course
+                              AND nextcs.section > parentcs.section
+                              AND COALESCE($castNext, 0) = 0
+                          ), 1000000000)
+                      -- depth filter
+                      AND COALESCE($castChild, 0) $depthop
+                      ORDER BY childcs.section
+                  ";
+                  
+                  $params = [
+                      'courseid'        => $rec->courseid,
+                      'parentsectionid' => $rec->sectionid,
+                  ];
+                  
+                  $subsections = array_values($DB->get_records_sql($sqlSubsections, $params));
+                  
+                  // --------- For each subsection, fetch modules ---------
+                  //foreach ($subsections as &$subsection) {
                     
-
-                    $isfirst = is_first_section($record['courseid'], $record['sectionid']); // true if section number is the minimum (usually 0)
-
-                    if($isfirst)
-                    {
-                     $topic_url = (new moodle_url('/course/view.php', ['id' => $record['courseid']]))->out(false);   
-                    }else{
-                       $topic_url = (new moodle_url('/course/view.php', [
-        'id'        => $record['courseid'],   // course id
-        'sectionid' => $record['sectionid'],  // course_sections.id
-    ]))->out(false);
-                    }
-}
-
-
-
-
-
-
-
-
-
-
-function find_start_for_cohort_in_availability(array $node, int $cohortid) {
-    if (empty($node['c']) || !is_array($node['c'])) {
-        return null;
-    }
-
-    foreach ($node['c'] as $child) {
-        if (is_array($child)
-            && !empty($child['c']) && is_array($child['c'])
-            && isset($child['c'][0]['type'], $child['c'][0]['id'])
-            && $child['c'][0]['type'] === 'cohort'
-            && (int)$child['c'][0]['id'] === $cohortid
-            && isset($child['c'][1]['t'])) {
-
-            return (int)$child['c'][1]['t']; // <-- start/from time
-        }
-    }
-    return null;
-}
-
-function find_until_for_cohort_in_availability(array $node, int $cohortid) {
-    if (empty($node['c']) || !is_array($node['c'])) {
-        return null;
-    }
-
-    foreach ($node['c'] as $child) {
-        if (is_array($child)
-            && !empty($child['c']) && is_array($child['c'])
-            && isset($child['c'][0]['type'], $child['c'][0]['id'])
-            && $child['c'][0]['type'] === 'cohort'
-            && (int)$child['c'][0]['id'] === $cohortid
-            && isset($child['c'][2]['t'])) {
-
-            return (int)$child['c'][2]['t']; // <-- until/due time
-        }
-    }
-    return null;
-}
-
-/**
- * Quick check: does the availability tree contain the simple cohort group you rely on?
- * (same fixed-index pattern; doesn’t introduce any different logic)
- */
-function has_simple_cohort_group(array $node, int $cohortid): bool {
-    if (empty($node['c']) || !is_array($node['c'])) {
-        return false;
-    }
-    foreach ($node['c'] as $child) {
-        if (is_array($child)
-            && !empty($child['c']) && is_array($child['c'])
-            && isset($child['c'][0]['type'], $child['c'][0]['id'])
-            && $child['c'][0]['type'] === 'cohort'
-            && (int)$child['c'][0]['id'] === $cohortid) {
-            return true;
-        }
-    }
-    return false;
-}
-
-/** Fallback due: assign.duedate|cutoffdate, quiz.timeclose (unchanged idea) */
-function module_fallback_due(int $cmid): ?int {
-    global $DB;
-    $row = $DB->get_record_sql("
-        SELECT cm.instance, m.name AS modname
-          FROM {course_modules} cm
-          JOIN {modules} m ON m.id = cm.module
-         WHERE cm.id = :id
-    ", ['id' => $cmid]);
-    if (!$row) return null;
-
-    if ($row->modname === 'assign') {
-        $due = (int)$DB->get_field('assign', 'duedate', ['id' => $row->instance]);
-        if (empty($due)) {
-            $cut = (int)$DB->get_field('assign', 'cutoffdate', ['id' => $row->instance]);
-            if (!empty($cut)) $due = $cut;
-        }
-        return $due ?: null;
-    } else if ($row->modname === 'quiz') {
-        $due = (int)$DB->get_field('quiz', 'timeclose', ['id' => $row->instance]);
-        return $due ?: null;
-    }
-    return null;
-}
-
-function cm_view_url(int $cmid, string $modname): string {
-    if ($modname === 'assign') return (new moodle_url('/mod/assign/view.php', ['id' => $cmid]))->out(false);
-    if ($modname === 'quiz')   return (new moodle_url('/mod/quiz/view.php',   ['id' => $cmid]))->out(false);
-    return (new moodle_url('/mod/view.php', ['id' => $cmid]))->out(false);
-}
-
-
-function format_due_relative(int $dueTs): string {
-    $now  = time();
-    $diff = $dueTs - $now;
-
-    // Overdue?
-    if ($diff < 0) {
-        $adiff = abs($diff);
-        if ($adiff >= 86400) {
-            $days = (int)ceil($adiff / 86400);
-            return "Task overdue by {$days} " . ($days === 1 ? "day" : "days");
-        } elseif ($adiff >= 3600) {
-            $hours = (int)ceil($adiff / 3600);
-            return "Task overdue by {$hours} " . ($hours === 1 ? "hour" : "hours");
-        } elseif ($adiff >= 60) {
-            $mins = (int)ceil($adiff / 60);
-            return "Task overdue by {$mins} " . ($mins === 1 ? "minute" : "minutes");
-        }
-        return "Task overdue by less than a minute";
-    }
-
-    // Upcoming
-    if ($diff >= 86400) {
-        $days = (int)ceil($diff / 86400);
-        return "Task due in {$days} " . ($days === 1 ? "day" : "days");
-    } elseif ($diff >= 3600) {
-        $hours = (int)ceil($diff / 3600);
-        return "Task due in {$hours} " . ($hours === 1 ? "hour" : "hours");
-    } elseif ($diff >= 60) {
-        $mins = (int)ceil($diff / 60);
-        return "Task due in {$mins} " . ($mins === 1 ? "minute" : "minutes");
-    }
-    return "Task due in less than a minute";
-}
-
-/** 1) All courses where this cohort is enrolled (your SQL) */
-$coursesql = "
-    SELECT DISTINCT c.id, c.fullname, c.shortname
-      FROM {enrol} e
-      JOIN {course} c ON c.id = e.courseid
-     WHERE e.enrol = :enrol
-       AND e.customint1 = :cohortid
-       AND e.status = :enabled
-       AND EXISTS (
-             SELECT 1 FROM {user_enrolments} ue
-              WHERE ue.enrolid = e.id
-                AND ue.status = :active
-       )
-  ORDER BY c.sortorder, c.id
-";
-
-
-$courseparams  = [
-    'enrol'     => 'cohort',
-    'cohortid'  => $cohortid,
-    'enabled'   => 0, // enrol instance enabled
-    'active'    => 0  // user enrolment active
-];
-
-
-$courses = $DB->get_records_sql($coursesql, $courseparams);
-
-if (!$courses) {
-    // echo json_encode(['success' => true, 'soonest' => null, 'others' => []]);
-    // exit;
-
-
-    $excludeids = [2, 24];
-
-// Build a NOT IN clause safely
-list($notinSql, $notinParams) = $DB->get_in_or_equal($excludeids, SQL_PARAMS_NAMED, 'ex', false);
-
-$sql = "
-    SELECT DISTINCT c.id, c.fullname, c.shortname
-      FROM {user_enrolments} ue
-      JOIN {enrol} e ON e.id = ue.enrolid
-      JOIN {course} c ON c.id = e.courseid
-     WHERE ue.userid = :userid
-       AND ue.status = :ueactive      -- active user enrolment
-       AND e.status  = :eenabled      -- enabled enrol instance
-       AND c.id $notinSql             -- exclude specific courses
-  ORDER BY c.sortorder, c.id
-";
-
-$params = [
-    'userid'   => $user->id,
-    'ueactive' => 0,
-    'eenabled' => 0,
-] + $notinParams;
-
-$courses = $DB->get_records_sql($sql, $params);
-
-}
-
-
-if(count($courses) == 0)
-{
-
-}else{
-$courseids = array_map(fn($c) => (int)$c->id, array_values($courses));
-list($inSql, $inParams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'cid');
-
-
-
-/** 2) All assign/quiz CMs for those courses */
-$cmsql = "
-    SELECT
-        cm.id         AS cmid,
-        cm.course     AS courseid,
-        cm.section    AS sectionid,
-        cm.instance,
-        cm.availability,
-        m.name        AS modname,
-        a.name        AS assignname,
-        q.name        AS quizname
-    FROM {course_modules} cm
-    JOIN {modules} m ON m.id = cm.module
-    LEFT JOIN {assign} a ON a.id = cm.instance AND m.name = 'assign'
-    LEFT JOIN {quiz}  q ON q.id = cm.instance AND m.name = 'quiz'
-    WHERE cm.course $inSql
-      AND m.name IN ('assign','quiz')
-      AND cm.deletioninprogress = 0
-";
-$cms = $DB->get_records_sql($cmsql, $inParams);
-
-$now = time();
-$matched = [];
-
-/** 3) Keep only items whose availability has the same cohort group pattern; get FROM/UNTIL via your logic */
-foreach ($cms as $cm) {
-    $fromTs = null;
-    $untilTs = null;
-
-    if (!empty($cm->availability)) {
-        $tree = json_decode($cm->availability, true);
-        if (json_last_error() === JSON_ERROR_NONE && is_array($tree) && has_simple_cohort_group($tree, $cohortid)) {
-            // USE YOUR EXACT PATTERN functions:
-            $fromTs  = find_start_for_cohort_in_availability($tree, $cohortid);
-            $untilTs = find_until_for_cohort_in_availability($tree, $cohortid);
-        } else {
-            // Not restricted to this cohort by your simple pattern → skip
-            continue;
-        }
-    } else {
-        // No availability → not cohort-restricted → skip
-        continue;
-    }
-
-    // If no UNTIL from availability, fall back to module-level due/close.
-    $fallbackDue = module_fallback_due((int)$cm->cmid);
-    if ($untilTs === null && $fallbackDue !== null) {
-        $untilTs = $fallbackDue;
-    }
-
-    // If we still have neither FROM nor UNTIL, skip.
-    if ($fromTs === null && $untilTs === null) continue;
-
-    // Relevance window:
-    // - If from in future -> it’s upcoming (sort by from)
-    // - Else if until in future -> it’s open/closing soon (sort by until)
-    // - Else skip (already closed)
-    $sortKey = null;
-    if ($fromTs !== null && $fromTs > $now) {
-        $sortKey = $fromTs;
-    } elseif ($untilTs !== null && $untilTs > $now) {
-        $sortKey = $untilTs;
-    } else {
-        continue;
-    }
-
-    $name = ($cm->modname === 'assign') ? ($cm->assignname ?? 'Assignment') : ($cm->quizname ?? 'Quiz');
-
-    $matched[] = (object)[
-        'sort_key'    => (int)$sortKey,
-        'cmid'        => (int)$cm->cmid,
-        'courseid'    => (int)$cm->courseid,
-        'sectionid'   => (int)$cm->sectionid,
-        'modname'     => (string)$cm->modname,       // 'assign' | 'quiz'
-        'instance'    => (int)$cm->instance,
-        'name'        => (string)$name,
-        'url'         => cm_view_url((int)$cm->cmid, $cm->modname),
-        'from_ts'     => $fromTs !== null ? (int)$fromTs : null,
-        'until_ts'    => $untilTs !== null ? (int)$untilTs : null,
-        'fallback_due'=> $fallbackDue !== null ? (int)$fallbackDue : null,
-        'course_full' => isset($courses[$cm->courseid]) ? (string)$courses[$cm->courseid]->fullname : '',
-        'course_short'=> isset($courses[$cm->courseid]) ? (string)$courses[$cm->courseid]->shortname : '',
-        'due_display' => ($untilTs !== null) ? format_due_relative((int)$untilTs) : null,
-    ];
-}
-
-/** 4) Sort and keep soonest inside the same list */
-usort($matched, fn($a, $b) => $a->sort_key <=> $b->sort_key);
-
-// Remove internal sort_key from all items
-foreach ($matched as $i => $o) {
-    unset($matched[$i]->sort_key);
-}
-
-// soonest is the first item, but DO NOT remove it from $matched
-$soonest = $matched[0] ?? null;
-
-             }
-                
-                ?>
-
-
+                      $sqlModules = "
+                          SELECT cm.id,
+                              CASE
+                                  WHEN m.name = 'page'  THEN (SELECT name FROM {page}  WHERE id = cm.instance)
+                                  -- Add more modules as needed:
+                                  -- WHEN m.name = 'page'  THEN (SELECT name FROM {page}   WHERE id = cm.instance)
+                                  -- WHEN m.name = 'url'   THEN (SELECT name FROM {url}    WHERE id = cm.instance)
+                                  ELSE 'Unknown Activity'
+                              END AS module_name,
+                              cm.instance
+                          FROM {course_modules} cm
+                          JOIN {modules} m ON cm.module = m.id
+                          WHERE cm.section = :sectionid
+                          AND cm.deletioninprogress = 0
+                      ";
+                      $modules = $DB->get_records_sql($sqlModules, ['sectionid' => $subsections[0]->id]);
+                  
+                      $slides_url = null;
+                      foreach ($modules as $rec) {
+                      
+                              $slides_url = (new moodle_url('/mod/page/view.php', ['id' => $rec->id]))->out(false);
+                              break;
+                          
+                      }
+                      
+                  
+                      $isfirst = is_first_section($record['courseid'], $record['sectionid']); // true if section number is the minimum (usually 0)
+                  
+                      if($isfirst)
+                      {
+                       $topic_url = (new moodle_url('/course/view.php', ['id' => $record['courseid']]))->out(false);   
+                      }else{
+                         $topic_url = (new moodle_url('/course/view.php', [
+                  'id'        => $record['courseid'],   // course id
+                  'sectionid' => $record['sectionid'],  // course_sections.id
+                  ]))->out(false);
+                      }
+                  }
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  function find_start_for_cohort_in_availability(array $node, int $cohortid) {
+                  if (empty($node['c']) || !is_array($node['c'])) {
+                  return null;
+                  }
+                  
+                  foreach ($node['c'] as $child) {
+                  if (is_array($child)
+                  && !empty($child['c']) && is_array($child['c'])
+                  && isset($child['c'][0]['type'], $child['c'][0]['id'])
+                  && $child['c'][0]['type'] === 'cohort'
+                  && (int)$child['c'][0]['id'] === $cohortid
+                  && isset($child['c'][1]['t'])) {
+                  
+                  return (int)$child['c'][1]['t']; // <-- start/from time
+                  }
+                  }
+                  return null;
+                  }
+                  
+                  function find_until_for_cohort_in_availability(array $node, int $cohortid) {
+                  if (empty($node['c']) || !is_array($node['c'])) {
+                  return null;
+                  }
+                  
+                  foreach ($node['c'] as $child) {
+                  if (is_array($child)
+                  && !empty($child['c']) && is_array($child['c'])
+                  && isset($child['c'][0]['type'], $child['c'][0]['id'])
+                  && $child['c'][0]['type'] === 'cohort'
+                  && (int)$child['c'][0]['id'] === $cohortid
+                  && isset($child['c'][2]['t'])) {
+                  
+                  return (int)$child['c'][2]['t']; // <-- until/due time
+                  }
+                  }
+                  return null;
+                  }
+                  
+                  /**
+                  * Quick check: does the availability tree contain the simple cohort group you rely on?
+                  * (same fixed-index pattern; doesn’t introduce any different logic)
+                  */
+                  function has_simple_cohort_group(array $node, int $cohortid): bool {
+                  if (empty($node['c']) || !is_array($node['c'])) {
+                  return false;
+                  }
+                  foreach ($node['c'] as $child) {
+                  if (is_array($child)
+                  && !empty($child['c']) && is_array($child['c'])
+                  && isset($child['c'][0]['type'], $child['c'][0]['id'])
+                  && $child['c'][0]['type'] === 'cohort'
+                  && (int)$child['c'][0]['id'] === $cohortid) {
+                  return true;
+                  }
+                  }
+                  return false;
+                  }
+                  
+                  /** Fallback due: assign.duedate|cutoffdate, quiz.timeclose (unchanged idea) */
+                  function module_fallback_due(int $cmid): ?int {
+                  global $DB;
+                  $row = $DB->get_record_sql("
+                  SELECT cm.instance, m.name AS modname
+                  FROM {course_modules} cm
+                  JOIN {modules} m ON m.id = cm.module
+                  WHERE cm.id = :id
+                  ", ['id' => $cmid]);
+                  if (!$row) return null;
+                  
+                  if ($row->modname === 'assign') {
+                  $due = (int)$DB->get_field('assign', 'duedate', ['id' => $row->instance]);
+                  if (empty($due)) {
+                  $cut = (int)$DB->get_field('assign', 'cutoffdate', ['id' => $row->instance]);
+                  if (!empty($cut)) $due = $cut;
+                  }
+                  return $due ?: null;
+                  } else if ($row->modname === 'quiz') {
+                  $due = (int)$DB->get_field('quiz', 'timeclose', ['id' => $row->instance]);
+                  return $due ?: null;
+                  }
+                  return null;
+                  }
+                  
+                  function cm_view_url(int $cmid, string $modname): string {
+                  if ($modname === 'assign') return (new moodle_url('/mod/assign/view.php', ['id' => $cmid]))->out(false);
+                  if ($modname === 'quiz')   return (new moodle_url('/mod/quiz/view.php',   ['id' => $cmid]))->out(false);
+                  return (new moodle_url('/mod/view.php', ['id' => $cmid]))->out(false);
+                  }
+                  
+                  
+                  function format_due_relative(int $dueTs): string {
+                  $now  = time();
+                  $diff = $dueTs - $now;
+                  
+                  // Overdue?
+                  if ($diff < 0) {
+                  $adiff = abs($diff);
+                  if ($adiff >= 86400) {
+                  $days = (int)ceil($adiff / 86400);
+                  return "Task overdue by {$days} " . ($days === 1 ? "day" : "days");
+                  } elseif ($adiff >= 3600) {
+                  $hours = (int)ceil($adiff / 3600);
+                  return "Task overdue by {$hours} " . ($hours === 1 ? "hour" : "hours");
+                  } elseif ($adiff >= 60) {
+                  $mins = (int)ceil($adiff / 60);
+                  return "Task overdue by {$mins} " . ($mins === 1 ? "minute" : "minutes");
+                  }
+                  return "Task overdue by less than a minute";
+                  }
+                  
+                  // Upcoming
+                  if ($diff >= 86400) {
+                  $days = (int)ceil($diff / 86400);
+                  return "Task due in {$days} " . ($days === 1 ? "day" : "days");
+                  } elseif ($diff >= 3600) {
+                  $hours = (int)ceil($diff / 3600);
+                  return "Task due in {$hours} " . ($hours === 1 ? "hour" : "hours");
+                  } elseif ($diff >= 60) {
+                  $mins = (int)ceil($diff / 60);
+                  return "Task due in {$mins} " . ($mins === 1 ? "minute" : "minutes");
+                  }
+                  return "Task due in less than a minute";
+                  }
+                  
+                  /** 1) All courses where this cohort is enrolled (your SQL) */
+                  $coursesql = "
+                  SELECT DISTINCT c.id, c.fullname, c.shortname
+                  FROM {enrol} e
+                  JOIN {course} c ON c.id = e.courseid
+                  WHERE e.enrol = :enrol
+                  AND e.customint1 = :cohortid
+                  AND e.status = :enabled
+                  AND EXISTS (
+                  SELECT 1 FROM {user_enrolments} ue
+                  WHERE ue.enrolid = e.id
+                  AND ue.status = :active
+                  )
+                  ORDER BY c.sortorder, c.id
+                  ";
+                  
+                  
+                  $courseparams  = [
+                  'enrol'     => 'cohort',
+                  'cohortid'  => $cohortid,
+                  'enabled'   => 0, // enrol instance enabled
+                  'active'    => 0  // user enrolment active
+                  ];
+                  
+                  
+                  $courses = $DB->get_records_sql($coursesql, $courseparams);
+                  
+                  if (!$courses) {
+                  // echo json_encode(['success' => true, 'soonest' => null, 'others' => []]);
+                  // exit;
+                  
+                  
+                  $excludeids = [2, 24];
+                  
+                  // Build a NOT IN clause safely
+                  list($notinSql, $notinParams) = $DB->get_in_or_equal($excludeids, SQL_PARAMS_NAMED, 'ex', false);
+                  
+                  $sql = "
+                  SELECT DISTINCT c.id, c.fullname, c.shortname
+                  FROM {user_enrolments} ue
+                  JOIN {enrol} e ON e.id = ue.enrolid
+                  JOIN {course} c ON c.id = e.courseid
+                  WHERE ue.userid = :userid
+                  AND ue.status = :ueactive      -- active user enrolment
+                  AND e.status  = :eenabled      -- enabled enrol instance
+                  AND c.id $notinSql             -- exclude specific courses
+                  ORDER BY c.sortorder, c.id
+                  ";
+                  
+                  $params = [
+                  'userid'   => $user->id,
+                  'ueactive' => 0,
+                  'eenabled' => 0,
+                  ] + $notinParams;
+                  
+                  $courses = $DB->get_records_sql($sql, $params);
+                  
+                  }
+                  
+                  
+                  if(count($courses) == 0)
+                  {
+                  
+                  }else{
+                  $courseids = array_map(fn($c) => (int)$c->id, array_values($courses));
+                  list($inSql, $inParams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'cid');
+                  
+                  
+                  
+                  /** 2) All assign/quiz CMs for those courses */
+                  $cmsql = "
+                  SELECT
+                  cm.id         AS cmid,
+                  cm.course     AS courseid,
+                  cm.section    AS sectionid,
+                  cm.instance,
+                  cm.availability,
+                  m.name        AS modname,
+                  a.name        AS assignname,
+                  q.name        AS quizname
+                  FROM {course_modules} cm
+                  JOIN {modules} m ON m.id = cm.module
+                  LEFT JOIN {assign} a ON a.id = cm.instance AND m.name = 'assign'
+                  LEFT JOIN {quiz}  q ON q.id = cm.instance AND m.name = 'quiz'
+                  WHERE cm.course $inSql
+                  AND m.name IN ('assign','quiz')
+                  AND cm.deletioninprogress = 0
+                  ";
+                  $cms = $DB->get_records_sql($cmsql, $inParams);
+                  
+                  $now = time();
+                  $matched = [];
+                  
+                  /** 3) Keep only items whose availability has the same cohort group pattern; get FROM/UNTIL via your logic */
+                  foreach ($cms as $cm) {
+                  $fromTs = null;
+                  $untilTs = null;
+                  
+                  if (!empty($cm->availability)) {
+                  $tree = json_decode($cm->availability, true);
+                  if (json_last_error() === JSON_ERROR_NONE && is_array($tree) && has_simple_cohort_group($tree, $cohortid)) {
+                  // USE YOUR EXACT PATTERN functions:
+                  $fromTs  = find_start_for_cohort_in_availability($tree, $cohortid);
+                  $untilTs = find_until_for_cohort_in_availability($tree, $cohortid);
+                  } else {
+                  // Not restricted to this cohort by your simple pattern → skip
+                  continue;
+                  }
+                  } else {
+                  // No availability → not cohort-restricted → skip
+                  continue;
+                  }
+                  
+                  // If no UNTIL from availability, fall back to module-level due/close.
+                  $fallbackDue = module_fallback_due((int)$cm->cmid);
+                  if ($untilTs === null && $fallbackDue !== null) {
+                  $untilTs = $fallbackDue;
+                  }
+                  
+                  // If we still have neither FROM nor UNTIL, skip.
+                  if ($fromTs === null && $untilTs === null) continue;
+                  
+                  // Relevance window:
+                  // - If from in future -> it’s upcoming (sort by from)
+                  // - Else if until in future -> it’s open/closing soon (sort by until)
+                  // - Else skip (already closed)
+                  $sortKey = null;
+                  if ($fromTs !== null && $fromTs > $now) {
+                  $sortKey = $fromTs;
+                  } elseif ($untilTs !== null && $untilTs > $now) {
+                  $sortKey = $untilTs;
+                  } else {
+                  continue;
+                  }
+                  
+                  $name = ($cm->modname === 'assign') ? ($cm->assignname ?? 'Assignment') : ($cm->quizname ?? 'Quiz');
+                  
+                  $matched[] = (object)[
+                  'sort_key'    => (int)$sortKey,
+                  'cmid'        => (int)$cm->cmid,
+                  'courseid'    => (int)$cm->courseid,
+                  'sectionid'   => (int)$cm->sectionid,
+                  'modname'     => (string)$cm->modname,       // 'assign' | 'quiz'
+                  'instance'    => (int)$cm->instance,
+                  'name'        => (string)$name,
+                  'url'         => cm_view_url((int)$cm->cmid, $cm->modname),
+                  'from_ts'     => $fromTs !== null ? (int)$fromTs : null,
+                  'until_ts'    => $untilTs !== null ? (int)$untilTs : null,
+                  'fallback_due'=> $fallbackDue !== null ? (int)$fallbackDue : null,
+                  'course_full' => isset($courses[$cm->courseid]) ? (string)$courses[$cm->courseid]->fullname : '',
+                  'course_short'=> isset($courses[$cm->courseid]) ? (string)$courses[$cm->courseid]->shortname : '',
+                  'due_display' => ($untilTs !== null) ? format_due_relative((int)$untilTs) : null,
+                  ];
+                  }
+                  
+                  /** 4) Sort and keep soonest inside the same list */
+                  usort($matched, fn($a, $b) => $a->sort_key <=> $b->sort_key);
+                  
+                  // Remove internal sort_key from all items
+                  foreach ($matched as $i => $o) {
+                  unset($matched[$i]->sort_key);
+                  }
+                  
+                  // soonest is the first item, but DO NOT remove it from $matched
+                  $soonest = $matched[0] ?? null;
+                  
+                  }
+                  
+                  ?>
                     <div class="cards" id="cards">
-
                         <?php
-                if(count($courses) != 0)
-                {
-                ?>
+                     if(count($courses) != 0)
+                     {
+                     ?>
                         <a href="<?php echo $topic_url;?>" class="card">
                             <p><span class="">Current</span> Topic</p>
                             <h2>
@@ -3497,7 +3461,6 @@ $soonest = $matched[0] ?? null;
                                     <?php echo !empty($soonest->due_display) ? $soonest->due_display : 'No upcoming tasks'; ?>
                                 </span>
                             </p>
-
                             <h2>
                                 <span>
                                     <span class="">
@@ -3507,28 +3470,27 @@ $soonest = $matched[0] ?? null;
                                         <?php echo !empty($soonest->name) ? $soonest->name : '—'; ?>
                                     </span>
                                 </span>
-
                                 <!-- <svg
-                            width="25"
-                            height="25"
-                            viewBox="0 0 25 25"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <rect
-                            x="0.706897"
-                            y="0.706897"
-                            width="23.5862"
-                            height="23.5862"
-                            rx="11.7931"
-                            stroke="#001CB1"
-                            stroke-width="0.413793"
-                            />
-                            <path
-                            d="M6.75178 11.8873C6.46612 11.8881 6.18653 11.9698 5.94534 12.1228C5.70416 12.2759 5.51124 12.4942 5.38891 12.7523C5.26657 13.0104 5.21983 13.2979 5.25408 13.5815C5.28833 13.8651 5.40217 14.1333 5.58244 14.3549L9.4253 19.0624C9.56232 19.2325 9.73795 19.3675 9.93761 19.4561C10.1373 19.5447 10.3552 19.5844 10.5733 19.5719C11.0397 19.5469 11.4608 19.2974 11.7293 18.8871L19.7119 6.03112C19.7133 6.02897 19.7146 6.02685 19.716 6.02475C19.7909 5.90975 19.7666 5.68185 19.612 5.53867C19.5696 5.49936 19.5195 5.46915 19.4649 5.44992C19.4103 5.43068 19.3524 5.42282 19.2946 5.42683C19.2369 5.43083 19.1806 5.44661 19.1292 5.4732C19.0778 5.49979 19.0324 5.53662 18.9957 5.58142C18.9929 5.58495 18.9899 5.58842 18.9869 5.59183L10.9363 14.6878C10.9057 14.7224 10.8685 14.7506 10.8269 14.7707C10.7852 14.7908 10.74 14.8024 10.6939 14.8049C10.6477 14.8074 10.6015 14.8007 10.558 14.7852C10.5145 14.7697 10.4744 14.7457 10.4402 14.7146L7.76841 12.2832C7.49092 12.0288 7.12823 11.8876 6.75178 11.8873Z"
-                            fill="#001CB1"
-                            />
-                        </svg> -->
+                           width="25"
+                           height="25"
+                           viewBox="0 0 25 25"
+                           fill="none"
+                           xmlns="http://www.w3.org/2000/svg"
+                           >
+                           <rect
+                           x="0.706897"
+                           y="0.706897"
+                           width="23.5862"
+                           height="23.5862"
+                           rx="11.7931"
+                           stroke="#001CB1"
+                           stroke-width="0.413793"
+                           />
+                           <path
+                           d="M6.75178 11.8873C6.46612 11.8881 6.18653 11.9698 5.94534 12.1228C5.70416 12.2759 5.51124 12.4942 5.38891 12.7523C5.26657 13.0104 5.21983 13.2979 5.25408 13.5815C5.28833 13.8651 5.40217 14.1333 5.58244 14.3549L9.4253 19.0624C9.56232 19.2325 9.73795 19.3675 9.93761 19.4561C10.1373 19.5447 10.3552 19.5844 10.5733 19.5719C11.0397 19.5469 11.4608 19.2974 11.7293 18.8871L19.7119 6.03112C19.7133 6.02897 19.7146 6.02685 19.716 6.02475C19.7909 5.90975 19.7666 5.68185 19.612 5.53867C19.5696 5.49936 19.5195 5.46915 19.4649 5.44992C19.4103 5.43068 19.3524 5.42282 19.2946 5.42683C19.2369 5.43083 19.1806 5.44661 19.1292 5.4732C19.0778 5.49979 19.0324 5.53662 18.9957 5.58142C18.9929 5.58495 18.9899 5.58842 18.9869 5.59183L10.9363 14.6878C10.9057 14.7224 10.8685 14.7506 10.8269 14.7707C10.7852 14.7908 10.74 14.8024 10.6939 14.8049C10.6477 14.8074 10.6015 14.8007 10.558 14.7852C10.5145 14.7697 10.4744 14.7457 10.4402 14.7146L7.76841 12.2832C7.49092 12.0288 7.12823 11.8876 6.75178 11.8873Z"
+                           fill="#001CB1"
+                           />
+                           </svg> -->
                             </h2>
                         </div>
                         <a href="" class="card">
@@ -3560,12 +3522,10 @@ $soonest = $matched[0] ?? null;
                                 </defs>
                             </svg>
                         </a>
-
                         <div id="recording-card" style="cursor:pointer"
                             onclick="redirectToRecordings(<?php echo $cohortid; ?>, <?php echo $course->id; ?>)"
                             class="card">
                             <p><span class="desktop">Previous</span> Recording</p>
-
                             <svg width="32" height="19" viewBox="0 0 32 19" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path
@@ -3578,61 +3538,55 @@ $soonest = $matched[0] ?? null;
                             <h2><span>A1-Level 1</span></h2>
                         </a>
                         <?php
-             }else{
-?>
+                     }else{
+                     ?>
                         <div class="card">
                             <p>You have not been enrolled in any levels yet</p>
                         </div>
                         <?php
-             }
-                ?>
+                     }
+                        ?>
                     </div>
                     <?php } ?>
-
-
                     <div class="schedule">
                         <h4>Schedule</h4>
                         <div class="row" id="schedule-container">
                             <div id="default-schedule" style="display: flex; flex-wrap: wrap;">
                                 <?php
-                            foreach ($dayOrder as $day) {
-                                if (!empty($allDaysWithHours[$day])) {
-                                    foreach ($allDaysWithHours[$day] as $hour) {
-                                        echo "
-                                        <div class='date'>
-                                            <div class='day'><h1>" . htmlspecialchars($day) . "</h1></div>
-                                            <p>" . htmlspecialchars($hour) . "</p>
-                                        </div>
-                                        ";
-                                    }
-                                } else {
-                                    echo "
-                                    <div class='date'>
-                                        <div class='day gray'><h1>" . htmlspecialchars($day) . "</h1></div>
-                                    </div>
-                                    ";
-                                }
-                            }
-                            ?>
+                           foreach ($dayOrder as $day) {
+                               if (!empty($allDaysWithHours[$day])) {
+                                   foreach ($allDaysWithHours[$day] as $hour) {
+                                       echo "
+                                       <div class='date'>
+                                           <div class='day'><h1>" . htmlspecialchars($day) . "</h1></div>
+                                           <p>" . htmlspecialchars($hour) . "</p>
+                                       </div>
+                                       ";
+                                   }
+                               } else {
+                                   echo "
+                                   <div class='date'>
+                                       <div class='day gray'><h1>" . htmlspecialchars($day) . "</h1></div>
+                                   </div>
+                                   ";
+                               }
+                           }
+                           ?>
                             </div>
                         </div>
                     </div>
                 </div>
-
                 <?php
-                
-                }}else{
-                    $googleMeetURL="";
-                }
-            }
-            ?>
+               }}else{
+                   $googleMeetURL="";
+               }
+               }
+               ?>
             </div>
         </section>
-
         <section class="page_bottom">
             <div class="center_content">
                 <h1 class="heading">Take a Look at Your Level and Access It</h1>
-
                 <div class="levels">
                     <div class="card subLevelOpen1">
                         <div class="top">
@@ -3648,25 +3602,25 @@ $soonest = $matched[0] ?? null;
                                 <a href="<?php echo getLink($cursosArray, 21, $urlCourse); ?>"
                                     class="stagBox <?php echo verificarInscripcion($cursosArray, 21) ? '' : 'lock'; ?>">
                                     <?php
-                        if(!verificarInscripcion($cursosArray, 21)){
-                            echo "
-                            <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
-                                <svg 
-                            style='margin-bottom: -30px;position:relative;'
-                            width='18'
-                            height='24'
-                            viewBox='0 0 18 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                            >
-                            <path
-                                d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
-                                fill='white'
-                            />
-                            </svg>
-                            ";
-                        }
-                    ?>
+                              if(!verificarInscripcion($cursosArray, 21)){
+                                  echo "
+                                  <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
+                                      <svg 
+                                  style='margin-bottom: -30px;position:relative;'
+                                  width='18'
+                                  height='24'
+                                  viewBox='0 0 18 24'
+                                  fill='none'
+                                  xmlns='http://www.w3.org/2000/svg'
+                                  >
+                                  <path
+                                      d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
+                                      fill='white'
+                                  />
+                                  </svg>
+                                  ";
+                              }
+                              ?>
                                     <h1>1</h1>
                                     <p>Level</p>
                                 </a>
@@ -3676,29 +3630,28 @@ $soonest = $matched[0] ?? null;
                                     <h3>100%</h3>
                                     <p>completed</p>
                                 </div>
-
                                 <a href="<?php echo getLink($cursosArray, 10, $urlCourse); ?>"
                                     class="stagBox <?php echo verificarInscripcion($cursosArray, 10) ? '' : 'lock'; ?>">
                                     <?php
-                        if(!verificarInscripcion($cursosArray, 10)){
-                            echo "
-                            <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
-                                <svg 
-                            style='margin-bottom: -30px;position:relative;'
-                            width='18'
-                            height='24'
-                            viewBox='0 0 18 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                            >
-                            <path
-                                d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
-                                fill='white'
-                            />
-                            </svg>
-                            ";
-                        }
-                    ?>
+                              if(!verificarInscripcion($cursosArray, 10)){
+                                  echo "
+                                  <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
+                                      <svg 
+                                  style='margin-bottom: -30px;position:relative;'
+                                  width='18'
+                                  height='24'
+                                  viewBox='0 0 18 24'
+                                  fill='none'
+                                  xmlns='http://www.w3.org/2000/svg'
+                                  >
+                                  <path
+                                      d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
+                                      fill='white'
+                                  />
+                                  </svg>
+                                  ";
+                              }
+                              ?>
                                     <h1>2</h1>
                                     <p>Level</p>
                                 </a>
@@ -3716,29 +3669,28 @@ $soonest = $matched[0] ?? null;
                                     <h3>100%</h3>
                                     <p>completed</p>
                                 </div>
-
                                 <a href="<?php echo getLink($cursosArray, 22, $urlCourse); ?>"
                                     class="stagBox <?php echo verificarInscripcion($cursosArray, 22) ? '' : 'lock'; ?>">
                                     <?php
-                        if(!verificarInscripcion($cursosArray, 22)){
-                            echo "
-                            <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
-                                <svg 
-                            style='position:relative;'
-                            width='18'
-                            height='24'
-                            viewBox='0 0 18 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                            >
-                            <path
-                                d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
-                                fill='white'
-                            />
-                            </svg>
-                            ";
-                        }
-                    ?>
+                              if(!verificarInscripcion($cursosArray, 22)){
+                                  echo "
+                                  <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
+                                      <svg 
+                                  style='position:relative;'
+                                  width='18'
+                                  height='24'
+                                  viewBox='0 0 18 24'
+                                  fill='none'
+                                  xmlns='http://www.w3.org/2000/svg'
+                                  >
+                                  <path
+                                      d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
+                                      fill='white'
+                                  />
+                                  </svg>
+                                  ";
+                              }
+                              ?>
                                     <h1>3</h1>
                                     <p>Level</p>
                                 </a>
@@ -3748,29 +3700,28 @@ $soonest = $matched[0] ?? null;
                                     <h3>100%</h3>
                                     <p>completed</p>
                                 </div>
-
                                 <a href="<?php echo getLink($cursosArray, 12, $urlCourse); ?>"
                                     class="stagBox <?php echo verificarInscripcion($cursosArray, 12) ? '' : 'lock'; ?>">
                                     <?php
-                        if(!verificarInscripcion($cursosArray, 12)){
-                            echo "
-                            <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
-                                <svg 
-                            style='position:relative;'
-                            width='18'
-                            height='24'
-                            viewBox='0 0 18 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                            >
-                            <path
-                                d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
-                                fill='white'
-                            />
-                            </svg>
-                            ";
-                        }
-                    ?>
+                              if(!verificarInscripcion($cursosArray, 12)){
+                                  echo "
+                                  <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
+                                      <svg 
+                                  style='position:relative;'
+                                  width='18'
+                                  height='24'
+                                  viewBox='0 0 18 24'
+                                  fill='none'
+                                  xmlns='http://www.w3.org/2000/svg'
+                                  >
+                                  <path
+                                      d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
+                                      fill='white'
+                                  />
+                                  </svg>
+                                  ";
+                              }
+                              ?>
                                     <h1>4</h1>
                                     <p>Level</p>
                                 </a>
@@ -3788,29 +3739,28 @@ $soonest = $matched[0] ?? null;
                                     <h3>100%</h3>
                                     <p>completed</p>
                                 </div>
-
                                 <a href="<?php echo getLink($cursosArray, 13, $urlCourse); ?>"
                                     class="stagBox <?php echo verificarInscripcion($cursosArray, 13) ? '' : 'lock'; ?>">
                                     <?php
-                        if(!verificarInscripcion($cursosArray, 13)){
-                            echo "
-                            <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
-                                <svg 
-                            style='position:relative;'
-                            width='18'
-                            height='24'
-                            viewBox='0 0 18 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                            >
-                            <path
-                                d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
-                                fill='white'
-                            />
-                            </svg>
-                            ";
-                        }
-                    ?>
+                              if(!verificarInscripcion($cursosArray, 13)){
+                                  echo "
+                                  <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
+                                      <svg 
+                                  style='position:relative;'
+                                  width='18'
+                                  height='24'
+                                  viewBox='0 0 18 24'
+                                  fill='none'
+                                  xmlns='http://www.w3.org/2000/svg'
+                                  >
+                                  <path
+                                      d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
+                                      fill='white'
+                                  />
+                                  </svg>
+                                  ";
+                              }
+                              ?>
                                     <h1>5</h1>
                                     <p>Level</p>
                                 </a>
@@ -3819,25 +3769,25 @@ $soonest = $matched[0] ?? null;
                                 <a href="<?php echo getLink($cursosArray, 14, $urlCourse); ?>"
                                     class="stagBox <?php echo verificarInscripcion($cursosArray, 14) ? '' : 'lock'; ?>">
                                     <?php
-                        if(!verificarInscripcion($cursosArray, 14)){
-                            echo "
-                            <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
-                                <svg 
-                            style='position:relative;'
-                            width='18'
-                            height='24'
-                            viewBox='0 0 18 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                            >
-                            <path
-                                d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
-                                fill='white'
-                            />
-                            </svg>
-                            ";
-                        }
-                    ?>
+                              if(!verificarInscripcion($cursosArray, 14)){
+                                  echo "
+                                  <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
+                                      <svg 
+                                  style='position:relative;'
+                                  width='18'
+                                  height='24'
+                                  viewBox='0 0 18 24'
+                                  fill='none'
+                                  xmlns='http://www.w3.org/2000/svg'
+                                  >
+                                  <path
+                                      d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
+                                      fill='white'
+                                  />
+                                  </svg>
+                                  ";
+                              }
+                              ?>
                                     <h1>6</h1>
                                     <p>Level</p>
                                 </a>
@@ -3857,25 +3807,25 @@ $soonest = $matched[0] ?? null;
                                 <a href="<?php echo getLink($cursosArray, 15, $urlCourse); ?>"
                                     class="stagBox <?php echo verificarInscripcion($cursosArray, 15) ? '' : 'lock'; ?>">
                                     <?php
-                        if(!verificarInscripcion($cursosArray, 15)){
-                            echo "
-                            <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
-                                <svg 
-                            style='position:relative;'
-                            width='18'
-                            height='24'
-                            viewBox='0 0 18 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                            >
-                            <path
-                                d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
-                                fill='white'
-                            />
-                            </svg>
-                            ";
-                        }
-                    ?>
+                              if(!verificarInscripcion($cursosArray, 15)){
+                                  echo "
+                                  <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
+                                      <svg 
+                                  style='position:relative;'
+                                  width='18'
+                                  height='24'
+                                  viewBox='0 0 18 24'
+                                  fill='none'
+                                  xmlns='http://www.w3.org/2000/svg'
+                                  >
+                                  <path
+                                      d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
+                                      fill='white'
+                                  />
+                                  </svg>
+                                  ";
+                              }
+                              ?>
                                     <h1>7</h1>
                                     <p>Level</p>
                                 </a>
@@ -3884,25 +3834,25 @@ $soonest = $matched[0] ?? null;
                                 <a href="<?php echo getLink($cursosArray, 16, $urlCourse); ?>"
                                     class="stagBox <?php echo verificarInscripcion($cursosArray, 16) ? '' : 'lock'; ?>">
                                     <?php
-                        if(!verificarInscripcion($cursosArray, 16)){
-                            echo "
-                            <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
-                                <svg 
-                            style='position:relative;'
-                            width='18'
-                            height='24'
-                            viewBox='0 0 18 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                            >
-                            <path
-                                d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
-                                fill='white'
-                            />
-                            </svg>
-                            ";
-                        }
-                    ?>
+                              if(!verificarInscripcion($cursosArray, 16)){
+                                  echo "
+                                  <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
+                                      <svg 
+                                  style='position:relative;'
+                                  width='18'
+                                  height='24'
+                                  viewBox='0 0 18 24'
+                                  fill='none'
+                                  xmlns='http://www.w3.org/2000/svg'
+                                  >
+                                  <path
+                                      d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
+                                      fill='white'
+                                  />
+                                  </svg>
+                                  ";
+                              }
+                              ?>
                                     <h1>8</h1>
                                     <p>Level</p>
                                 </a>
@@ -3916,57 +3866,55 @@ $soonest = $matched[0] ?? null;
                         </div>
                         <div class="bottom">
                             <div class="stag">
-
                                 <a href="<?php echo getLink($cursosArray, 17, $urlCourse); ?>"
                                     class="stagBox <?php echo verificarInscripcion($cursosArray, 17) ? '' : 'lock'; ?>">
                                     <?php
-                        if(!verificarInscripcion($cursosArray, 17)){
-                            echo "
-                            <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
-                                <svg 
-                            style='position:relative;'
-                            width='18'
-                            height='24'
-                            viewBox='0 0 18 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                            >
-                            <path
-                                d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
-                                fill='white'
-                            />
-                            </svg>
-                            ";
-                        }
-                    ?>
+                              if(!verificarInscripcion($cursosArray, 17)){
+                                  echo "
+                                  <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
+                                      <svg 
+                                  style='position:relative;'
+                                  width='18'
+                                  height='24'
+                                  viewBox='0 0 18 24'
+                                  fill='none'
+                                  xmlns='http://www.w3.org/2000/svg'
+                                  >
+                                  <path
+                                      d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
+                                      fill='white'
+                                  />
+                                  </svg>
+                                  ";
+                              }
+                              ?>
                                     <h1>9</h1>
                                     <p>Level</p>
                                 </a>
                             </div>
                             <div class="stag">
-
                                 <a href="<?php echo getLink($cursosArray, 18, $urlCourse); ?>"
                                     class="stagBox <?php echo verificarInscripcion($cursosArray, 18) ? '' : 'lock'; ?>">
                                     <?php
-                        if(!verificarInscripcion($cursosArray, 18)){
-                            echo "
-                            <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
-                                <svg 
-                            style='position:relative;'
-                            width='18'
-                            height='24'
-                            viewBox='0 0 18 24'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                            >
-                            <path
-                                d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
-                                fill='white'
-                            />
-                            </svg>
-                            ";
-                        }
-                    ?>
+                              if(!verificarInscripcion($cursosArray, 18)){
+                                  echo "
+                                  <div style='position:absolute;width: 100%;height: 100%;background: #00000063;' ;></div>
+                                      <svg 
+                                  style='position:relative;'
+                                  width='18'
+                                  height='24'
+                                  viewBox='0 0 18 24'
+                                  fill='none'
+                                  xmlns='http://www.w3.org/2000/svg'
+                                  >
+                                  <path
+                                      d='M17.5 9H16V6.99998C16 3.14016 12.8599 0 9 0C5.14012 0 2.00002 3.14016 2.00002 6.99998V9H0.500016C0.434341 8.99996 0.369301 9.01286 0.308617 9.03797C0.247933 9.06309 0.192794 9.09992 0.146355 9.14635C0.0999157 9.19279 0.0630866 9.24793 0.0379738 9.30862C0.0128609 9.3693 -4.30326e-05 9.43434 1.07813e-07 9.50002V22C1.07813e-07 23.103 0.896953 24 2.00002 24H16C17.103 24 18 23.103 18 22V9.50002C18 9.43434 17.9871 9.3693 17.962 9.30862C17.9369 9.24793 17.9001 9.19279 17.8536 9.14635C17.8072 9.09992 17.7521 9.06309 17.6914 9.03797C17.6307 9.01286 17.5657 8.99996 17.5 9ZM10.4971 19.4448C10.5048 19.5147 10.4977 19.5855 10.4763 19.6524C10.4548 19.7194 10.4195 19.7811 10.3726 19.8335C10.3257 19.8859 10.2683 19.9278 10.2041 19.9565C10.1399 19.9852 10.0704 20 10 20H8.00002C7.9297 20 7.86017 19.9852 7.79597 19.9565C7.73177 19.9278 7.67435 19.8859 7.62744 19.8335C7.58054 19.7811 7.5452 19.7194 7.52375 19.6524C7.5023 19.5855 7.49522 19.5147 7.50295 19.4448L7.81838 16.6084C7.30617 16.2359 7.00003 15.6465 7.00003 15C7.00003 13.897 7.89698 13 9.00005 13C10.1031 13 11.0001 13.8969 11.0001 15C11.0001 15.6465 10.6939 16.2359 10.1817 16.6084L10.4971 19.4448ZM13 9H5.00002V6.99998C5.00002 4.79442 6.79444 3 9 3C11.2056 3 13 4.79442 13 6.99998V9Z'
+                                      fill='white'
+                                  />
+                                  </svg>
+                                  ";
+                              }
+                              ?>
                                     <h1>10</h1>
                                     <p>Level</p>
                                 </a>
@@ -3976,15 +3924,12 @@ $soonest = $matched[0] ?? null;
                 </div>
             </div>
         </section>
-
         <section id="level1" class="sub_level">
             <div class="center_content">
                 <h1 class="heading">Levels Of Begginer-A1</h1>
-
                 <div class="cards">
                     <div class="card">
                         <img src="../img/cour/card-01.png" alt="" class="bg" />
-
                         <div class="top">
                             <h1>Level 1</h1>
                             <p>
@@ -3996,14 +3941,14 @@ $soonest = $matched[0] ?? null;
                         <div class="bottom">
                             <div class="progress">
                                 <!-- <svg class="progress-ring" width="44" height="44">
-                    <circle
-                    class="progress-ring__circle"
-                    cx="22"
-                    cy="22"
-                    r="20"
-                    stroke-width="4"
-                    />
-                </svg> -->
+                           <circle
+                           class="progress-ring__circle"
+                           cx="22"
+                           cy="22"
+                           r="20"
+                           stroke-width="4"
+                           />
+                           </svg> -->
                                 <!-- <div class="progress-text">100%</div> -->
                             </div>
                             <a href="<?php echo getLink($cursosArray, 21, $urlCourse); ?>" class="btn">View Level 1</a>
@@ -4011,7 +3956,6 @@ $soonest = $matched[0] ?? null;
                     </div>
                     <div class="card">
                         <img src="../img/cour/card-02.png" alt="" class="bg" />
-
                         <div class="top">
                             <h1>Level 2</h1>
                             <p>
@@ -4023,14 +3967,14 @@ $soonest = $matched[0] ?? null;
                         <div class="bottom">
                             <div class="progress">
                                 <!-- <svg class="progress-ring" width="44" height="44">
-                    <circle
-                    class="progress-ring__circle"
-                    cx="22"
-                    cy="22"
-                    r="20"
-                    stroke-width="4"
-                    />
-                </svg> -->
+                           <circle
+                           class="progress-ring__circle"
+                           cx="22"
+                           cy="22"
+                           r="20"
+                           stroke-width="4"
+                           />
+                           </svg> -->
                                 <!-- <div class="progress-text">100%</div> -->
                             </div>
                             <a href="<?php echo getLink($cursosArray, 10, $urlCourse); ?>" class="btn">View Level 2</a>
@@ -4039,16 +3983,12 @@ $soonest = $matched[0] ?? null;
                 </div>
             </div>
         </section>
-
-
         <section id="level2" class="sub_level">
             <div class="center_content">
                 <h1 class="heading">Levels Of Elementary-A2</h1>
-
                 <div class="cards">
                     <div class="card">
                         <img src="../img/cour/card-01.png" alt="" class="bg" />
-
                         <div class="top">
                             <h1>Level 3</h1>
                             <p>
@@ -4060,14 +4000,14 @@ $soonest = $matched[0] ?? null;
                         <div class="bottom">
                             <div class="progress">
                                 <!-- <svg class="progress-ring" width="44" height="44">
-                    <circle
-                    class="progress-ring__circle"
-                    cx="22"
-                    cy="22"
-                    r="20"
-                    stroke-width="4"
-                    />
-                </svg> -->
+                           <circle
+                           class="progress-ring__circle"
+                           cx="22"
+                           cy="22"
+                           r="20"
+                           stroke-width="4"
+                           />
+                           </svg> -->
                                 <!-- <div class="progress-text">100%</div> -->
                             </div>
                             <a href="<?php echo getLink($cursosArray, 22, $urlCourse); ?>" class="btn">View Level 3</a>
@@ -4075,7 +4015,6 @@ $soonest = $matched[0] ?? null;
                     </div>
                     <div class="card">
                         <img src="../img/cour/card-02.png" alt="" class="bg" />
-
                         <div class="top">
                             <h1>Level 4</h1>
                             <p>
@@ -4087,14 +4026,14 @@ $soonest = $matched[0] ?? null;
                         <div class="bottom">
                             <div class="progress">
                                 <!-- <svg class="progress-ring" width="44" height="44">
-                    <circle
-                    class="progress-ring__circle"
-                    cx="22"
-                    cy="22"
-                    r="20"
-                    stroke-width="4"
-                    />
-                </svg> -->
+                           <circle
+                           class="progress-ring__circle"
+                           cx="22"
+                           cy="22"
+                           r="20"
+                           stroke-width="4"
+                           />
+                           </svg> -->
                                 <!-- <div class="progress-text">100%</div> -->
                             </div>
                             <a href="<?php echo getLink($cursosArray, 12, $urlCourse); ?>" class="btn">View Level 4</a>
@@ -4103,15 +4042,12 @@ $soonest = $matched[0] ?? null;
                 </div>
             </div>
         </section>
-
         <section id="level3" class="sub_level">
             <div class="center_content">
                 <h1 class="heading">Levels Of Intermediate-B1</h1>
-
                 <div class="cards">
                     <div class="card">
                         <img src="../img/cour/Figure2.png" alt="" class="bg" />
-
                         <div class="top">
                             <h1>Level 5</h1>
                             <p>
@@ -4123,14 +4059,14 @@ $soonest = $matched[0] ?? null;
                         <div class="bottom">
                             <div class="progress">
                                 <!-- <svg class="progress-ring" width="44" height="44">
-                    <circle
-                    class="progress-ring__circle"
-                    cx="22"
-                    cy="22"
-                    r="20"
-                    stroke-width="4"
-                    />
-                </svg> -->
+                           <circle
+                           class="progress-ring__circle"
+                           cx="22"
+                           cy="22"
+                           r="20"
+                           stroke-width="4"
+                           />
+                           </svg> -->
                                 <!-- <div class="progress-text">100%</div> -->
                             </div>
                             <a href="<?php echo getLink($cursosArray, 13, $urlCourse); ?>" class="btn">View Level 5</a>
@@ -4138,7 +4074,6 @@ $soonest = $matched[0] ?? null;
                     </div>
                     <div class="card">
                         <img src="../img/cour/Figure.png" alt="" class="bg" />
-
                         <div class="top">
                             <h1>Level 6</h1>
                             <p>
@@ -4150,14 +4085,14 @@ $soonest = $matched[0] ?? null;
                         <div class="bottom">
                             <div class="progress">
                                 <!-- <svg class="progress-ring" width="44" height="44">
-                    <circle
-                    class="progress-ring__circle"
-                    cx="22"
-                    cy="22"
-                    r="20"
-                    stroke-width="4"
-                    />
-                </svg> -->
+                           <circle
+                           class="progress-ring__circle"
+                           cx="22"
+                           cy="22"
+                           r="20"
+                           stroke-width="4"
+                           />
+                           </svg> -->
                                 <!-- <div class="progress-text">100%</div> -->
                             </div>
                             <a href="<?php echo getLink($cursosArray, 14, $urlCourse); ?>" class="btn">View Level 6</a>
@@ -4166,15 +4101,12 @@ $soonest = $matched[0] ?? null;
                 </div>
             </div>
         </section>
-
         <section id="level4" class="sub_level">
             <div class="center_content">
                 <h1 class="heading">Levels Of Upper Intermediate-B2</h1>
-
                 <div class="cards">
                     <div class="card">
                         <img src="../img/cour/Figure2.png" alt="" class="bg" />
-
                         <div class="top">
                             <h1>Level 7</h1>
                             <p>
@@ -4186,14 +4118,14 @@ $soonest = $matched[0] ?? null;
                         <div class="bottom">
                             <div class="progress">
                                 <!-- <svg class="progress-ring" width="44" height="44">
-                    <circle
-                    class="progress-ring__circle"
-                    cx="22"
-                    cy="22"
-                    r="20"
-                    stroke-width="4"
-                    />
-                </svg> -->
+                           <circle
+                           class="progress-ring__circle"
+                           cx="22"
+                           cy="22"
+                           r="20"
+                           stroke-width="4"
+                           />
+                           </svg> -->
                                 <!-- <div class="progress-text">100%</div> -->
                             </div>
                             <a href="<?php echo getLink($cursosArray, 15, $urlCourse); ?>" class="btn">View Level 7</a>
@@ -4201,7 +4133,6 @@ $soonest = $matched[0] ?? null;
                     </div>
                     <div class="card">
                         <img src="../img/cour/Figure.png" alt="" class="bg" />
-
                         <div class="top">
                             <h1>Level 8</h1>
                             <p>
@@ -4213,14 +4144,14 @@ $soonest = $matched[0] ?? null;
                         <div class="bottom">
                             <div class="progress">
                                 <!-- <svg class="progress-ring" width="44" height="44">
-                    <circle
-                    class="progress-ring__circle"
-                    cx="22"
-                    cy="22"
-                    r="20"
-                    stroke-width="4"
-                    />
-                </svg> -->
+                           <circle
+                           class="progress-ring__circle"
+                           cx="22"
+                           cy="22"
+                           r="20"
+                           stroke-width="4"
+                           />
+                           </svg> -->
                                 <!-- <div class="progress-text">100%</div> -->
                             </div>
                             <a href="<?php echo getLink($cursosArray, 16, $urlCourse); ?>" class="btn">View Level 8</a>
@@ -4229,15 +4160,12 @@ $soonest = $matched[0] ?? null;
                 </div>
             </div>
         </section>
-
         <section id="level5" class="sub_level">
             <div class="center_content">
                 <h1 class="heading">Levels Of Advanced-C1</h1>
-
                 <div class="cards">
                     <div class="card">
                         <img src="../img/cour/FigureF1.png" alt="" class="bg" />
-
                         <div class="top">
                             <h1>Level 9</h1>
                             <p>
@@ -4249,14 +4177,14 @@ $soonest = $matched[0] ?? null;
                         <div class="bottom">
                             <div class="progress">
                                 <!-- <svg class="progress-ring" width="44" height="44">
-                    <circle
-                    class="progress-ring__circle"
-                    cx="22"
-                    cy="22"
-                    r="20"
-                    stroke-width="4"
-                    />
-                </svg> -->
+                           <circle
+                           class="progress-ring__circle"
+                           cx="22"
+                           cy="22"
+                           r="20"
+                           stroke-width="4"
+                           />
+                           </svg> -->
                                 <!-- <div class="progress-text">100%</div> -->
                             </div>
                             <a href="<?php echo getLink($cursosArray, 17, $urlCourse); ?>" class="btn">View Level 9</a>
@@ -4264,7 +4192,6 @@ $soonest = $matched[0] ?? null;
                     </div>
                     <div class="card">
                         <img src="../img/cour/FigureF2.png" alt="" class="bg" />
-
                         <div class="top">
                             <h1>Level 10</h1>
                             <p>
@@ -4276,14 +4203,14 @@ $soonest = $matched[0] ?? null;
                         <div class="bottom">
                             <div class="progress">
                                 <!-- <svg class="progress-ring" width="44" height="44">
-                    <circle
-                    class="progress-ring__circle"
-                    cx="22"
-                    cy="22"
-                    r="20"
-                    stroke-width="4"
-                    />
-                </svg> -->
+                           <circle
+                           class="progress-ring__circle"
+                           cx="22"
+                           cy="22"
+                           r="20"
+                           stroke-width="4"
+                           />
+                           </svg> -->
                                 <!-- <div class="progress-text">100%</div> -->
                             </div>
                             <a href="<?php echo getLink($cursosArray, 18, $urlCourse); ?>" class="btn">View Level 10</a>
@@ -4292,7 +4219,6 @@ $soonest = $matched[0] ?? null;
                 </div>
             </div>
         </section>
-
         <section class="subscriptions">
             <div class="topPart">
                 <h1>Subscriptions</h1>
@@ -4310,40 +4236,39 @@ $soonest = $matched[0] ?? null;
                         <div class="row_02">
                             <h1>English with Wade Warren</h1>
                             <!-- <div class="balance">
-                <img src="../img/cour/icons/wallet_lg.png" alt="" />
-                <p>Balance : 0 Lessons</p>
-                </div>
-                <div class="balance revision">
-                <img src="../img/cour/icons/revision.png" alt="">
-                <p>Subscription to 1 lesson renews 
-                    automatically on February 18</p>
-                </div> -->
+                        <img src="../img/cour/icons/wallet_lg.png" alt="" />
+                        <p>Balance : 0 Lessons</p>
+                        </div>
+                        <div class="balance revision">
+                        <img src="../img/cour/icons/revision.png" alt="">
+                        <p>Subscription to 1 lesson renews 
+                            automatically on February 18</p>
+                        </div> -->
                             <p class="text">
                                 Start a Monthly Subscription and set up the schedule
                             </p>
                         </div>
                     </div>
                     <div class="row_03">
-                        <a href="" class="btn subscribe subscribe-modal-open">Subscribe</a>
+                        <a href="#" class="btn subscribe subscribe-modal-open-teacher">Subscribe</a>
                         <!-- <div class="options">
-                <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="4"
-                viewBox="0 0 18 4"
-                fill="none"
-                >
-                <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M0 0.00012207H4V4.00012H0V0.00012207ZM7 0.00012207H11V4.00012H7V0.00012207ZM18 0.00012207H14V4.00012H18V0.00012207Z"
-                    fill="#121117"
-                />
-                </svg>
-            </div> -->
+                     <svg
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="18"
+                     height="4"
+                     viewBox="0 0 18 4"
+                     fill="none"
+                     >
+                     <path
+                         fill-rule="evenodd"
+                         clip-rule="evenodd"
+                         d="M0 0.00012207H4V4.00012H0V0.00012207ZM7 0.00012207H11V4.00012H7V0.00012207ZM18 0.00012207H14V4.00012H18V0.00012207Z"
+                         fill="#121117"
+                     />
+                     </svg>
+                     </div> -->
                     </div>
                 </div>
-
                 <div class="card">
                     <div class="card_top">
                         <div class="row_01">
@@ -4380,7 +4305,35 @@ $soonest = $matched[0] ?? null;
                         </div>
                     </div>
                 </div>
+                <div class="card">
+                    <div class="card_top">
+                        <div class="row_01">
+                            <div class="imageContainer">
+                                <img src="../img/subs/9-1.png" alt="" />
+                            </div>
+                            <p class="status active">Cancelled</p>
+                        </div>
+                        <div class="row_02">
+                            <h1>English with Karen</h1>
+                            <div class="balance">
+                                <img src="../img/cour/icons/wallet_lg.png" alt="" />
+                                <p>Balance : 0 Lessons</p>
+                            </div>
+                            <div class="balance revision">
 
+                                <p>
+
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row_03">
+                        <button href="" class="btn re-subscribe">
+                            Resubscribe
+                        </button>
+
+                    </div>
+                </div>
                 <div class="card">
                     <div class="card_top">
                         <div class="row_01">
@@ -4417,7 +4370,6 @@ $soonest = $matched[0] ?? null;
                         </div>
                     </div>
                 </div>
-
                 <div class="anotherOptions">
                     <a href="" class="anotherOptions_card">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="33" viewBox="0 0 32 33" fill="none">
@@ -4428,7 +4380,6 @@ $soonest = $matched[0] ?? null;
                                 d="M24 8.5906C24 8.23697 23.8596 7.89784 23.6095 7.64779C23.3595 7.39774 23.0203 7.25726 22.6667 7.25726H10.6667C9.33168 7.25696 8.01779 7.59078 6.8448 8.22828C5.6718 8.86578 4.677 9.7867 3.95104 10.9071C3.22509 12.0275 2.79107 13.3118 2.68855 14.6429C2.58602 15.974 2.81824 17.3096 3.36405 18.5279C3.51047 18.8478 3.77738 19.0968 4.10661 19.2208C4.43585 19.3447 4.80072 19.3336 5.12174 19.1897C5.44276 19.0458 5.69391 18.7809 5.82046 18.4526C5.94702 18.1244 5.93872 17.7594 5.79738 17.4373C5.43358 16.625 5.27884 15.7345 5.34729 14.8471C5.41573 13.9597 5.70517 13.1036 6.18923 12.3567C6.67329 11.6098 7.33658 10.9959 8.11864 10.571C8.9007 10.1461 9.77667 9.92362 10.6667 9.92393H22.6667C23.0203 9.92393 23.3595 9.78345 23.6095 9.53341C23.8596 9.28336 24 8.94422 24 8.5906ZM8.00005 24.5906C8.00005 24.9442 8.14052 25.2834 8.39057 25.5334C8.64062 25.7835 8.97976 25.9239 9.33338 25.9239H21.3334C22.6684 25.9242 23.9823 25.5904 25.1553 24.9529C26.3283 24.3154 27.3231 23.3945 28.0491 22.2741C28.775 21.1537 29.209 19.8694 29.3115 18.5383C29.4141 17.2072 29.1819 15.8716 28.636 14.6533C28.4896 14.3334 28.2227 14.0844 27.8935 13.9604C27.5642 13.8365 27.1994 13.8476 26.8784 13.9915C26.5573 14.1354 26.3062 14.4003 26.1796 14.7286C26.0531 15.0568 26.0614 15.4218 26.2027 15.7439C26.5665 16.5562 26.7213 17.4467 26.6528 18.3341C26.5844 19.2215 26.2949 20.0776 25.8109 20.8245C25.3268 21.5714 24.6635 22.1853 23.8815 22.6102C23.0994 23.0351 22.2234 23.2576 21.3334 23.2573H9.33338C8.97976 23.2573 8.64062 23.3977 8.39057 23.6478C8.14052 23.8978 8.00005 24.237 8.00005 24.5906Z"
                                 fill="black" />
                         </svg>
-
                         <p>Transfer Lesson or Subscription</p>
                     </a>
                     <a href="" class="anotherOptions_card">
@@ -4437,7 +4388,6 @@ $soonest = $matched[0] ?? null;
                                 d="M28.8701 27.2282L23.7441 22.1022C25.3072 20.0644 26.153 17.5671 26.1498 14.9989C26.1498 11.8613 24.928 8.91266 22.7096 6.69425C21.6216 5.60018 20.3274 4.73278 18.9019 4.14226C17.4764 3.55174 15.9479 3.24983 14.405 3.25401C11.2682 3.25401 8.31955 4.47584 6.10035 6.69425C1.52205 11.2733 1.52205 18.7244 6.10035 23.3035C7.18832 24.3976 8.48253 25.265 9.90803 25.8556C11.3335 26.4461 12.862 26.748 14.405 26.7437C17.0083 26.7437 19.4748 25.891 21.5091 24.3372L26.6351 29.464C26.9433 29.7722 27.348 29.9271 27.7526 29.9271C28.1572 29.9271 28.5619 29.7722 28.8701 29.464C29.017 29.3172 29.1334 29.143 29.2129 28.9511C29.2924 28.7593 29.3333 28.5537 29.3333 28.3461C29.3333 28.1385 29.2924 27.9329 29.2129 27.7411C29.1334 27.5493 29.017 27.375 28.8701 27.2282ZM8.33615 21.0685C4.98916 17.7215 4.98995 12.2762 8.33615 8.92926C9.13149 8.12992 10.0774 7.49623 11.1193 7.06484C12.1611 6.63346 13.2782 6.41295 14.4058 6.41606C15.5333 6.41296 16.6502 6.63349 17.6919 7.06487C18.7336 7.49626 19.6794 8.12995 20.4746 8.92926C21.2741 9.72449 21.908 10.6704 22.3396 11.7123C22.7711 12.7541 22.9917 13.8712 22.9886 14.9989C22.9886 17.2916 22.0955 19.4468 20.4746 21.0685C18.8537 22.6902 16.6985 23.5817 14.405 23.5817C12.1131 23.5817 9.95708 22.6886 8.33536 21.0685H8.33615Z"
                                 fill="black" />
                         </svg>
-
                         <p>Find Another Tutor</p>
                     </a>
                 </div>
@@ -4446,7 +4396,7 @@ $soonest = $matched[0] ?? null;
         <section class="subscriptions groupSubscription">
             <div class="topPart">
                 <h1>Group Subscription</h1>
-                <a href="">Manage</a>
+                <a href=""></a>
             </div>
             <div class="bottomPart">
                 <div class="card">
@@ -4459,7 +4409,6 @@ $soonest = $matched[0] ?? null;
                                 <div class="level green">A1-Level 1</div>
                                 <div class="status">Active</div>
                             </div>
-
                             <div class="teacher-info">
                                 <div class="teacher01">
                                     <span>Main Teacher</span>
@@ -4473,7 +4422,6 @@ $soonest = $matched[0] ?? null;
                             </div>
                         </div>
                     </div>
-
                     <div class="title-desc">
                         <h1>English Group Classes (Florida 1)</h1>
                         <p>
@@ -4482,7 +4430,6 @@ $soonest = $matched[0] ?? null;
                             English conversations.
                         </p>
                     </div>
-
                     <div class="schedule">
                         <div class="day active">
                             <label>Mon</label>
@@ -4508,10 +4455,8 @@ $soonest = $matched[0] ?? null;
                             <div class="time">5:40 am</div>
                         </div>
                     </div>
-
                     <button class="btn manage_options">Manage</button>
                 </div>
-
                 <div class="card">
                     <div class="card-top">
                         <div class="tag">
@@ -4522,7 +4467,6 @@ $soonest = $matched[0] ?? null;
                                 <div class="level purple">B1-Level 5</div>
                                 <div class="status">Not Started</div>
                             </div>
-
                             <div class="teacher-info">
                                 <div class="teacher01">
                                     <span>Main Teacher</span>
@@ -4536,7 +4480,6 @@ $soonest = $matched[0] ?? null;
                             </div>
                         </div>
                     </div>
-
                     <div class="title-desc">
                         <h1>English Group Classes (NewYork)</h1>
                         <p>
@@ -4545,7 +4488,6 @@ $soonest = $matched[0] ?? null;
                             English conversations.
                         </p>
                     </div>
-
                     <div class="schedule">
                         <div class="day active">
                             <label>Mon</label>
@@ -4571,10 +4513,8 @@ $soonest = $matched[0] ?? null;
                             <div class="time">5:40 am</div>
                         </div>
                     </div>
-
                     <button class="btn btn subscribe subscribe-modal-open">Change to this group</button>
                 </div>
-
                 <div class="card">
                     <div class="card-top">
                         <div class="tag">
@@ -4585,7 +4525,6 @@ $soonest = $matched[0] ?? null;
                                 <div class="level purple">B1-Level 5</div>
                                 <div class="status">Not Started</div>
                             </div>
-
                             <div class="teacher-info">
                                 <div class="teacher01">
                                     <span>Main Teacher</span>
@@ -4599,7 +4538,6 @@ $soonest = $matched[0] ?? null;
                             </div>
                         </div>
                     </div>
-
                     <div class="title-desc">
                         <h1>English Group Classes (Texas)</h1>
                         <p>
@@ -4608,7 +4546,6 @@ $soonest = $matched[0] ?? null;
                             English conversations.
                         </p>
                     </div>
-
                     <div class="schedule">
                         <div class="day active">
                             <label>Mon</label>
@@ -4634,10 +4571,8 @@ $soonest = $matched[0] ?? null;
                             <div class="time">5:40 am</div>
                         </div>
                     </div>
-
                     <button class="btn subscribe subscribe-modal-open">Subscribe</button>
                 </div>
-
                 <div class="anotherOptions">
                     <a href="" class="anotherOptions_card">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="33" viewBox="0 0 32 33" fill="none">
@@ -4645,16 +4580,12 @@ $soonest = $matched[0] ?? null;
                                 d="M28.8701 27.2282L23.7441 22.1022C25.3072 20.0644 26.153 17.5671 26.1498 14.9989C26.1498 11.8613 24.928 8.91266 22.7096 6.69425C21.6216 5.60018 20.3274 4.73278 18.9019 4.14226C17.4764 3.55174 15.9479 3.24983 14.405 3.25401C11.2682 3.25401 8.31955 4.47584 6.10035 6.69425C1.52205 11.2733 1.52205 18.7244 6.10035 23.3035C7.18832 24.3976 8.48253 25.265 9.90803 25.8556C11.3335 26.4461 12.862 26.748 14.405 26.7437C17.0083 26.7437 19.4748 25.891 21.5091 24.3372L26.6351 29.464C26.9433 29.7722 27.348 29.9271 27.7526 29.9271C28.1572 29.9271 28.5619 29.7722 28.8701 29.464C29.017 29.3172 29.1334 29.143 29.2129 28.9511C29.2924 28.7593 29.3333 28.5537 29.3333 28.3461C29.3333 28.1385 29.2924 27.9329 29.2129 27.7411C29.1334 27.5493 29.017 27.375 28.8701 27.2282ZM8.33615 21.0685C4.98916 17.7215 4.98995 12.2762 8.33615 8.92926C9.13149 8.12992 10.0774 7.49623 11.1193 7.06484C12.1611 6.63346 13.2782 6.41295 14.4058 6.41606C15.5333 6.41296 16.6502 6.63349 17.6919 7.06487C18.7336 7.49626 19.6794 8.12995 20.4746 8.92926C21.2741 9.72449 21.908 10.6704 22.3396 11.7123C22.7711 12.7541 22.9917 13.8712 22.9886 14.9989C22.9886 17.2916 22.0955 19.4468 20.4746 21.0685C18.8537 22.6902 16.6985 23.5817 14.405 23.5817C12.1131 23.5817 9.95708 22.6886 8.33536 21.0685H8.33615Z"
                                 fill="black" />
                         </svg>
-
                         <p>Find Another Group</p>
                     </a>
                 </div>
             </div>
         </section>
     </div>
-
-
-
     <!-- Share Tutor -->
     <!-- =========== -->
     <section class="shareTutor">
@@ -4665,18 +4596,14 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <h1 class="heading">Share this tutor</h1>
-
         <div class="row01">
             <div class="col01">
                 <img src="../img/cour/1.png" alt="" />
             </div>
-
             <div class="col02">
                 <div class="r">
                     <h1>Dinella</h1>
-
                     <div class="rating">
                         <svg width="18" height="17" viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -4685,10 +4612,8 @@ $soonest = $matched[0] ?? null;
                         </svg>
                         <h1>5</h1>
                     </div>
-
                     <p>(28 reviews)</p>
                 </div>
-
                 <div class="r_1">
                     <div class="verified">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -4698,7 +4623,6 @@ $soonest = $matched[0] ?? null;
                         </svg>
                         <p>Verified</p>
                     </div>
-
                     <div class="professional">
                         <svg width="24" height="18" viewBox="0 0 24 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -4710,16 +4634,13 @@ $soonest = $matched[0] ?? null;
                 </div>
             </div>
         </div>
-
         <div class="row02">
             <div class="link">
                 <p id="copyLinkText">https://latingles.com/Dinela26121264</p>
                 <img src="../img/cour/icons/copy.png" alt="" class="copyLinkBTN" />
             </div>
-
             <button class="copyLinkBTN">Copy link</button>
         </div>
-
         <div class="socialLinks">
             <a href="">
                 <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -4729,46 +4650,38 @@ $soonest = $matched[0] ?? null;
                 </svg>
                 <span>Email</span>
             </a>
-
             <a href="">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M15.303 2.61603C14.4768 1.78426 13.4937 1.12473 12.4107 0.675678C11.3277 0.226625 10.1664 -0.00302758 8.994 3.01367e-05C4.078 3.01367e-05 0.0769999 4.00003 0.0739999 8.91903C0.0720007 10.4842 0.482814 12.0223 1.265 13.378L0 18L4.728 16.76C6.03594 17.4724 7.50164 17.8455 8.991 17.845H8.994C13.91 17.845 17.912 13.844 17.914 8.92603C17.9178 7.75393 17.689 6.59272 17.241 5.50961C16.793 4.42651 16.1346 3.443 15.304 2.61603H15.303ZM8.994 16.339H8.991C7.66347 16.3392 6.36032 15.9824 5.218 15.306L4.948 15.145L2.141 15.881L2.891 13.145L2.714 12.865C1.97142 11.683 1.57861 10.3149 1.581 8.91903C1.582 4.83203 4.908 1.50603 8.998 1.50603C10.978 1.50703 12.838 2.27903 14.238 3.68103C14.9284 4.36827 15.4757 5.18559 15.8482 6.08572C16.2206 6.98584 16.4109 7.95089 16.408 8.92503C16.406 13.013 13.08 16.338 8.994 16.338V16.339ZM13.061 10.787C12.838 10.675 11.742 10.137 11.538 10.062C11.333 9.98803 11.185 9.95003 11.037 10.174C10.888 10.397 10.461 10.899 10.331 11.047C10.201 11.197 10.071 11.214 9.848 11.103C9.625 10.991 8.908 10.756 8.056 9.99703C7.393 9.40603 6.946 8.67703 6.816 8.45303C6.686 8.23003 6.802 8.10903 6.913 7.99803C7.013 7.89803 7.136 7.73803 7.248 7.60803C7.36 7.47803 7.396 7.38503 7.471 7.23603C7.545 7.08703 7.508 6.95703 7.452 6.84603C7.397 6.73403 6.951 5.63703 6.765 5.19103C6.584 4.75703 6.4 4.81603 6.264 4.80803C6.12141 4.8023 5.9787 4.79997 5.836 4.80103C5.72309 4.80401 5.61203 4.83033 5.50979 4.87835C5.40756 4.92637 5.31638 4.99504 5.242 5.08003C5.038 5.30303 4.462 5.84203 4.462 6.93903C4.462 8.03503 5.26 9.09503 5.372 9.24403C5.484 9.39403 6.944 11.644 9.179 12.61C9.711 12.84 10.126 12.977 10.449 13.08C10.984 13.249 11.469 13.225 11.853 13.168C12.282 13.104 13.172 12.628 13.358 12.108C13.543 11.588 13.543 11.141 13.488 11.048C13.432 10.955 13.283 10.899 13.06 10.788V10.787H13.061Z"
                         fill="#121117" />
                 </svg>
-
                 <span>WhatsApp</span>
             </a>
-
             <a href="">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M14.546 0H1.455C0.65 0 0 0.65 0 1.455V14.545C0 15.35 0.65 16 1.455 16H14.545C15.35 16 16 15.35 16 14.546V1.455C16 0.65 15.35 0 14.546 0ZM5.057 13.09H2.912V6.188H5.057V13.09ZM3.963 5.2C3.63135 5.2 3.31328 5.06825 3.07876 4.83374C2.84425 4.59922 2.7125 4.28115 2.7125 3.9495C2.7125 3.61785 2.84425 3.29978 3.07876 3.06526C3.31328 2.83075 3.63135 2.699 3.963 2.699C4.29479 2.699 4.61298 2.8308 4.84759 3.06541C5.0822 3.30002 5.214 3.61821 5.214 3.95C5.214 4.28179 5.0822 4.59998 4.84759 4.83459C4.61298 5.0692 4.29479 5.201 3.963 5.201M13.093 13.091H10.95V9.735C10.95 8.935 10.935 7.905 9.835 7.905C8.718 7.905 8.547 8.776 8.547 9.677V13.092H6.403V6.189H8.461V7.132H8.491C8.777 6.589 9.476 6.017 10.52 6.017C12.692 6.017 13.094 7.447 13.094 9.306L13.093 13.091Z"
                         fill="#121117" />
                 </svg>
-
                 <span>LinkedIn</span>
             </a>
-
             <a href="">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M10.482 7.622L17.04 0H15.486L9.793 6.618L5.245 0H0L6.876 10.007L0 18H1.554L7.566 11.011L12.368 18H17.613L10.482 7.622ZM8.354 10.096L7.657 9.099L2.114 1.169H4.5L8.974 7.569L9.671 8.565L15.486 16.884H13.099L8.354 10.096Z"
                         fill="#121117" />
                 </svg>
-
                 <span>X (Twitter)</span>
             </a>
         </div>
     </section>
-
     <!-- Reshedule Lesson -->
     <!-- ================ -->
     <section class="resheduleLesson resheduleLesson_popup">
         <div class="goBack">
             <img src="../img/cour/icons/Goback.png" alt="" />
         </div>
-
         <div class="closeIcon secondLayerBackdropClose">
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -4776,9 +4689,7 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <h1 class="heading">Reshedule lesson</h1>
-
         <div class="row01">
             <p>Current Lesson</p>
             <div class="card">
@@ -4792,17 +4703,14 @@ $soonest = $matched[0] ?? null;
                         <p>Weekly English with Dinella</p>
                     </div>
                 </div>
-
                 <div class="totalLesson">
                     <img src="../img/cour/icons/wallet.png" alt="" />
                     <p>0 lessons</p>
                 </div>
             </div>
         </div>
-
         <div class="newDateAndTime">
             <p>New date and time</p>
-
             <div class="dropdown time_dropdown">
                 <div class="dropdown-button">
                     <p>25 minutes</p>
@@ -4821,7 +4729,6 @@ $soonest = $matched[0] ?? null;
                     <div class="dropdown-item">2 Hours</div>
                 </div>
             </div>
-
             <div class="row02">
                 <div class="date calendarOpen">
                     <p id="selectedData">Monday, Dec 9</p>
@@ -4831,7 +4738,6 @@ $soonest = $matched[0] ?? null;
                             fill="black" />
                     </svg>
                 </div>
-
                 <div class="dropdown limitedTime">
                     <div class="dropdown-button">
                         <p>10:30</p>
@@ -4851,10 +4757,8 @@ $soonest = $matched[0] ?? null;
                 </div>
             </div>
         </div>
-
         <button class="secondLayerBackdropClose">Continue</button>
     </section>
-
     <!-- Change your plan with Ranim A. -->
     <!-- ============================== -->
     <section class="change_your_plane change_your_plane_popup">
@@ -4865,19 +4769,16 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="row01">
             <div class="imageContainer">
                 <img src="../img/cour/1.png" alt="" />
             </div>
-
             <h1>Change your plan with Ranim A.</h1>
         </div>
         <div class="row02">
             <div class="currentPlane">
                 <p>Current plan</p>
             </div>
-
             <h4>4 lessons per week</h4>
             <p>16 lessons · $86 every 4 weeks</p>
         </div>
@@ -4895,14 +4796,12 @@ $soonest = $matched[0] ?? null;
             <button class="btnToContinueChangePlane">Continue</button>
         </div>
     </section>
-
     <!-- Upgrade now? -->
     <!-- ============ -->
     <section class="upgradeNow upgradeNow_popup">
         <div class="backArrow">
             <img src="../img/cour/icons/Goback.png" alt="" />
         </div>
-
         <div class="closeIcon secondLayerBackdropCloses">
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -4910,7 +4809,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="top">
             <h1>Upgrade now?</h1>
             <p>
@@ -4918,29 +4816,24 @@ $soonest = $matched[0] ?? null;
                 cycle renews on December 10
             </p>
         </div>
-
         <div class="bottom">
             <div class="card review_your_changes_popupOpen">
                 <div class="left">
                     <img src="../img/cour/icons/process.png" alt="" />
-
                     <div class="content">
                         <div class="tag">
                             <p>Recommended</p>
                         </div>
-
                         <h1>Proceed with the upgrade now</h1>
                         <p>Start your new plan today with a payment.</p>
                     </div>
                 </div>
-
                 <img src="../img/cour/icons/leftArrow.png" alt="" />
             </div>
             <div class="divider"></div>
             <div class="card great_popup_open">
                 <div class="left">
                     <img src="../img/cour/icons/calander_red.png" alt="" />
-
                     <div class="content">
                         <h1>Wait to upgrade on December 10</h1>
                         <p>
@@ -4949,19 +4842,16 @@ $soonest = $matched[0] ?? null;
                         </p>
                     </div>
                 </div>
-
                 <img src="../img/cour/icons/leftArrow.png" alt="" />
             </div>
         </div>
     </section>
-
     <!-- Review your changes -->
     <!-- =================== -->
     <section class="review_your_changes review_your_changes_popup">
         <div class="backArrow">
             <img src="../img/cour/icons/Goback.png" alt="" />
         </div>
-
         <div class="closeIcon secondLayerBackdropCloses">
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -4969,28 +4859,23 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="review_your_changes_row01">
             <div class="imageContainer">
                 <img src="../img/cour/1.png" alt="" />
             </div>
             <h1>Review your changes</h1>
         </div>
-
         <div class="review_your_changes_row02">
             <div class="row01">
                 <h4>4 lessons per week</h4>
                 <p>16 lessons · $86 every 4 weeks</p>
             </div>
-
             <img src="../img/cour/icons/bottomArrow.png" alt="" />
-
             <div class="row01">
                 <h4>5 lessons per week</h4>
                 <p>20 lessons · $108 every 4 weeks</p>
             </div>
         </div>
-
         <div class="review_your_changes_row03">
             <img src="../img/cour/icons/wallet.png" alt="" />
             <p>
@@ -4998,10 +4883,8 @@ $soonest = $matched[0] ?? null;
                 them before <span>Dec 10</span>.
             </p>
         </div>
-
         <a href="" class="continueBtn">Continue to checkout</a>
     </section>
-
     <!-- Great! We’ve confirmed your upgrade. -->
     <!-- ==================================== -->
     <section class="great_popup">
@@ -5012,24 +4895,20 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="top">
             <div class="highlighted">
                 <h1>5</h1>
             </div>
             <h1>Great! We’ve confirmed your upgrade.</h1>
         </div>
-
         <div class="bottom">
             <p>
                 Starting Dec 10, your plan with Ranim A. will change to 5 lessons per
                 week. Keep up the good work!
             </p>
-
             <button class="secondLayerBackdropClose">Okay, thanks!</button>
         </div>
     </section>
-
     <!-- Cancel lesson -->
     <!-- ============= -->
     <section class="cancel_lesson_popup">
@@ -5040,20 +4919,16 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="top">
             <div class="imageContainer">
                 <img src="../img/cour/1.png" alt="" />
             </div>
-
             <div class="row01">
                 <h1>Cancel lesson</h1>
                 <p>Wednesday, November 20, 15:00-15:50</p>
             </div>
-
             <div class="policy">
                 <img src="../img/cour/icons/policy.png" alt="" />
-
                 <div class="policy_col01">
                     <p>Cancellation policy</p>
                     <p>
@@ -5063,11 +4938,9 @@ $soonest = $matched[0] ?? null;
                 </div>
             </div>
         </div>
-
         <form action="">
             <div class="row">
                 <p>Please choose a reason for canceling</p>
-
                 <div class="dropdown reasonOption">
                     <div class="dropdown-button">
                         <p>Select a reason</p>
@@ -5087,7 +4960,6 @@ $soonest = $matched[0] ?? null;
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <label for="reason">Message for Dinela • Optional</label>
                 <textarea name="reason" id="reason" placeholder="I need to cancel because..."></textarea>
@@ -5096,16 +4968,13 @@ $soonest = $matched[0] ?? null;
                 <button type="submit">Reschedule Instead</button>
                 <button type="submit">Confirm cancellation</button>
             </div>
-
         </form>
     </section>
-
     <!-- Message Toaster -->
     <div class="toaster notActive">
         <div class="correct"></div>
         <p>Successfully toasted!</p>
     </div>
-
     <!-- Calander -->
     <!-- ========= -->
     <div class="calendar-modal" id="calendarModal">
@@ -5118,7 +4987,6 @@ $soonest = $matched[0] ?? null;
             <button class="confirm-btn">Confirm</button>
         </div>
     </div>
-
     <!-- Which tutor? -->
     <!-- ============ -->
     <div class="whichTutor">
@@ -5129,9 +4997,7 @@ $soonest = $matched[0] ?? null;
                     fill="#121117"></path>
             </svg>
         </div>
-
         <h1>Which tutor?</h1>
-
         <div class="tutors">
             <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
@@ -5144,7 +5010,6 @@ $soonest = $matched[0] ?? null;
                             <p>6 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5164,7 +5029,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5184,7 +5048,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5204,7 +5067,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5224,7 +5086,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5232,7 +5093,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5243,7 +5105,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5263,7 +5124,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5271,7 +5131,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5282,7 +5143,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5290,7 +5150,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5301,7 +5162,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5309,7 +5169,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5320,7 +5181,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5328,7 +5188,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5339,7 +5200,6 @@ $soonest = $matched[0] ?? null;
                             <p>6 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5347,7 +5207,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5358,7 +5219,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5366,7 +5226,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5377,7 +5238,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5385,7 +5245,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5396,7 +5257,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5404,7 +5264,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5415,7 +5276,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5423,7 +5283,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5434,7 +5295,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5442,7 +5302,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5453,7 +5314,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5461,7 +5321,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5472,7 +5333,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5480,7 +5340,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5491,7 +5352,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5499,7 +5359,8 @@ $soonest = $matched[0] ?? null;
                             fill="#6A697C" />
                     </svg>
                 </div>
-            </a><a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
+            </a>
+            <a href="/courses/local/customplugin/my_lessons_details_reshedule.php">
                 <div class="tutor_card">
                     <div class="tutor_card_leftSide">
                         <div class="imageContainer">
@@ -5510,7 +5371,6 @@ $soonest = $matched[0] ?? null;
                             <p>0 lessons to schedule</p>
                         </div>
                     </div>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewBox="0 0 7 12" fill="none"
                         class="tutor_card_rightArrow">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -5521,9 +5381,6 @@ $soonest = $matched[0] ?? null;
             </a>
         </div>
     </div>
-
-
-
     <!-- User Options -->
     <!-- ============ -->
     <div class="options userOptions">
@@ -5548,7 +5405,6 @@ $soonest = $matched[0] ?? null;
             <p>Cancel</p>
         </div>
     </div>
-
     <!-- Subcribtion options -->
     <!-- =================== -->
     <div class="options userOptions subscription_dropdown_options">
@@ -5564,7 +5420,7 @@ $soonest = $matched[0] ?? null;
             <img src="../img/cour/icons/dollar.png" alt="" />
             <p>Change your plan</p>
         </div>
-        <div href="" class="option">
+        <div href="" class="option addextralessons">
             <img src="../img/cour/icons/wallet.png" alt="" />
             <p>Add extra lessons</p>
         </div>
@@ -5572,12 +5428,15 @@ $soonest = $matched[0] ?? null;
             <img src="../img/cour/icons/revision.png" alt="" />
             <p>Transfer lessons or subscription</p>
         </div>
-        <div href="" class="option">
+        <div class="option pause-teacher-subscription">
+            <img src="../img/subs/pause-icon.png" alt="" />
+            <p>Pause Subscription</p>
+        </div>
+        <div href="" class="option cancel-teachers-subsciption">
             <img src="../img/cour/icons/cancel.png" alt="" />
             <p>Cancel Subscription</p>
         </div>
     </div>
-
     <div class="options manage_userOptions subscription_dropdown_options" style="top: 1300px; left: 926.095px;">
         <a href="" class="option">
             <img src="../img/cour/icons/revision.png" alt="">
@@ -5591,20 +5450,16 @@ $soonest = $matched[0] ?? null;
             <img src="../img/cour/icons/revision.png" alt="">
             <p>Pause subscription</p>
         </a>
-
-
         <div href="" class="option">
             <img src="../img/cour/icons/cancel.png" alt="">
             <p>Cancel Group Subscription</p>
         </div>
     </div>
-
-
     <section id="sm-manager" class="sm-section">
         <div class="sm-card">
             <h1 class="sm-title">Manage Group Subscription<br>Of Florida 1</h1>
             <nav aria-label="Subscription Options">
-                <ul class="sm-options cancel-group-subsciption">
+                <ul class="sm-options ">
                     <li class="sm-option sm-change-group">
                         <a href="#" class="sm-link">
                             <img src="../img/cour/icons/revision.png" alt="Change group icon" class="sm-icon">
@@ -5623,7 +5478,7 @@ $soonest = $matched[0] ?? null;
                             <span class="sm-text">Pause Subscription</span>
                         </a>
                     </li>
-                    <li class="sm-option">
+                    <li class="sm-option cancel-group-subsciption">
                         <a href="#" class="sm-link">
                             <img src="../img/cour/icons/cancel.png" alt="Cancel subscription icon" class="sm-icon">
                             <span class="sm-text">Cancel Group Subscription</span>
@@ -5634,473 +5489,7 @@ $soonest = $matched[0] ?? null;
         </div>
     </section>
 
-    <div class="subscribe-modal-backdrop" data-subscribe-modal>
-        <div class="subscribe-modal-main">
-            <button class="subscribe-modal__close" data-subscribe-close aria-label="Close">
-                &times;
-            </button>
-            <main class="checkout-page">
-                <div class="checkout-container">
-                    <section class="plan-selection-panel">
-                        <div class="panel-content">
-                            <div class="selection-header">
-                                <!--merged image-->
-                                <div class="header-icon-wrapper">
-                                    <img src="../img/subs/Progress-steps.png" alt="" />
-                                </div>
-                                <div class="selection-header-text">
-                                    <h2>Time to help you succeed at work!</h2>
-                                    <p>Consistency is key to progress, so we recommend a weekly schedule. Each
-                                        <b>50-min</b>
-                                        lesson costs <b>$9.00</b>.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="plan-options">
-                                <div class="plan-option">
-                                    <input type="radio" name="plan" id="plan-1" class="visually-hidden">
-                                    <label for="plan-1" class="plan-label">
-                                        <span class="plan-name">1 Month</span>
-                                        <span class="plan-price"><b>$36.00</b> per Month</span>
-                                    </label>
-                                </div>
-                                <div class="plan-option">
-                                    <input type="radio" name="plan" id="plan-4" class="visually-hidden">
-                                    <label for="plan-4" class="plan-label">
-                                        <span class="plan-name">4 Months</span>
-                                        <span class="plan-price"><b>$72.00</b> per 4 Month</span>
-                                    </label>
-                                </div>
-                                <div class="plan-option">
-                                    <input type="radio" name="plan" id="plan-6" class="visually-hidden" checked>
-                                    <label for="plan-6" class="plan-label">
-                                        <span class="plan-name">6 Months</span>
-                                        <span class="plan-price"><b>$108.00</b> per 6 Month</span>
 
-                                    </label>
-                                </div>
-                                <div class="plan-option">
-                                    <input type="radio" name="plan" id="plan-9" class="visually-hidden">
-                                    <label for="plan-9" class="plan-label">
-                                        <span class="plan-name">9 Months</span>
-                                        <span class="plan-price"><b>$144.00</b> per 9 Month</span>
-                                    </label>
-                                </div>
-                                <div class="plan-option">
-                                    <input type="radio" name="plan" id="plan-12" class="visually-hidden">
-                                    <label for="plan-12" class="plan-label">
-                                        <div class="plan-name-wrapper">
-                                            <span class="plan-name">12 Months</span>
-                                            <span class="popular-badge">Popular</span>
-                                        </div>
-                                        <span class="plan-price"><b>$180.00</b> per 12 Month</span>
-                                    </label>
-                                </div>
-                                <div class="plan-option">
-                                    <input type="radio" name="plan" id="plan-custom" class="visually-hidden">
-                                    <label for="plan-custom" class="plan-label">
-                                        <div class="custom-plan-text">
-                                            <span class="plan-name">Custom plan</span>
-                                            <p>Choose the number of <b>months</b> if that suits you better.</p>
-                                        </div>
-                                        <img src="../img/subs/calendar.png" alt="" />
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <footer class="selection-footer">
-                            <button class="checkout-button">Continue to checkout</button>
-                        </footer>
-                    </section>
-
-                    <div class="confirm-section">
-                        <section id="intro">
-                            <div class="intro-container">
-                                <!--merged image-->
-                                <div class="intro-icon-wrapper">
-                                    <img src="../img/subs/good-choice.png" alt="icon element" />
-                                </div>
-                                <div class="intro-text">
-                                    <h1 class="intro-heading">Good choice. Last step!</h1>
-                                    <p class="intro-subheading">Enter your details to confirm your monthly subscription.
-                                    </p>
-                                </div>
-                            </div>
-                        </section>
-                        <section id="order">
-                            <div class="order-container">
-                                <h2 class="order-title">Your order</h2>
-                                <hr>
-                                <div class="order-items-list">
-                                    <div class="order-item">
-                                        <span class="item-name">6 Months Plan</span>
-                                        <span class="item-price">$108.00</span>
-                                    </div>
-                                    <div class="order-item">
-                                        <div class="item-name-with-icon">
-                                            <span class="item-name">Taxes & fees</span>
-                                            <img src="../img/subs/question-mark.svg" alt="info icon" class="info-icon">
-                                        </div>
-                                        <span class="item-price">$12.00</span>
-                                    </div>
-                                    <div class="order-item">
-                                        <div class="item-name-with-icon">
-                                            <span class="item-name">Your latingles credit</span>
-                                            <img src="../img/subs/question-mark.svg" alt="info icon" class="info-icon">
-                                        </div>
-                                        <span class="item-price">$20.00</span>
-                                    </div>
-                                </div>
-                                <div class="order-total">
-                                    <div class="total-row">
-                                        <h3 class="total-label">Total</h3>
-                                        <span class="total-amount">$120.00</span>
-                                    </div>
-                                    <span class="total-period">per 6 Month</span>
-                                </div>
-                                <!-- Promo code row (hidden until "Have a promo code?" is clicked) -->
-                                <div class="promo-row" hidden>
-                                    <label class="sr-only" for="promo-input">Promo code</label>
-                                    <input id="promo-input" class="promo-input" type="text" inputmode="text"
-                                        autocomplete="off" placeholder="Enter promo code" />
-                                    <button class="promo-apply" type="button">Apply</button>
-                                </div>
-
-                                <a href="#" class="promo-link">Have a promo code?</a>
-                            </div>
-                        </section>
-                        <section id="payment">
-                            <div class="payment-container">
-                                <hr>
-                                <div class="payment-details">
-                                    <h2 class="payment-title">Payment method</h2>
-                                    <div class="payment-selector-container">
-                                        <button class="payment-selector">
-                                            <div class="card-details">
-                                                <img src="../img/subs/visa.png" alt="Visa" alt="Visa" class="card-logo">
-                                                <span class="card-number">visa****7583</span>
-                                            </div>
-                                            <img src="../img/subs/arrow-down.svg" alt="dropdown arrow"
-                                                alt="dropdown arrow" class="dropdown-arrow">
-                                        </button>
-                                        <!-- Payment dropdown menu -->
-                                        <ul class="payment-menu" role="listbox" aria-label="Payment methods" hidden>
-                                            <li class="payment-option" role="option" tabindex="-1" data-method="visa"
-                                                data-label="visa ****7583">
-                                                <span>visa ****7583</span>
-                                            </li>
-                                            <li class="payment-option" role="option" tabindex="-1"
-                                                data-method="new-card" data-label="New Payment Card">
-                                                <span>New Payment Card</span>
-                                            </li>
-                                            <li class="payment-option" role="option" tabindex="-1"
-                                                data-method="apple-pay" data-label="Apple Pay">
-                                                <span>Apple Pay</span>
-                                            </li>
-                                            <li class="payment-option" role="option" tabindex="-1"
-                                                data-method="google-pay" data-label="Google Pay">
-                                                <span>Google Pay</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <!-- New Card form (hidden until 'New Payment Card' selected) -->
-                                    <div class="new-card-form" hidden>
-                                        <label>Card Number</label>
-                                        <input type="text" placeholder="5218 - 9811 - 4323 - 5216" />
-
-                                        <div class="new-card-row">
-                                            <div>
-                                                <label>Expire Date</label>
-                                                <input type="text" placeholder="MM / YYYY" />
-                                            </div>
-                                            <div>
-                                                <label>Security Code</label>
-                                                <input type="text" placeholder="CVC / CVV" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Apple Pay button (hidden until Apple Pay selected) -->
-                                    <button class="apple-pay-button" hidden><img src="../img/subs/apple-pay.svg"
-                                            alt="Apple Pay" alt="Apple Pay" class="apple-pay-logo"></button>
-
-                                    <!-- Google Pay button (hidden until Google Pay selected) -->
-                                    <button class="google-pay-button" hidden><img src="../img/subs/google-pay.svg"
-                                            alt="Google Pay" alt="Google Pay" class="google-pay-logo"></button>
-
-                                    <button class="confirm-button">Confirm monthly subscription</button>
-                                    <p class="policy-text">
-                                        By pressing the "Confirm monthly subscription" button, you agree to <a href="#"
-                                            class="policy-link">LAtingles’s Refund and Payment Policy</a>.
-                                    </p>
-                                    <div class="info-box-cancellation">
-                                        <img src="../img/subs/check-mark.svg" alt="checkmark" class="info-icon">
-                                        <p>You can change your tutor for free or cancel your subscriptioat any time</p>
-                                    </div>
-                                    <div class="info-box-renewal">
-                                        <h3 class="renewal-title">Renews automatically every 6 Months</h3>
-                                        <p class="renewal-text">We will charge <strong>$120.00</strong> to your saved
-                                            payment method to add <strong>6 Months</strong> plan unless you cancel your
-                                            subscription</p>
-                                    </div>
-                                    <p class="security-text">It’s safe to pay on Latingles. All transactions are
-                                        protected
-                                        by SSL encryption.</p>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-
-                    <section class="plan-summary-panel">
-                        <button class="close-button" data-subscribe-close aria-label="Close">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13"
-                                fill="none">
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
-                                    fill="#121117"></path>
-                            </svg>
-                        </button>
-                        <div class="summary-card">
-
-                            <div class="summary-header">
-                                <h3>Your learning plan</h3>
-                                <a href="#" class="link open-faq-modal">See how our plans work</a>
-                            </div>
-                            <hr class="separator">
-                            <div class="summary-body">
-                                <div class="plan-title-section">
-                                    <h4>6 Months Plan</h4>
-                                    <p>That’s <b>6 Months Plan at $108.00.</b></p>
-                                    <span class="flexible-badge"><img src="${ASSET_PATH}/8160_24684.svg" alt="">Flexible
-                                        plan</span>
-                                </div>
-
-                                <section id="plan-selector">
-                                    <div class="plan-container">
-                                        <div class="plan-header-group">
-                                            <h2 class="plan-title">How many Months would you like to<br>Select?</h2>
-                                            <div class="plan-dropdown" role="button" tabindex="0">
-                                                <span class="plan-dropdown-value">12</span>
-                                                <img src="../img/subs/arrow-down.svg" alt="Dropdown arrow"
-                                                    class="plan-dropdown-arrow">
-                                                <section id="pricing-options">
-                                                    <div class="pricing-list-container">
-                                                        <ul class="pricing-list">
-                                                            <li class="pricing-item">
-                                                                <span class="item-label">4 Months</span>
-                                                                <span class="item-price">$72.00</span>
-                                                            </li>
-                                                            <li class="pricing-item">
-                                                                <span class="item-label">5 Months</span>
-                                                                <span class="item-price">$90.00</span>
-                                                            </li>
-                                                            <li class="pricing-item">
-                                                                <span class="item-label">6 Months</span>
-                                                                <span class="item-price">$108.00</span>
-                                                            </li>
-                                                            <li class="pricing-item">
-                                                                <span class="item-label">7 Months</span>
-                                                                <span class="item-price">$120.00</span>
-                                                            </li>
-                                                            <li class="pricing-item">
-                                                                <span class="item-label">8 Months</span>
-                                                                <span class="item-price">$135.00</span>
-                                                            </li>
-                                                            <li class="pricing-item">
-                                                                <span class="item-label">9 Months</span>
-                                                                <span class="item-price">$144.00</span>
-                                                            </li>
-                                                            <li class="pricing-item">
-                                                                <span class="item-label">10 Months</span>
-                                                                <span class="item-price">$156.00</span>
-                                                            </li>
-                                                            <li class="pricing-item">
-                                                                <span class="item-label">11 Months</span>
-                                                                <span class="item-price">$170.00</span>
-                                                            </li>
-                                                            <li class="pricing-item">
-                                                                <span class="item-label">12 Months</span>
-                                                                <span class="item-price">$180.00</span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </section>
-
-                                            </div>
-
-                                        </div>
-
-                                        <hr class="plan-separator">
-
-                                        <div class="plan-details">
-                                            <div class="plan-duration">
-                                                <p class="duration-number">12</p>
-                                                <p class="duration-label">Months</p>
-                                            </div>
-                                            <div class="plan-pricing">
-                                                <div class="plan-pricing-sub">
-                                                    <p class="price-amount">$180.00</p>
-                                                    <div class="plan-badge">save 20%</div>
-                                                </div>
-
-                                                <p class="price-description">charged per 12 Month</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
-                                <ul class="features-list">
-                                    <li class="feature-item">
-                                        <div class="feature-icon-wrapper"><img src="../img/subs/calender-1.png" alt="">
-                                        </div>
-                                        <p>your <b>lessons will be scheduled for 6 Months</b></p>
-                                    </li>
-                                    <li class="feature-item">
-                                        <div class="feature-icon-wrapper"><img src="../img/subs/cap.png" alt=""></div>
-                                        <p>Change your tutor <b>for free at any time.</b></p>
-                                    </li>
-                                    <li class="feature-item">
-                                        <div class="feature-icon-wrapper"><img src="../img/subs/stop.png" alt=""></div>
-                                        <p>Cancel your plan <b>at any time.</b></p>
-                                    </li>
-                                    <li class="feature-item">
-                                        <div class="feature-icon-wrapper"><img src="../img/subs/clock.png" alt=""></div>
-                                        <p>Change the duration of your classes <b>at any time.</b></p>
-                                    </li>
-                                </ul>
-                            </div>
-                            <hr class="separator">
-                            <div class="group-details">
-                                <img src="../img/subs/group-section/1.png" alt="Florida 1" class="group-logo">
-                                <div class="group-info">
-                                    <div class="group-header">
-                                        <h5 class="group-name">English Group (NewYork)</h5>
-                                        <div class="group-rating">
-                                            <img src="../img/subs/star.png" alt="star icon">
-                                            <span class="rating-score">5</span>
-                                            <a href="#" class="link">(3 reviews)</a>
-                                        </div>
-                                    </div>
-                                    <div class="group-schedule">
-                                        <!--merged image-->
-                                        <div class="tutor-avatars">
-                                            <img src="../img/subs/1.png" alt="Tutor avatar">
-                                            <img src="../img/subs/2.png" alt="Tutor avatar">
-                                        </div>
-                                        <div class="time-tags">
-                                            <span class="time-tag">Mon - 5: 40 am</span>
-                                            <span class="time-tag">Tue - 5: 40 am</span>
-                                            <span class="time-tag">Fri - 5: 40 am</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-
-
-
-                </div>
-            </main>
-
-            <!-- Modal + overlay -->
-            <div class="modal-overlay" data-faq-overlay hidden>
-                <div class="modal modal-faq" data-faq>
-                    <button class="modal-close" type="button" aria-label="Close" data-faq-close>&times;</button>
-
-                    <h2 id="faq-modal-title" class="modal-title">See how plans works</h2>
-
-                    <div class="faq" data-faq>
-                        <!-- Item -->
-                        <section class="faq-item">
-                            <h3>
-                                <button class="faq-trigger" aria-expanded="false" aria-controls="faq-p1" id="faq-h1">
-                                    How to schedule your lessons
-                                    <span class="chev" aria-hidden="true"><img src="../img/subs/arrow-down.svg"
-                                            alt=""></span>
-                                </button>
-                            </h3>
-                            <div id="faq-p1" class="faq-panel" role="region" aria-labelledby="faq-h1" hidden>
-                                <div class="faq-panel-inner">
-                                    Dummy content: Go to “My Lessons”, pick a time slot, and confirm. You’ll receive a
-                                    calendar invite and in-app reminder.
-                                </div>
-                            </div>
-                        </section>
-
-                        <!-- Item -->
-                        <section class="faq-item">
-                            <h3>
-                                <button class="faq-trigger" aria-expanded="false" aria-controls="faq-p2" id="faq-h2">
-                                    How to change your tutor
-                                    <span class="chev" aria-hidden="true"><img src="../img/subs/arrow-down.svg"
-                                            alt=""></span>
-                                </button>
-                            </h3>
-                            <div id="faq-p2" class="faq-panel" role="region" aria-labelledby="faq-h2" hidden>
-                                <div class="faq-panel-inner">
-                                    Dummy content: From your dashboard, choose “Change tutor”, review suggestions, and
-                                    confirm. Your plan and credits carry over.
-                                </div>
-                            </div>
-                        </section>
-
-                        <!-- Item -->
-                        <section class="faq-item">
-                            <h3>
-                                <button class="faq-trigger" aria-expanded="false" aria-controls="faq-p3" id="faq-h3">
-                                    How to cancel your plan
-                                    <span class="chev" aria-hidden="true"><img src="../img/subs/arrow-down.svg"
-                                            alt=""></span>
-                                </button>
-                            </h3>
-                            <div id="faq-p3" class="faq-panel" role="region" aria-labelledby="faq-h3" hidden>
-                                <div class="faq-panel-inner">
-                                    Dummy content: Open “Billing & Plan”, click “Cancel plan”, follow the steps, and
-                                    you’ll see your end date immediately.
-                                </div>
-                            </div>
-                        </section>
-
-                        <!-- Item -->
-                        <section class="faq-item">
-                            <h3>
-                                <button class="faq-trigger" aria-expanded="false" aria-controls="faq-p4" id="faq-h4">
-                                    How to change your renewal date
-                                    <span class="chev" aria-hidden="true"><img src="../img/subs/arrow-down.svg"
-                                            alt=""></span>
-                                </button>
-                            </h3>
-                            <div id="faq-p4" class="faq-panel" role="region" aria-labelledby="faq-h4" hidden>
-                                <div class="faq-panel-inner">
-                                    Dummy content: In “Billing & Plan”, choose “Change renewal”, select a new date, and
-                                    confirm the proration preview.
-                                </div>
-                            </div>
-                        </section>
-
-                        <!-- Item -->
-                        <section class="faq-item">
-                            <h3>
-                                <button class="faq-trigger" aria-expanded="false" aria-controls="faq-p5" id="faq-h5">
-                                    How automatic payments work
-                                    <span class="chev" aria-hidden="true"><img src="../img/subs/arrow-down.svg"
-                                            alt=""></span>
-                                </button>
-                            </h3>
-                            <div id="faq-p5" class="faq-panel" role="region" aria-labelledby="faq-h5" hidden>
-                                <div class="faq-panel-inner">
-                                    Dummy content: We charge your saved method on the renewal date. You’ll get a receipt
-                                    and can update payment any time.
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
 
 
     <div class="subscribe-group-modal-backdrop js-checkout-modal">
@@ -6114,8 +5503,6 @@ $soonest = $matched[0] ?? null;
             </button>
             <main class="checkout-page">
                 <div class="checkout-container">
-
-
                     <div class="confirm-section-sub">
                         <section id="intro">
                             <div class="intro-container">
@@ -6168,7 +5555,6 @@ $soonest = $matched[0] ?? null;
                                         autocomplete="off" placeholder="Enter promo code" />
                                     <button class="promo-apply" type="button">Apply</button>
                                 </div>
-
                                 <a href="#" class="promo-link">Have a promo code?</a>
                             </div>
                         </section>
@@ -6210,7 +5596,6 @@ $soonest = $matched[0] ?? null;
                                     <div class="new-card-form" hidden>
                                         <label>Card Number</label>
                                         <input type="text" placeholder="5218 - 9811 - 4323 - 5216" />
-
                                         <div class="new-card-row">
                                             <div>
                                                 <label>Expire Date</label>
@@ -6222,15 +5607,12 @@ $soonest = $matched[0] ?? null;
                                             </div>
                                         </div>
                                     </div>
-
                                     <!-- Apple Pay button (hidden until Apple Pay selected) -->
                                     <button class="apple-pay-button" hidden><img src="../img/subs/apple-pay.svg"
                                             alt="Apple Pay" alt="Apple Pay" class="apple-pay-logo"></button>
-
                                     <!-- Google Pay button (hidden until Google Pay selected) -->
                                     <button class="google-pay-button" hidden><img src="../img/subs/google-pay.svg"
                                             alt="Google Pay" alt="Google Pay" class="google-pay-logo"></button>
-
                                     <button class="confirm-button">Confirm monthly subscription</button>
                                     <p class="policy-text">
                                         By pressing the "Confirm monthly subscription" button, you agree to <a href="#"
@@ -6244,20 +5626,19 @@ $soonest = $matched[0] ?? null;
                                         <h3 class="renewal-title">Renews automatically every 6 Months</h3>
                                         <p class="renewal-text">We will charge <strong>$120.00</strong> to your saved
                                             payment method to add <strong>6 Months</strong> plan unless you cancel your
-                                            subscription</p>
+                                            subscription
+                                        </p>
                                     </div>
                                     <p class="security-text">It’s safe to pay on Latingles. All transactions are
                                         protected
-                                        by SSL encryption.</p>
+                                        by SSL encryption.
+                                    </p>
                                 </div>
                             </div>
                         </section>
                     </div>
-
                     <section class="plan-summary-panel">
-
                         <div class="summary-card">
-
                             <div class="summary-header">
                                 <h3>Your learning plan</h3>
                                 <a href="#" class="link open-faq-modal">See how our plans work</a>
@@ -6270,8 +5651,6 @@ $soonest = $matched[0] ?? null;
                                     <span class="flexible-badge"><img src="${ASSET_PATH}/8160_24684.svg" alt="">Flexible
                                         plan</span>
                                 </div>
-
-
                                 <ul class="features-list">
                                     <li class="feature-item">
                                         <div class="feature-icon-wrapper"><img src="../img/subs/calender-1.png" alt="">
@@ -6320,20 +5699,13 @@ $soonest = $matched[0] ?? null;
                             </div>
                         </div>
                     </section>
-
-
-
-
                 </div>
             </main>
-
             <!-- Modal + overlay -->
             <div class="modal-overlay" data-faq-overlay hidden>
                 <div class="modal modal-faq" data-faq>
                     <button class="modal-close" type="button" aria-label="Close" data-faq-close>&times;</button>
-
                     <h2 id="faq-modal-title" class="modal-title">See how plans works</h2>
-
                     <div class="faq" data-faq>
                         <!-- Item -->
                         <section class="faq-item">
@@ -6351,7 +5723,6 @@ $soonest = $matched[0] ?? null;
                                 </div>
                             </div>
                         </section>
-
                         <!-- Item -->
                         <section class="faq-item">
                             <h3>
@@ -6368,7 +5739,6 @@ $soonest = $matched[0] ?? null;
                                 </div>
                             </div>
                         </section>
-
                         <!-- Item -->
                         <section class="faq-item">
                             <h3>
@@ -6385,7 +5755,6 @@ $soonest = $matched[0] ?? null;
                                 </div>
                             </div>
                         </section>
-
                         <!-- Item -->
                         <section class="faq-item">
                             <h3>
@@ -6402,7 +5771,6 @@ $soonest = $matched[0] ?? null;
                                 </div>
                             </div>
                         </section>
-
                         <!-- Item -->
                         <section class="faq-item">
                             <h3>
@@ -6422,10 +5790,8 @@ $soonest = $matched[0] ?? null;
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
-
     <section class="plan-selection-panel-sub js-plan-panel">
         <div class="panel-content">
             <div class="selection-header">
@@ -6461,7 +5827,6 @@ $soonest = $matched[0] ?? null;
                     <label for="plan-6" class="plan-label">
                         <span class="plan-name">6 Months</span>
                         <span class="plan-price"><b>$108.00</b> per 6 Month</span>
-
                     </label>
                 </div>
                 <div class="plan-option">
@@ -6481,8 +5846,8 @@ $soonest = $matched[0] ?? null;
                         <span class="plan-price"><b>$180.00</b> per 12 Month</span>
                     </label>
                 </div>
-                <div class="plan-option">
-                    <input type="radio" name="plan" id="plan-custom" class="visually-hidden">
+                <div class="plan-option " id="plan-custom-3">
+                    <input type="radio" name="plan" class="visually-hidden">
                     <label for="plan-custom" class="plan-label">
                         <div class="custom-plan-text">
                             <span class="plan-name">Custom plan</span>
@@ -6492,68 +5857,63 @@ $soonest = $matched[0] ?? null;
                     </label>
                 </div>
                 <button class="checkout-button js-plan-continue">Continue to checkout</button>
-
             </div>
         </div>
-
     </section>
-
-
-    <div class="subscribe-modal-backdrop" data-subscribe-modal>
-
-        <div class="subscribe-modal-main">
-            <button class="subscribe-modal__close" data-subscribe-close aria-label="Close">
-                &times;
-            </button>
-            <aside class="plans">
-                <div class="plans__title">
-                    <img src="../img/subs/Progress-steps.png" alt="" />
-                    <div>
-                        <h2>Time to help you succeed at work!</h2>
-                        <p>Consistency is key to progress, so we recommend a weekly schedule. Each 50-min lesson
-                            costs <strong>$9.00</strong>.</p>
-                    </div>
-                </div>
-
-                <button class="plan-card" data-plan="1" data-price="36">
-                    <span>1 Month</span><span class="price">$36.00 <small>per Month</small></span>
-                </button>
-
-                <button class="plan-card" data-plan="4" data-price="72">
-                    <span>4 Months</span><span class="price">$72.00 <small>per 4 Month</small></span>
-                </button>
-
-                <button class="plan-card" data-plan="6" data-price="108">
-                    <span>6 Months</span><span class="price">$108.00 <small>per 6 Month</small></span>
-                </button>
-
-                <button class="plan-card" data-plan="9" data-price="144">
-                    <span>9 Months</span><span class="price">$144.00 <small>per 9 Month</small></span>
-                </button>
-
-                <button class="plan-card " data-plan="12" data-price="180">
-                    <span>12 Months</span>
-                    <span class="tag">Popular</span>
-                    <span class="price">$180.00 <small>per 12 Month</small></span>
-                </button>
-
-                <div class="plan-card custom-plan">
-                    <div class="plan-custom__row">
-                        <strong>Custom plan</strong> <small>per month</small>
-                    </div>
-                    <p>Choose the number of months if that suits you better.</p>
-
-
-                </div>
-
-                <div class="plans__cta">
-                    <button class="btn-primary" data-continue>Continue to checkout</button>
-                </div>
-            </aside>
-        </div>
-    </div>
-
-
+    <!-- 
+      <div class="subscribe-modal-backdrop 3" data-subscribe-modal>
+      
+          <div class="subscribe-modal-main">
+              <button class="subscribe-modal__close" data-subscribe-close aria-label="Close">
+                  &times;
+              </button>
+              <aside class="plans">
+                  <div class="plans__title">
+                      <img src="../img/subs/Progress-steps.png" alt="" />
+                      <div>
+                          <h2>Time to help you succeed at work!</h2>
+                          <p>Consistency is key to progress, so we recommend a weekly schedule. Each 50-min lesson
+                              costs <strong>$9.00</strong>.</p>
+                      </div>
+                  </div>
+      
+                  <button class="plan-card" data-plan="1" data-price="36">
+                      <span>1 Month</span><span class="price">$36.00 <small>per Month</small></span>
+                  </button>
+      
+                  <button class="plan-card" data-plan="4" data-price="72">
+                      <span>4 Months</span><span class="price">$72.00 <small>per 4 Month</small></span>
+                  </button>
+      
+                  <button class="plan-card" data-plan="6" data-price="108">
+                      <span>6 Months</span><span class="price">$108.00 <small>per 6 Month</small></span>
+                  </button>
+      
+                  <button class="plan-card" data-plan="9" data-price="144">
+                      <span>9 Months</span><span class="price">$144.00 <small>per 9 Month</small></span>
+                  </button>
+      
+                  <button class="plan-card " data-plan="12" data-price="180">
+                      <span>12 Months</span>
+                      <span class="tag">Popular</span>
+                      <span class="price">$180.00 <small>per 12 Month</small></span>
+                  </button>
+      
+                  <div class="plan-card custom-plan">
+                      <div class="plan-custom__row">
+                          <strong>Custom plan</strong> <small>per month</small>
+                      </div>
+                      <p>Choose the number of months if that suits you better.</p>
+      
+      
+                  </div>
+      
+                  <div class="plans__cta">
+                      <button class="btn-primary" data-continue>Continue to checkout</button>
+                  </div>
+              </aside>
+          </div>
+      </div> -->
     <!-- extra lessons -->
     <!-- ============= -->
     <div class="extraLesson">
@@ -6564,7 +5924,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117"></path>
             </svg>
         </div>
-
         <div class="row01">
             <div class="imageContainer">
                 <img src="../img/cour/1.png" alt="" />
@@ -6575,7 +5934,6 @@ $soonest = $matched[0] ?? null;
                 before Jan 07.
             </p>
         </div>
-
         <div class="row02">
             <div class="top">
                 <div class="increment">
@@ -6601,10 +5959,8 @@ $soonest = $matched[0] ?? null;
                 </h1>
             </div>
         </div>
-
         <button class="confirm_payment_modal_open">Continue</button>
     </div>
-
     <!-- Confirm Payment -->
     <!-- =============== -->
     <div class="confirm_payment">
@@ -6618,9 +5974,7 @@ $soonest = $matched[0] ?? null;
                     fill="#121117"></path>
             </svg>
         </div>
-
         <h1 class="heading">Confirm payment</h1>
-
         <div class="row01">
             <div class="top">
                 <div class="row01_top_row1">
@@ -6649,19 +6003,16 @@ $soonest = $matched[0] ?? null;
                 <img src="../img/cour/icons/visa.png" alt="" />
                 <p>Visa **** 1345</p>
             </div>
-
             <a href="" class="editBTN">Edit</a>
         </div>
         <p class="instruction">
             By pressing the "Confirm payment" button, you agree to
             <a href="">Preply’s Refund</a> <a href="">and Payment Policy</a>
         </p>
-
         <button class="firstLayerBackdropClose">
             Confirm payment · $<span class="totalAmountShowInBtn">11.34</span>
         </button>
     </div>
-
     <!-- Transfer lessons or subscription -->
     <!-- =============================== -->
     <div class="transferLessons_subscription">
@@ -6672,9 +6023,7 @@ $soonest = $matched[0] ?? null;
                     fill="#121117"></path>
             </svg>
         </div>
-
         <h1 class="heading">Transfer lessons or subscription</h1>
-
         <div class="cards">
             <div class="card">
                 <div class="left">
@@ -6689,7 +6038,6 @@ $soonest = $matched[0] ?? null;
                     <div class="innerCircle"></div>
                 </div>
             </div>
-
             <div class="card">
                 <div class="left">
                     <h1>Transfer lessons</h1>
@@ -6703,7 +6051,6 @@ $soonest = $matched[0] ?? null;
                     <div class="innerCircle"></div>
                 </div>
             </div>
-
             <div class="card">
                 <div class="left">
                     <h1>Transfer subscription</h1>
@@ -6714,12 +6061,10 @@ $soonest = $matched[0] ?? null;
                 </div>
             </div>
         </div>
-
         <button class="transferLessons_subscription_btn_ModalOpen">
             Continue
         </button>
     </div>
-
     <!-- Transfer Balance -->
     <!-- ================ -->
     <div class="transferBalance">
@@ -6730,7 +6075,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117"></path>
             </svg>
         </div>
-
         <div class="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -6738,33 +6082,27 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <h1 class="heading">Transfer balance</h1>
-
         <div class="row01">
             <div class="from">
                 <h1>From</h1>
                 <p>Select teacher</p>
             </div>
-
             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                     d="M12.5859 6.99313H0.585938V8.99313H12.5859L7.29294 14.2861L8.70694 15.7001L16.4139 7.99313L8.70694 0.286133L7.29294 1.70013L12.5859 6.99313Z"
                     fill="#121117" />
             </svg>
         </div>
-
         <p class="peragraph">
             Select the tutor you want to transfer balance from
         </p>
-
         <div class="cards cardsfrom">
             <div class="card">
                 <div class="left">
                     <div class="imageContainer">
                         <img src="../img/cour/13.png" alt="" />
                     </div>
-
                     <div class="content">
                         <h1>Albert</h1>
                         <p>English · 8-week plan · $7.60/lesson</p>
@@ -6775,13 +6113,11 @@ $soonest = $matched[0] ?? null;
                     <div class="innerCircle"></div>
                 </div>
             </div>
-
             <div class="card">
                 <div class="left">
                     <div class="imageContainer">
                         <img src="../img/cour/14.png" alt="" />
                     </div>
-
                     <div class="content">
                         <h1>Karen V.</h1>
                         <p>English · 6-week plan · $7.60/lesson</p>
@@ -6793,10 +6129,8 @@ $soonest = $matched[0] ?? null;
                 </div>
             </div>
         </div>
-
         <button class="transferBalanceFrom_ModalOpen">Continue</button>
     </div>
-
     <!-- Transfer Balance -->
     <!-- ================ -->
     <div class="transferBalance transferBalanceTo">
@@ -6807,7 +6141,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117"></path>
             </svg>
         </div>
-
         <div class="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -6815,38 +6148,31 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <h1 class="heading">Transfer balance</h1>
-
         <div class="row01">
             <div class="from">
                 <h1>Albert</h1>
                 <p>lessons . $</p>
             </div>
-
             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                     d="M12.5859 6.99313H0.585938V8.99313H12.5859L7.29294 14.2861L8.70694 15.7001L16.4139 7.99313L8.70694 0.286133L7.29294 1.70013L12.5859 6.99313Z"
                     fill="#121117" />
             </svg>
-
             <div class="from to">
                 <h1>To</h1>
                 <p>Select teacher</p>
             </div>
         </div>
-
         <p class="peragraph">
             Select the tutor you want to transfer balance from
         </p>
-
         <div class="cards cardsTo">
             <div class="card">
                 <div class="left">
                     <div class="imageContainer">
                         <img src="../img/cour/15.png" alt="" />
                     </div>
-
                     <div class="content">
                         <h1>Lucia B.</h1>
                         <p>English · 4-week plan · $7.60/lesson</p>
@@ -6862,7 +6188,6 @@ $soonest = $matched[0] ?? null;
                     <div class="imageContainer">
                         <img src="../img/cour/16.png" alt="" />
                     </div>
-
                     <div class="content">
                         <h1>Triny A.</h1>
                         <p>English · 6-week plan · $7.60/lesson</p>
@@ -6878,7 +6203,6 @@ $soonest = $matched[0] ?? null;
                     <div class="imageContainer">
                         <img src="../img/cour/16.png" alt="" />
                     </div>
-
                     <div class="content">
                         <h1>Triny A.</h1>
                         <p>English · 6-week plan · $7.60/lesson</p>
@@ -6894,7 +6218,6 @@ $soonest = $matched[0] ?? null;
                     <div class="imageContainer">
                         <img src="../img/cour/16.png" alt="" />
                     </div>
-
                     <div class="content">
                         <h1>Triny A.</h1>
                         <p>English · 6-week plan · $7.60/lesson</p>
@@ -6910,7 +6233,6 @@ $soonest = $matched[0] ?? null;
                     <div class="imageContainer">
                         <img src="../img/cour/16.png" alt="" />
                     </div>
-
                     <div class="content">
                         <h1>Triny A.</h1>
                         <p>English · 6-week plan · $7.60/lesson</p>
@@ -6926,7 +6248,6 @@ $soonest = $matched[0] ?? null;
                     <div class="imageContainer">
                         <img src="../img/cour/16.png" alt="" />
                     </div>
-
                     <div class="content">
                         <h1>Triny A.</h1>
                         <p>English · 6-week plan · $7.60/lesson</p>
@@ -6938,11 +6259,9 @@ $soonest = $matched[0] ?? null;
                 </div>
             </div>
         </div>
-
         <a href="">Find Tutors</a>
         <button class="transferLessonsOpen">Continue</button>
     </div>
-
     <!-- Transfer lessons -->
     <!-- ================ -->
     <div class="transferBalance transferLessonsTo transferLessons">
@@ -6953,7 +6272,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117"></path>
             </svg>
         </div>
-
         <div class="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -6961,41 +6279,32 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <h1 class="heading">Transfer lessons</h1>
-
         <div class="row01">
             <div class="from">
                 <h1>Albert</h1>
                 <p class="fromLessonAndAmount">lessons . $</p>
             </div>
-
             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                     d="M12.5859 6.99313H0.585938V8.99313H12.5859L7.29294 14.2861L8.70694 15.7001L16.4139 7.99313L8.70694 0.286133L7.29294 1.70013L12.5859 6.99313Z"
                     fill="#121117" />
             </svg>
-
             <div class="from to">
                 <h1>Lucia B.</h1>
                 <p class="toLessonAndAmount">lessons . $</p>
             </div>
         </div>
-
         <div class="horizontalLine"></div>
-
         <p class="peragraph">Select the amount of lessons to transfer</p>
-
         <div class="lesson_and_dragger">
             <h1 id="lessonCount">1 lesson</h1>
-
             <div class="drag_lesson">
                 <div class="blackArea slider-track"></div>
                 <div class="grayArea"></div>
                 <div class="dragger slider-thumb"></div>
             </div>
         </div>
-
         <div class="box lessonDetailBox">
             <p class="topPera accortingLessonTexts">
                 Your tutors have different lesson prices, so when you transfer
@@ -7003,30 +6312,24 @@ $soonest = $matched[0] ?? null;
                 cover a price difference of
                 <span>$2.50 to get 1 lesson with Lucia B. ($7.68/lesson)</span>
             </p>
-
             <div class="bottomContent">
                 <div class="left">
                     <div class="user">
                         <div class="imageContainer">
                             <img src="../img/cour/13.png" alt="" />
                         </div>
-
                         <h1>Albert</h1>
                     </div>
-
                     <div class="lesson lessonFromBox">
                         <div></div>
                     </div>
-
                     <h1 class="shortDetail_fromUser">1 lesson</h1>
                 </div>
-
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path fill-rule="evenodd" clip-rule="evenodd"
                         d="M16.0859 10.9931H4.08594V12.9931H16.0859L10.7929 18.2861L12.2069 19.7001L19.9139 11.9931L12.2069 4.28613L10.7929 5.70013L16.0859 10.9931Z"
                         fill="#121117" />
                 </svg>
-
                 <div class="left">
                     <div class="user">
                         <div class="imageContainer">
@@ -7034,23 +6337,18 @@ $soonest = $matched[0] ?? null;
                         </div>
                         <h1>Lucia B.</h1>
                     </div>
-
                     <div class="lesson lessonToBox">
                         <div></div>
                     </div>
-
                     <h1 class="shortDetail_toUser">
                         <span>$2.50 to pay</span> for a full lesson
                     </h1>
                 </div>
             </div>
-
             <p class="extraContent_ofTransferLessons"></p>
         </div>
-
         <button class="active tellUsWhyOpen">Continue</button>
     </div>
-
     <!-- Tell Us Why -->
     <!-- =========== -->
     <div class="transferBalance tellUsWhy">
@@ -7061,7 +6359,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117"></path>
             </svg>
         </div>
-
         <div class="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -7069,34 +6366,27 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <h1 class="heading">Tell us why</h1>
-
         <div class="row01">
             <div class="from">
                 <h1>Albert</h1>
                 <p>lessons . $</p>
             </div>
-
             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                     d="M12.5859 6.99313H0.585938V8.99313H12.5859L7.29294 14.2861L8.70694 15.7001L16.4139 7.99313L8.70694 0.286133L7.29294 1.70013L12.5859 6.99313Z"
                     fill="#121117" />
             </svg>
-
             <div class="from to">
                 <h1>Lucia B.</h1>
                 <p>lessons . $</p>
             </div>
         </div>
-
         <div class="horizontalLine"></div>
-
         <p class="peragraph">
             Tell us why you decided to transfer. We won't share this with your
             tutors.
         </p>
-
         <div class="options">
             <div class="option">
                 <p>I want to focus on another subject</p>
@@ -7104,42 +6394,35 @@ $soonest = $matched[0] ?? null;
                     <div class="innerCircle"></div>
                 </div>
             </div>
-
             <div class="option">
                 <p>Too many lessons left</p>
                 <div class="circle">
                     <div class="innerCircle"></div>
                 </div>
             </div>
-
             <div class="option">
                 <p>Problems with availability</p>
                 <div class="circle">
                     <div class="innerCircle"></div>
                 </div>
             </div>
-
             <div class="option">
                 <p>Unhappy with my tutor</p>
                 <div class="circle">
                     <div class="innerCircle"></div>
                 </div>
             </div>
-
             <div class="otherAsyncTextarea">
                 <p>Other</p>
                 <div class="circle">
                     <div class="innerCircle"></div>
                 </div>
             </div>
-
             <textarea name="defineWhatOther" id="defineWhatOther" placeholder="Define here..."
                 class="otherAsync"></textarea>
         </div>
-
         <button class="transferCompleteOpen">Continue</button>
     </div>
-
     <!-- Transfer complete! -->
     <!-- ================= -->
     <div class="TransferComplete">
@@ -7150,7 +6433,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117"></path>
             </svg>
         </div>
-
         <div class="topPart">
             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="41" viewBox="0 0 40 41" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -7159,22 +6441,18 @@ $soonest = $matched[0] ?? null;
             </svg>
             <h1>Transfer complete!</h1>
         </div>
-
         <div class="content">
             <p>
                 You have <span>1 Trial lessons</span> available to schedule with Lucia
                 B. and <span>$2.66 credit</span> for your future payments.
             </p>
-
             <p>
                 Remember to schedule your balance by <span>Mar 18, 2025</span> so it
                 doesn't expire when your subscription renews.
             </p>
         </div>
-
         <a href="">Schedule lessons</a>
     </div>
-
     <!-- Review Your Transfer -->
     <!-- ==================== -->
     <div class="transferBalance transferLessonsTo reviewYourTransfer">
@@ -7185,7 +6463,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117"></path>
             </svg>
         </div>
-
         <div class="backButton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -7193,30 +6470,24 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <h1 class="heading">Review your transfer</h1>
-
         <div class="row01">
             <div class="from">
                 <h1>Dinela</h1>
                 <p>16 lessons / 4 weeks</p>
             </div>
-
             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                     d="M12.5859 6.99313H0.585938V8.99313H12.5859L7.29294 14.2861L8.70694 15.7001L16.4139 7.99313L8.70694 0.286133L7.29294 1.70013L12.5859 6.99313Z"
                     fill="#121117" />
             </svg>
-
             <div class="from to">
                 <h1>David</h1>
                 <p class="toLessonAndAmount">16 lessons / 4 weeks</p>
             </div>
         </div>
-
         <div class="content">
             <h1>What happens next</h1>
-
             <ul>
                 <li>
                     Your subscription with Ranim will stop and you won’t be charged
@@ -7228,14 +6499,9 @@ $soonest = $matched[0] ?? null;
                 </li>
             </ul>
         </div>
-
         <button class="active secondLayerBackdropClose">Continue</button>
     </div>
-
-
-
-
-    <div class="modal-wrapper">
+    <div class="modal-wrapper" id="upgrade-plans-lesson">
         <div class="modal-container">
             <button class="modal-close-button" aria-label="Close">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
@@ -7245,12 +6511,12 @@ $soonest = $matched[0] ?? null;
                 </svg>
             </button>
             <h2 class="modal-title">What would you like to do?</h2>
-            <div class="modal-options-list">
-                <a href="#" class="modal-option">
+            <div class="modal-options-list upgrade-yes-btn">
+                <a href="#" class="modal-option ">
                     <img class="modal-option-icon" src="../img/cour/icons/revision.png" alt="">
                     <span class="modal-option-text">Upgrade Plan</span>
                 </a>
-                <a href="#" class="modal-option">
+                <a href="#" class="modal-option downgrade-yes-btn">
                     <img class="modal-option-icon" src="../img/cour/icons/revision.png" alt="">
                     <span class="modal-option-text">Downgrade Plan</span>
                 </a>
@@ -7263,18 +6529,15 @@ $soonest = $matched[0] ?? null;
             <img src="../img/subs/icons/feedback-to-group.png" alt="feedback to group" />
             <p>Give feedback to Group</p>
         </button>
-
         <button class="option give-feedback-to-teacher-modal-open">
             <img src="../img/subs/icons/feedback-to-teacher.png" alt="feedback to teacher" />
             <p>Give feedback to teacher</p>
         </button>
-
         <button class="option tell-us-what-happened-modal-open">
             <img src="../img/subs/icons/report-a-issue.png" alt="report a issue" />
             <p>Report a issue</p>
         </button>
     </main>
-
     <!-- prefer to share your feedback for Florida -->
     <main class="modal-basic-style prefer-to-share-feedback-modal">
         <div class="closeIcon backdrop-level-2-close desktop">
@@ -7284,10 +6547,10 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="heading-options">
             <div class="mobile back-custom-icon">
-                <?xml version="1.0" encoding="utf-8"?><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                <?xml version="1.0" encoding="utf-8"?>
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px"
                     viewBox="0 0 66.91 122.88" style="enable-background: new 0 0 66.91 122.88" xml:space="preserve">
                     <g>
@@ -7301,7 +6564,6 @@ $soonest = $matched[0] ?? null;
                     How Would You Prefer to Share Your Feedback for Florida 1 Group?
                 </h1>
             </div>
-
             <div class="bullet-select-options">
                 <button>
                     <div class="icon-and-text">
@@ -7312,7 +6574,6 @@ $soonest = $matched[0] ?? null;
                         <div class="fill-circle"></div>
                     </div>
                 </button>
-
                 <button>
                     <div class="icon-and-text">
                         <img src="../img/subs/icons/anonymous.png" alt="" />
@@ -7324,10 +6585,8 @@ $soonest = $matched[0] ?? null;
                 </button>
             </div>
         </div>
-
         <button class="red-button disabled-button">Continue</button>
     </main>
-
     <!-- Publish your Review for Florida 1 -->
     <main class="modal-basic-style publish-your-review-for-florida-1-modal">
         <div class="back-icon back-modal">
@@ -7344,10 +6603,8 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <section class="top-part">
             <h1 class="heading">Publish your Review for Florida 1</h1>
-
             <div class="review">
                 <div class="review-short-detail">
                     <h1>5</h1>
@@ -7380,7 +6637,6 @@ $soonest = $matched[0] ?? null;
                     </div>
                     <p>3 reviews</p>
                 </div>
-
                 <div class="review-bar">
                     <div class="rating-bar active-text-color">
                         <p class="rating-stage">5</p>
@@ -7409,7 +6665,6 @@ $soonest = $matched[0] ?? null;
                     </div>
                 </div>
             </div>
-
             <form action="" class="review-form">
                 <div class="selectable-stars outline-and-fill-star-container-one">
                     <div class="outline-and-fill-star">
@@ -7417,7 +6672,6 @@ $soonest = $matched[0] ?? null;
                             <path
                                 d="M22.4429 12.0637L17.9989 0.179688L13.5549 12.0637L0.879883 12.6177L10.8089 20.5157L7.41888 32.7417L17.9989 25.7397L28.5789 32.7417L25.1889 20.5157L35.1179 12.6177L22.4429 12.0637ZM20.4689 14.7817L17.9989 8.17969L15.5309 14.7817L8.48888 15.0897L14.0049 19.4777L12.1219 26.2697L17.9999 22.3797L23.8779 26.2697L21.9939 19.4777L27.5099 15.0897L20.4689 14.7817Z" />
                         </svg>
-
                         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="33" viewBox="0 0 36 33" fill="none"
                             class="outline-star">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -7430,7 +6684,6 @@ $soonest = $matched[0] ?? null;
                             <path
                                 d="M22.4429 12.0637L17.9989 0.179688L13.5549 12.0637L0.879883 12.6177L10.8089 20.5157L7.41888 32.7417L17.9989 25.7397L28.5789 32.7417L25.1889 20.5157L35.1179 12.6177L22.4429 12.0637ZM20.4689 14.7817L17.9989 8.17969L15.5309 14.7817L8.48888 15.0897L14.0049 19.4777L12.1219 26.2697L17.9999 22.3797L23.8779 26.2697L21.9939 19.4777L27.5099 15.0897L20.4689 14.7817Z" />
                         </svg>
-
                         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="33" viewBox="0 0 36 33" fill="none"
                             class="outline-star">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -7443,7 +6696,6 @@ $soonest = $matched[0] ?? null;
                             <path
                                 d="M22.4429 12.0637L17.9989 0.179688L13.5549 12.0637L0.879883 12.6177L10.8089 20.5157L7.41888 32.7417L17.9989 25.7397L28.5789 32.7417L25.1889 20.5157L35.1179 12.6177L22.4429 12.0637ZM20.4689 14.7817L17.9989 8.17969L15.5309 14.7817L8.48888 15.0897L14.0049 19.4777L12.1219 26.2697L17.9999 22.3797L23.8779 26.2697L21.9939 19.4777L27.5099 15.0897L20.4689 14.7817Z" />
                         </svg>
-
                         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="33" viewBox="0 0 36 33" fill="none"
                             class="outline-star">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -7456,7 +6708,6 @@ $soonest = $matched[0] ?? null;
                             <path
                                 d="M22.4429 12.0637L17.9989 0.179688L13.5549 12.0637L0.879883 12.6177L10.8089 20.5157L7.41888 32.7417L17.9989 25.7397L28.5789 32.7417L25.1889 20.5157L35.1179 12.6177L22.4429 12.0637ZM20.4689 14.7817L17.9989 8.17969L15.5309 14.7817L8.48888 15.0897L14.0049 19.4777L12.1219 26.2697L17.9999 22.3797L23.8779 26.2697L21.9939 19.4777L27.5099 15.0897L20.4689 14.7817Z" />
                         </svg>
-
                         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="33" viewBox="0 0 36 33" fill="none"
                             class="outline-star">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -7469,7 +6720,6 @@ $soonest = $matched[0] ?? null;
                             <path
                                 d="M22.4429 12.0637L17.9989 0.179688L13.5549 12.0637L0.879883 12.6177L10.8089 20.5157L7.41888 32.7417L17.9989 25.7397L28.5789 32.7417L25.1889 20.5157L35.1179 12.6177L22.4429 12.0637ZM20.4689 14.7817L17.9989 8.17969L15.5309 14.7817L8.48888 15.0897L14.0049 19.4777L12.1219 26.2697L17.9999 22.3797L23.8779 26.2697L21.9939 19.4777L27.5099 15.0897L20.4689 14.7817Z" />
                         </svg>
-
                         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="33" viewBox="0 0 36 33" fill="none"
                             class="outline-star">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -7478,11 +6728,9 @@ $soonest = $matched[0] ?? null;
                         </svg>
                     </div>
                 </div>
-
                 <textarea name="review-text-area" id="review-text-area"
                     placeholder="How was your learning experience? Write your review here..." required
                     autocomplete="off"></textarea>
-
                 <div class="btnGroup">
                     <button type="button" class="outline-button">Cancel</button>
                     <button type="button" class="red-button success-modal-for-providing-feedback-modal-open">
@@ -7491,17 +6739,14 @@ $soonest = $matched[0] ?? null;
                 </div>
             </form>
         </section>
-
         <section class="student-reviews">
             <h1 class="heading">What my students say for Florida 1</h1>
-
             <div class="review-cards">
                 <div class="review-card">
                     <div class="top">
                         <div class="image">
                             <img src="../img/subs/20.png" alt="student" />
                         </div>
-
                         <div class="name-and-date">
                             <h1>Marcos</h1>
                             <p>March 27, 2025</p>
@@ -7540,7 +6785,6 @@ $soonest = $matched[0] ?? null;
                                     fill="#121118" />
                             </svg>
                         </div>
-
                         <p>
                             I took several lessons with Carolina. She is proficient in
                             English. In every lesson I learned new words and phrasal verbs,
@@ -7555,7 +6799,6 @@ $soonest = $matched[0] ?? null;
                         <div class="image">
                             <img src="../img/subs/21.png" alt="student" />
                         </div>
-
                         <div class="name-and-date">
                             <h1>Alejandro</h1>
                             <p>February 28, 2025</p>
@@ -7594,7 +6837,6 @@ $soonest = $matched[0] ?? null;
                                     fill="#121118" />
                             </svg>
                         </div>
-
                         <p>
                             * The best teacher on earth. She's very professional and
                             patient. * Carolina was the only teacher that really understand
@@ -7611,7 +6853,6 @@ $soonest = $matched[0] ?? null;
                         <div class="image">
                             <img src="../img/subs/22.png" alt="student" />
                         </div>
-
                         <div class="name-and-date">
                             <h1>Blas</h1>
                             <p>December 21, 2024</p>
@@ -7650,7 +6891,6 @@ $soonest = $matched[0] ?? null;
                                     fill="#121118" />
                             </svg>
                         </div>
-
                         <p>
                             Great teacher. Very patient and committed to helping the student
                             feel confident with speaking and continue learning English
@@ -7660,7 +6900,6 @@ $soonest = $matched[0] ?? null;
             </div>
         </section>
     </main>
-
     <!-- Great! Thankyou For proving your feedback -->
     <main class="modal-basic-style success-modal-for-providing-feedback-modal">
         <div class="close-icon backdrop-level-2-close">
@@ -7670,27 +6909,22 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="content">
             <div class="user-image-with-latingles">
                 <div class="image">
                     <img src="../img/subs/23.jpg" alt="" />
                 </div>
-
                 <div class="image">
                     <img src="../img/subs/1.png" alt="" />
                 </div>
             </div>
-
             <h1 class="heading">
                 Great! Thankyou For proving <br />
                 your feedback
             </h1>
         </div>
-
         <button class="red-button backdrop-level-2-close">Done</button>
     </main>
-
     <!-- Rate your lesson with Florida 1 in 4 simple questions -->
     <main class="modal-basic-style rate-your-teacher-4-questions-modal">
         <div class="back-icon back-modal">
@@ -7707,7 +6941,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="content">
             <div class="heading-and-pera">
                 <h1 class="heading">
@@ -7716,12 +6949,10 @@ $soonest = $matched[0] ?? null;
                 <p>This rating is anonymous</p>
             </div>
         </div>
-
         <button class="red-button question-one-modal-open">
             Share your rating
         </button>
     </main>
-
     <!-- How well did the lesson improve your learning goals? -->
     <main class="modal-basic-style rate-your-teacher-4-questions-modal question-one-modal">
         <div class="back-icon back-modal">
@@ -7738,9 +6969,7 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="question-progress-bar" style="--question-answer-progress: 0%"></div>
-
         <div class="content">
             <div class="icon-and-skip-button">
                 <div class="icon-container">
@@ -7750,19 +6979,16 @@ $soonest = $matched[0] ?? null;
                             fill="black" />
                     </svg>
                 </div>
-
                 <button type="button" class="anonymous-feedback-last-modal-open">
                     Skip
                 </button>
             </div>
-
             <div class="heading-and-pera">
                 <h1 class="heading">
                     How well did the lesson improve your learning goals?
                 </h1>
                 <p>This rating is anonymous</p>
             </div>
-
             <div class="rating-1-to-10-options">
                 <ul class="options disabled-btn-remove-1">
                     <li><button>1</button></li>
@@ -7776,19 +7002,16 @@ $soonest = $matched[0] ?? null;
                     <li><button>9</button></li>
                     <li><button>10</button></li>
                 </ul>
-
                 <div class="rating-description">
                     <p>Not at all</p>
                     <p>Fully</p>
                 </div>
             </div>
         </div>
-
         <button class="red-button question-two-modal-open disabled-button">
             Next
         </button>
     </main>
-
     <!-- How clear was the lesson with Florida 1? -->
     <main class="modal-basic-style rate-your-teacher-4-questions-modal question-two-modal">
         <div class="back-icon back-modal">
@@ -7805,9 +7028,7 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="question-progress-bar" style="--question-answer-progress: 25%"></div>
-
         <div class="content">
             <div class="icon-and-skip-button">
                 <div class="icon-container">
@@ -7820,17 +7041,14 @@ $soonest = $matched[0] ?? null;
                             fill="black" />
                     </svg>
                 </div>
-
                 <button type="button" class="anonymous-feedback-last-modal-open">
                     Skip
                 </button>
             </div>
-
             <div class="heading-and-pera">
                 <h1 class="heading">How clear was the lesson with Florida 1?</h1>
                 <p>This rating is anonymous</p>
             </div>
-
             <div class="rating-1-to-10-options">
                 <ul class="options disabled-btn-remove-2">
                     <li><button>1</button></li>
@@ -7844,19 +7062,16 @@ $soonest = $matched[0] ?? null;
                     <li><button>9</button></li>
                     <li><button>10</button></li>
                 </ul>
-
                 <div class="rating-description">
                     <p>Not at all</p>
                     <p>Fully</p>
                 </div>
             </div>
         </div>
-
         <button class="red-button question-three-modal-open disabled-button">
             Next
         </button>
     </main>
-
     <!-- How well prepared was the lesson? -->
     <main class="modal-basic-style rate-your-teacher-4-questions-modal question-three-modal">
         <div class="back-icon back-modal">
@@ -7873,9 +7088,7 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="question-progress-bar" style="--question-answer-progress: 50%"></div>
-
         <div class="content">
             <div class="icon-and-skip-button">
                 <div class="icon-container">
@@ -7885,17 +7098,14 @@ $soonest = $matched[0] ?? null;
                             fill="black" />
                     </svg>
                 </div>
-
                 <button type="button" class="anonymous-feedback-last-modal-open">
                     Skip
                 </button>
             </div>
-
             <div class="heading-and-pera">
                 <h1 class="heading">How well prepared was the lesson?</h1>
                 <p>This rating is anonymous</p>
             </div>
-
             <div class="rating-1-to-10-options">
                 <ul class="options disabled-btn-remove-3">
                     <li><button>1</button></li>
@@ -7909,19 +7119,16 @@ $soonest = $matched[0] ?? null;
                     <li><button>9</button></li>
                     <li><button>10</button></li>
                 </ul>
-
                 <div class="rating-description">
                     <p>Not at all</p>
                     <p>Fully</p>
                 </div>
             </div>
         </div>
-
         <button class="red-button question-four-modal-open disabled-button">
             Next
         </button>
     </main>
-
     <!-- How well did Florida 1 needs your support? -->
     <main class="modal-basic-style rate-your-teacher-4-questions-modal question-four-modal">
         <div class="back-icon back-modal">
@@ -7938,9 +7145,7 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="question-progress-bar" style="--question-answer-progress: 75%"></div>
-
         <div class="content">
             <div class="icon-and-skip-button">
                 <div class="icon-container">
@@ -7953,17 +7158,14 @@ $soonest = $matched[0] ?? null;
                             fill="black" />
                     </svg>
                 </div>
-
                 <button type="button" class="anonymous-feedback-last-modal-open">
                     Skip
                 </button>
             </div>
-
             <div class="heading-and-pera">
                 <h1 class="heading">How well did Florida 1 needs your support?</h1>
                 <p>This rating is anonymous</p>
             </div>
-
             <div class="rating-1-to-10-options">
                 <ul class="options disabled-btn-remove-4">
                     <li><button>1</button></li>
@@ -7977,19 +7179,16 @@ $soonest = $matched[0] ?? null;
                     <li><button>9</button></li>
                     <li><button>10</button></li>
                 </ul>
-
                 <div class="rating-description">
                     <p>Not at all</p>
                     <p>Fully</p>
                 </div>
             </div>
         </div>
-
         <button class="red-button anonymous-feedback-last-modal-open disabled-button">
             Next
         </button>
     </main>
-
     <!-- Please write down your review for Florida 1 ! -->
     <main class="modal-basic-style rate-your-teacher-4-questions-modal anonymous-feedback-last-modal">
         <div class="back-icon back-modal">
@@ -8006,9 +7205,7 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="question-progress-bar" style="--question-answer-progress: 100%"></div>
-
         <div class="content">
             <div class="icon-and-skip-button">
                 <div class="icon-container">
@@ -8022,19 +7219,15 @@ $soonest = $matched[0] ?? null;
                     </svg>
                 </div>
             </div>
-
             <div class="heading-and-pera">
                 <h1 class="heading">Please write down your review for Florida 1 !</h1>
                 <p>This rating is anonymous</p>
             </div>
-
             <textarea name="student-review" id="student-review"
                 placeholder="How was your learning experience? Write your review here..."></textarea>
         </div>
-
         <button class="red-button backdrop-level-2-close">Done</button>
     </main>
-
     <!-- How Would You Prefer to Share Your Feedback for Daniela Canelon? -->
     <main class="modal-basic-style give-feedback-to-teacher-modal">
         <div class="closeIcon backdrop-level-2-close desktop">
@@ -8044,14 +7237,13 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="heading-options">
             <div class="image-and-heading">
                 <div class="mobile back-custom-icon">
-                    <?xml version="1.0" encoding="utf-8"?><svg version="1.1" id="Layer_1"
-                        xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                        width="24px" height="24px" viewBox="0 0 66.91 122.88"
-                        style="enable-background: new 0 0 66.91 122.88" xml:space="preserve">
+                    <?xml version="1.0" encoding="utf-8"?>
+                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px"
+                        viewBox="0 0 66.91 122.88" style="enable-background: new 0 0 66.91 122.88" xml:space="preserve">
                         <g>
                             <path
                                 d="M64.96,111.2c2.65,2.73,2.59,7.08-0.13,9.73c-2.73,2.65-7.08,2.59-9.73-0.14L1.97,66.01l4.93-4.8l-4.95,4.8 c-2.65-2.74-2.59-7.1,0.15-9.76c0.08-0.08,0.16-0.15,0.24-0.22L55.1,2.09c2.65-2.73,7-2.79,9.73-0.14 c2.73,2.65,2.78,7.01,0.13,9.73L16.5,61.23L64.96,111.2L64.96,111.2L64.96,111.2z" />
@@ -8061,12 +7253,10 @@ $soonest = $matched[0] ?? null;
                 <div class="image-container">
                     <img src="../img/subs/1.png" alt="teacher" />
                 </div>
-
                 <h1>
                     How Would You Prefer to Share Your Feedback for Daniela Canelon?
                 </h1>
             </div>
-
             <div class="bullet-select-options">
                 <button>
                     <div class="icon-and-text">
@@ -8077,7 +7267,6 @@ $soonest = $matched[0] ?? null;
                         <div class="fill-circle"></div>
                     </div>
                 </button>
-
                 <button>
                     <div class="icon-and-text">
                         <img src="../img/subs/icons/anonymous.png" alt="" />
@@ -8089,10 +7278,8 @@ $soonest = $matched[0] ?? null;
                 </button>
             </div>
         </div>
-
         <button class="red-button disabled-button">Continue</button>
     </main>
-
     <!-- Please write down your review for Daniela Canelon? -->
     <main class="modal-basic-style public-feedback-to-teacher-modal">
         <div class="back-icon back-modal">
@@ -8102,7 +7289,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="closeIcon backdrop-level-2-close">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -8110,25 +7296,20 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="heading-options">
             <div class="image-and-heading">
                 <div class="image-container">
                     <img src="../img/subs/1.png" alt="teacher" />
                 </div>
-
                 <h1>Please write down your review for Daniela Canelon?</h1>
-
                 <p>Help other students choose the right tutor</p>
             </div>
-
             <div class="selectable-stars outline-and-fill-star-container-two">
                 <div class="outline-and-fill-star">
                     <svg class="star fill-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 33">
                         <path
                             d="M22.4429 12.0637L17.9989 0.179688L13.5549 12.0637L0.879883 12.6177L10.8089 20.5157L7.41888 32.7417L17.9989 25.7397L28.5789 32.7417L25.1889 20.5157L35.1179 12.6177L22.4429 12.0637ZM20.4689 14.7817L17.9989 8.17969L15.5309 14.7817L8.48888 15.0897L14.0049 19.4777L12.1219 26.2697L17.9999 22.3797L23.8779 26.2697L21.9939 19.4777L27.5099 15.0897L20.4689 14.7817Z" />
                     </svg>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="33" viewBox="0 0 36 33" fill="none"
                         class="outline-star">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -8141,7 +7322,6 @@ $soonest = $matched[0] ?? null;
                         <path
                             d="M22.4429 12.0637L17.9989 0.179688L13.5549 12.0637L0.879883 12.6177L10.8089 20.5157L7.41888 32.7417L17.9989 25.7397L28.5789 32.7417L25.1889 20.5157L35.1179 12.6177L22.4429 12.0637ZM20.4689 14.7817L17.9989 8.17969L15.5309 14.7817L8.48888 15.0897L14.0049 19.4777L12.1219 26.2697L17.9999 22.3797L23.8779 26.2697L21.9939 19.4777L27.5099 15.0897L20.4689 14.7817Z" />
                     </svg>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="33" viewBox="0 0 36 33" fill="none"
                         class="outline-star">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -8154,7 +7334,6 @@ $soonest = $matched[0] ?? null;
                         <path
                             d="M22.4429 12.0637L17.9989 0.179688L13.5549 12.0637L0.879883 12.6177L10.8089 20.5157L7.41888 32.7417L17.9989 25.7397L28.5789 32.7417L25.1889 20.5157L35.1179 12.6177L22.4429 12.0637ZM20.4689 14.7817L17.9989 8.17969L15.5309 14.7817L8.48888 15.0897L14.0049 19.4777L12.1219 26.2697L17.9999 22.3797L23.8779 26.2697L21.9939 19.4777L27.5099 15.0897L20.4689 14.7817Z" />
                     </svg>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="33" viewBox="0 0 36 33" fill="none"
                         class="outline-star">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -8167,7 +7346,6 @@ $soonest = $matched[0] ?? null;
                         <path
                             d="M22.4429 12.0637L17.9989 0.179688L13.5549 12.0637L0.879883 12.6177L10.8089 20.5157L7.41888 32.7417L17.9989 25.7397L28.5789 32.7417L25.1889 20.5157L35.1179 12.6177L22.4429 12.0637ZM20.4689 14.7817L17.9989 8.17969L15.5309 14.7817L8.48888 15.0897L14.0049 19.4777L12.1219 26.2697L17.9999 22.3797L23.8779 26.2697L21.9939 19.4777L27.5099 15.0897L20.4689 14.7817Z" />
                     </svg>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="33" viewBox="0 0 36 33" fill="none"
                         class="outline-star">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -8180,7 +7358,6 @@ $soonest = $matched[0] ?? null;
                         <path
                             d="M22.4429 12.0637L17.9989 0.179688L13.5549 12.0637L0.879883 12.6177L10.8089 20.5157L7.41888 32.7417L17.9989 25.7397L28.5789 32.7417L25.1889 20.5157L35.1179 12.6177L22.4429 12.0637ZM20.4689 14.7817L17.9989 8.17969L15.5309 14.7817L8.48888 15.0897L14.0049 19.4777L12.1219 26.2697L17.9999 22.3797L23.8779 26.2697L21.9939 19.4777L27.5099 15.0897L20.4689 14.7817Z" />
                     </svg>
-
                     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="33" viewBox="0 0 36 33" fill="none"
                         class="outline-star">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -8189,17 +7366,14 @@ $soonest = $matched[0] ?? null;
                     </svg>
                 </div>
             </div>
-
             <textarea name="review-text-area" id="review-text-area"
                 placeholder="How was your learning experience? Write your review here..." required
                 autocomplete="off"></textarea>
         </div>
-
         <button class="red-button success-modal-for-providing-feedback-modal-open">
             Post review
         </button>
     </main>
-
     <!-- How did it go with Daniela Canelon? -->
     <main class="modal-basic-style anonymous-feedback-to-teacher-modal">
         <div class="back-icon back-modal">
@@ -8209,7 +7383,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="closeIcon backdrop-level-2-close">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -8217,18 +7390,14 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="heading-options">
             <div class="image-and-heading">
                 <div class="image-container">
                     <img src="../img/subs/1.png" alt="teacher" />
                 </div>
-
                 <h1>How did it go with Daniela Canelon?</h1>
-
                 <p>This rating is anonymous</p>
             </div>
-
             <div class="bad-okay-great">
                 <button class="card bad-option-select-modal-open">
                     <svg xmlns="http://www.w3.org/2000/svg" width="23" height="22" viewBox="0 0 23 22" fill="none">
@@ -8236,20 +7405,16 @@ $soonest = $matched[0] ?? null;
                             d="M15.7199 19.0841L15.4812 17.891L15.004 15.5047H19.1835C19.6995 15.5047 20.2095 15.3931 20.6783 15.1776C21.1472 14.962 21.5639 14.6477 21.8999 14.256C22.2359 13.8644 22.4833 13.4047 22.625 12.9085C22.7668 12.4123 22.7995 11.8913 22.7211 11.3813L21.4361 3.02944C21.3061 2.18438 20.878 1.41376 20.2291 0.857013C19.5802 0.300268 18.7535 -0.00581905 17.8985 -0.00585938H11.2051C9.79182 -0.00570537 8.41021 0.412761 7.23438 1.19681L5.45901 2.38038H0.686523V13.1185H5.45901L9.20064 19.6663C9.51367 20.2143 9.96604 20.6698 10.5119 20.9867C11.0577 21.3035 11.6776 21.4703 12.3087 21.4703H16.1971L15.7199 19.0841ZM8.55874 3.18216L7.84525 3.65702V12.4849L11.2731 18.4828C11.3774 18.6654 11.5281 18.8172 11.71 18.9228C11.8919 19.0284 12.0984 19.084 12.3087 19.0841H13.2871L12.6643 15.9724L12.0928 13.1185H19.1835C19.3555 13.1184 19.5254 13.0812 19.6816 13.0093C19.8379 12.9374 19.9767 12.8326 20.0887 12.7021C20.2007 12.5715 20.2831 12.4183 20.3303 12.253C20.3775 12.0876 20.3884 11.914 20.3623 11.744L19.0785 3.39215C19.0352 3.11033 18.8923 2.85335 18.6759 2.66775C18.4594 2.48215 18.1836 2.38021 17.8985 2.38038H11.2051C10.2632 2.38064 9.34241 2.65961 8.55874 3.18216Z"
                             fill="#121117" />
                     </svg>
-
                     Bad
                 </button>
-
                 <button class="card">
                     <svg xmlns="http://www.w3.org/2000/svg" width="23" height="22" viewBox="0 0 23 22" fill="none">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M15.6329 2.38038L15.3943 3.57351L14.9171 5.95975H19.0966C19.6126 5.95977 20.1225 6.07138 20.5914 6.28691C21.0603 6.50245 21.477 6.81681 21.813 7.20846C22.149 7.60012 22.3964 8.05979 22.5381 8.55598C22.6798 9.05217 22.7126 9.57314 22.6342 10.0832L21.3492 18.435C21.2192 19.2801 20.7911 20.0507 20.1422 20.6075C19.4933 21.1642 18.6666 21.4703 17.8116 21.4703H11.1182C9.7049 21.4702 8.3233 21.0517 7.14746 20.2677L5.3721 19.0841H0.599609V8.34599H5.3721L9.11373 1.79814C9.42676 1.25013 9.87912 0.794626 10.425 0.477811C10.9708 0.160996 11.5907 -0.0058662 12.2218 -0.00585937H16.1102L15.6329 2.38038ZM8.47183 18.2823L7.75834 17.8074V8.97835L11.1862 2.98052C11.2905 2.79831 11.4411 2.64687 11.6228 2.54149C11.8044 2.43612 12.0106 2.38054 12.2206 2.38038H13.199L12.5762 5.49205L12.0059 8.34599H19.0966C19.2686 8.34606 19.4385 8.3833 19.5947 8.45517C19.751 8.52704 19.8898 8.63184 20.0018 8.76238C20.1137 8.89293 20.1962 9.04613 20.2434 9.2115C20.2906 9.37687 20.3015 9.55049 20.2754 9.72047L18.9916 18.0723C18.9482 18.3541 18.8054 18.6111 18.5889 18.7967C18.3725 18.9823 18.0967 19.0843 17.8116 19.0841H11.1182C10.1763 19.0838 9.25549 18.8049 8.47183 18.2823Z"
                             fill="#121117" />
                     </svg>
-
                     Okay
                 </button>
-
                 <button class="card great-option-select-modal-open">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -8259,13 +7424,11 @@ $soonest = $matched[0] ?? null;
                             d="M20.9241 6.96594H24.8856C26.9652 6.96594 28.5553 8.81827 28.2394 10.8737L27.0216 18.7904C26.8982 19.5914 26.4923 20.3219 25.8771 20.8496C25.2619 21.3773 24.4782 21.6673 23.6677 21.6673H22.8561L23.1729 19.4051H23.6677C24.2261 19.4051 24.7012 18.998 24.7862 18.4459L26.0032 10.5301C26.028 10.369 26.0176 10.2044 25.9728 10.0476C25.9281 9.89083 25.8499 9.7456 25.7438 9.62185C25.6376 9.49811 25.506 9.39877 25.3578 9.33066C25.2097 9.26254 25.0486 9.22725 24.8856 9.22721H18.1653L19.2964 3.57181H18.3693C17.9631 3.57181 17.589 3.79015 17.3877 4.14182L16.5922 5.33733H13.9873L15.4235 3.01969C15.7203 2.50041 16.1491 2.06881 16.6664 1.76866C17.1837 1.4685 17.7712 1.31046 18.3693 1.31055H22.0552L20.9241 6.96594Z"
                             fill="#121117" />
                     </svg>
-
                     Great
                 </button>
             </div>
         </div>
     </main>
-
     <!-- Awesome! What did you like? -->
     <main class="modal-basic-style great-option-select-modal">
         <div class="back-icon back-modal">
@@ -8275,7 +7438,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="closeIcon backdrop-level-2-close">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -8283,13 +7445,11 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="heading-options">
             <div class="heading-and-pera">
                 <h1>Awesome! What did you like?</h1>
                 <p>Choose one or more options</p>
             </div>
-
             <div class="suggested-feedback-options">
                 <button class="parent-option" data-target="professional-approach">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="17" viewBox="0 0 18 17" fill="none">
@@ -8297,7 +7457,6 @@ $soonest = $matched[0] ?? null;
                             d="M6 0H4V3H0V17H18V3H14V0H6ZM12 2H6V3H12V2ZM6 5H12V15H6V5ZM16 15H14V5H16V15ZM4 5H2V15H4V5Z"
                             fill="#121117" />
                     </svg>
-
                     Professional approach
                 </button>
                 <div class="nested-options" id="professional-approach">
@@ -8305,14 +7464,12 @@ $soonest = $matched[0] ?? null;
                     <button class="nested">Organized</button>
                     <button class="nested">Disciplined</button>
                 </div>
-
                 <button class="parent-option" data-target="lesson-delivery">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="18" viewBox="0 0 22 18" fill="none">
                         <path
                             d="M11 18L4 14.2V8.2L0 6L11 0L22 6V14H20V7.1L18 8.2V14.2L11 18ZM11 9.7L17.85 6L11 2.3L4.15 6L11 9.7ZM11 15.725L16 13.025V9.25L11 12L6 9.25V13.025L11 15.725Z"
                             fill="#121117" />
                     </svg>
-
                     Lesson delivery
                 </button>
                 <div class="nested-options" id="lesson-delivery">
@@ -8321,14 +7478,12 @@ $soonest = $matched[0] ?? null;
                     <button class="nested">On time</button>
                     <button class="nested">Knowledgeable</button>
                 </div>
-
                 <button class="parent-option" data-target="call-and-classroom">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M11 0H7V2H0V16H3V18H6V16H12V18H15V16H18V2H11V0ZM15 14H16V4H2V14H15ZM4 6H12V8H4V6ZM8 10H4V12H8V10Z"
                             fill="#121117" />
                     </svg>
-
                     Call and classroom
                 </button>
                 <div class="nested-options" id="call-and-classroom">
@@ -8336,14 +7491,12 @@ $soonest = $matched[0] ?? null;
                     <button class="nested">Clear audio</button>
                     <button class="nested">No interruptions</button>
                 </div>
-
                 <button class="parent-option" data-target="tutor-personality">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M9 16C8.08075 16 7.17049 15.8189 6.32122 15.4672C5.47194 15.1154 4.70026 14.5998 4.05025 13.9497C3.40024 13.2997 2.88463 12.5281 2.53284 11.6788C2.18106 10.8295 2 9.91925 2 9C2 8.08075 2.18106 7.17049 2.53284 6.32122C2.88463 5.47194 3.40024 4.70026 4.05025 4.05025C4.70026 3.40024 5.47194 2.88463 6.32122 2.53284C7.17049 2.18106 8.08075 2 9 2C10.8565 2 12.637 2.7375 13.9497 4.05025C15.2625 5.36301 16 7.14348 16 9C16 10.8565 15.2625 12.637 13.9497 13.9497C12.637 15.2625 10.8565 16 9 16ZM0 9C-1.76116e-08 7.8181 0.232792 6.64778 0.685084 5.55585C1.13738 4.46392 1.80031 3.47177 2.63604 2.63604C3.47177 1.80031 4.46392 1.13738 5.55585 0.685084C6.64778 0.232792 7.8181 0 9 0C10.1819 0 11.3522 0.232792 12.4442 0.685084C13.5361 1.13738 14.5282 1.80031 15.364 2.63604C16.1997 3.47177 16.8626 4.46392 17.3149 5.55585C17.7672 6.64778 18 7.8181 18 9C18 11.3869 17.0518 13.6761 15.364 15.364C13.6761 17.0518 11.3869 18 9 18C6.61305 18 4.32387 17.0518 2.63604 15.364C0.948211 13.6761 3.55683e-08 11.3869 0 9ZM8 6H5V9H8V6ZM10 6H13V9H10V6ZM9 14C9.9731 14.0001 10.9251 13.7164 11.7393 13.1835C12.5536 12.6507 13.1946 11.8918 13.584 11H4.416C4.80536 11.8918 5.44644 12.6507 6.26067 13.1835C7.0749 13.7164 8.0269 14.0001 9 14Z"
                             fill="#121117" />
                     </svg>
-
                     Tutor personality
                 </button>
                 <div class="nested-options" id="tutor-personality">
@@ -8351,22 +7504,18 @@ $soonest = $matched[0] ?? null;
                     <button class="nested">Supportive</button>
                     <button class="nested">Motivating</button>
                 </div>
-
                 <button class="parent-option" data-target="clear-communication">
                     Clear communication
                 </button>
-
                 <button class="parent-option" data-target="something-else">
                     Something else
                 </button>
             </div>
         </div>
-
         <button class="red-button anonymous-teacher-feedback-last-modal-open">
             Give Feedback
         </button>
     </main>
-
     <!-- What did Not like in Daniela? -->
     <main class="modal-basic-style bad-option-select-modal">
         <div class="back-icon back-modal">
@@ -8376,7 +7525,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="closeIcon backdrop-level-2-close">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -8384,13 +7532,11 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="heading-options">
             <div class="heading-and-pera">
                 <h1>What did Not like in Daniela?</h1>
                 <p>Choose one or more options</p>
             </div>
-
             <div class="suggested-feedback-options">
                 <button class="parent-option" data-target="unprofessional-approach">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="17" viewBox="0 0 18 17" fill="none">
@@ -8398,7 +7544,6 @@ $soonest = $matched[0] ?? null;
                             d="M6 0H4V3H0V17H18V3H14V0H6ZM12 2H6V3H12V2ZM6 5H12V15H6V5ZM16 15H14V5H16V15ZM4 5H2V15H4V5Z"
                             fill="#121117" />
                     </svg>
-
                     Unprofessional approach
                 </button>
                 <div class="nested-options" id="unprofessional-approach">
@@ -8406,14 +7551,12 @@ $soonest = $matched[0] ?? null;
                     <button class="nested">Disorganized</button>
                     <button class="nested">Irresponsible</button>
                 </div>
-
                 <button class="parent-option" data-target="poor-lesson-delivery">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="18" viewBox="0 0 22 18" fill="none">
                         <path
                             d="M11 18L4 14.2V8.2L0 6L11 0L22 6V14H20V7.1L18 8.2V14.2L11 18ZM11 9.7L17.85 6L11 2.3L4.15 6L11 9.7ZM11 15.725L16 13.025V9.25L11 12L6 9.25V13.025L11 15.725Z"
                             fill="#121117" />
                     </svg>
-
                     Poor lesson delivery
                 </button>
                 <div class="nested-options" id="poor-lesson-delivery">
@@ -8422,14 +7565,12 @@ $soonest = $matched[0] ?? null;
                     <button class="nested">Often late</button>
                     <button class="nested">Lack of knowledge</button>
                 </div>
-
                 <button class="parent-option" data-target="technical-issues">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M11 0H7V2H0V16H3V18H6V16H12V18H15V16H18V2H11V0ZM15 14H16V4H2V14H15ZM4 6H12V8H4V6ZM8 10H4V12H8V10Z"
                             fill="#121117" />
                     </svg>
-
                     Technical issues
                 </button>
                 <div class="nested-options" id="technical-issues">
@@ -8437,14 +7578,12 @@ $soonest = $matched[0] ?? null;
                     <button class="nested">Frequent disconnections</button>
                     <button class="nested">Poor video quality</button>
                 </div>
-
                 <button class="parent-option" data-target="personality-issues">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
                         <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M9 16C8.08075 16 7.17049 15.8189 6.32122 15.4672C5.47194 15.1154 4.70026 14.5998 4.05025 13.9497C3.40024 13.2997 2.88463 12.5281 2.53284 11.6788C2.18106 10.8295 2 9.91925 2 9C2 8.08075 2.18106 7.17049 2.53284 6.32122C2.88463 5.47194 3.40024 4.70026 4.05025 4.05025C4.70026 3.40024 5.47194 2.88463 6.32122 2.53284C7.17049 2.18106 8.08075 2 9 2C10.8565 2 12.637 2.7375 13.9497 4.05025C15.2625 5.36301 16 7.14348 16 9C16 10.8565 15.2625 12.637 13.9497 13.9497C12.637 15.2625 10.8565 16 9 16ZM0 9C-1.76116e-08 7.8181 0.232792 6.64778 0.685084 5.55585C1.13738 4.46392 1.80031 3.47177 2.63604 2.63604C3.47177 1.80031 4.46392 1.13738 5.55585 0.685084C6.64778 0.232792 7.8181 0 9 0C10.1819 0 11.3522 0.232792 12.4442 0.685084C13.5361 1.13738 14.5282 1.80031 15.364 2.63604C16.1997 3.47177 16.8626 4.46392 17.3149 5.55585C17.7672 6.64778 18 7.8181 18 9C18 11.3869 17.0518 13.6761 15.364 15.364C13.6761 17.0518 11.3869 18 9 18C6.61305 18 4.32387 17.0518 2.63604 15.364C0.948211 13.6761 3.55683e-08 11.3869 0 9ZM8 6H5V9H8V6ZM10 6H13V9H10V6ZM9 14C9.9731 14.0001 10.9251 13.7164 11.7393 13.1835C12.5536 12.6507 13.1946 11.8918 13.584 11H4.416C4.80536 11.8918 5.44644 12.6507 6.26067 13.1835C7.0749 13.7164 8.0269 14.0001 9 14Z"
                             fill="#121117" />
                     </svg>
-
                     Personality issues
                 </button>
                 <div class="nested-options" id="personality-issues">
@@ -8452,22 +7591,18 @@ $soonest = $matched[0] ?? null;
                     <button class="nested">Not supportive</button>
                     <button class="nested">Demotivating</button>
                 </div>
-
                 <button class="parent-option" data-target="unclear-communication">
                     Unclear communication
                 </button>
-
                 <button class="parent-option" data-target="other-negative">
                     Something else
                 </button>
             </div>
         </div>
-
         <button class="red-button anonymous-teacher-feedback-last-modal-open">
             Give Feedback
         </button>
     </main>
-
     <!-- Please write down your review for Daniela Canelon? -->
     <main class="modal-basic-style anonymous-teacher-feedback-last-modal">
         <div class="back-icon back-modal">
@@ -8477,7 +7612,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="closeIcon backdrop-level-2-close">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -8485,28 +7619,22 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="heading-options">
             <div class="image-and-heading">
                 <div class="image-container">
                     <img src="../img/subs/1.png" alt="teacher" />
                 </div>
-
                 <h1>Please write down your review for Daniela Canelon?</h1>
-
                 <p>This rating is anonymous</p>
             </div>
-
             <textarea name="review-text-area" id="review-text-area"
                 placeholder="How was your learning experience? Write your review here..." required
                 autocomplete="off"></textarea>
         </div>
-
         <button class="red-button success-modal-for-providing-feedback-modal-open">
             Done
         </button>
     </main>
-
     <!-- Tell Us What Happened -->
     <main class="modal-basic-style tell-us-what-happened-modal">
         <div class="closeIcon backdrop-level-2-close desktop">
@@ -8517,7 +7645,8 @@ $soonest = $matched[0] ?? null;
             </svg>
         </div>
         <div class="mobile back-custom-icon">
-            <?xml version="1.0" encoding="utf-8"?><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+            <?xml version="1.0" encoding="utf-8"?>
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px"
                 viewBox="0 0 66.91 122.88" style="enable-background: new 0 0 66.91 122.88" xml:space="preserve">
                 <g>
@@ -8529,13 +7658,11 @@ $soonest = $matched[0] ?? null;
         <div class="main-content">
             <div class="icon-and-content">
                 <img src="../img/subs/icons/report-a-issue.png" alt="" />
-
                 <div class="content">
                     <h1>Tell Us What Happened</h1>
                     <p>Helps us impove by reporting an issue</p>
                 </div>
             </div>
-
             <div class="bullet-select-options">
                 <button>
                     <div class="icon-and-text">
@@ -8545,7 +7672,6 @@ $soonest = $matched[0] ?? null;
                         <div class="fill-circle"></div>
                     </div>
                 </button>
-
                 <button>
                     <div class="icon-and-text">
                         <p>Unequal Participation</p>
@@ -8554,7 +7680,6 @@ $soonest = $matched[0] ?? null;
                         <div class="fill-circle"></div>
                     </div>
                 </button>
-
                 <button>
                     <div class="icon-and-text">
                         <p>Lack of Feedback</p>
@@ -8563,7 +7688,6 @@ $soonest = $matched[0] ?? null;
                         <div class="fill-circle"></div>
                     </div>
                 </button>
-
                 <button>
                     <div class="icon-and-text">
                         <p>Distractions and Lack of Focus</p>
@@ -8572,7 +7696,6 @@ $soonest = $matched[0] ?? null;
                         <div class="fill-circle"></div>
                     </div>
                 </button>
-
                 <button>
                     <div class="icon-and-text">
                         <p>Other</p>
@@ -8583,12 +7706,10 @@ $soonest = $matched[0] ?? null;
                 </button>
             </div>
         </div>
-
         <button class="red-button explain-your-issue-modal-open disabled-button">
             Continue
         </button>
     </main>
-
     <!-- Please Explain your Issue -->
     <main class="modal-basic-style explain-your-issue-modal">
         <div class="back-icon back-modal">
@@ -8598,7 +7719,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="closeIcon backdrop-level-2-close">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -8606,26 +7726,21 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="main-content">
             <div class="icon-and-content">
                 <img src="../img/subs/icons/report-a-issue.png" alt="" />
-
                 <div class="content">
                     <h1>Please Explain your Issue</h1>
                     <p>Helps us impove by reporting an issue</p>
                 </div>
             </div>
-
             <textarea name="review-text-area" id="review-text-area"
                 placeholder="How was your learning experience? Write your review here..." autocomplete="off"></textarea>
         </div>
-
         <button class="red-button issue-reported-modal-open">
             Report an issue
         </button>
     </main>
-
     <!-- Issue have been reported thanks for your feedback -->
     <main class="modal-basic-style issue-reported-modal">
         <div class="closeIcon backdrop-level-2-close">
@@ -8635,7 +7750,6 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </div>
-
         <div class="icon-and-heading">
             <div class="icon-container">
                 <svg xmlns="http://www.w3.org/2000/svg" width="43" height="42" viewBox="0 0 43 42" fill="none">
@@ -8644,14 +7758,10 @@ $soonest = $matched[0] ?? null;
                         stroke="#FF2500" stroke-width="3.45833" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
             </div>
-
             <h1>Issue have been reported thanks for your feedback</h1>
         </div>
-
         <button class="red-button backdrop-level-2-close">Done</button>
     </main>
-
-
     <section id="gl-modal" class="gl-modal-section">
         <div class="gl-modal">
             <div class="gl-modal-header">
@@ -8667,7 +7777,6 @@ $soonest = $matched[0] ?? null;
                     </svg>
                 </button>
             </div>
-
             <article class="gl-teacher-card">
                 <div class="gl-card-header">
                     <div class="gl-avatar-container">
@@ -8678,11 +7787,9 @@ $soonest = $matched[0] ?? null;
                     <div class="gl-favorite">
                         <div class="gl-heart">
                             <img src="../img/subs/heart.png" alt="">
-
                         </div>
                     </div>
                 </div>
-
                 <div class="gl-card-body">
                     <div class="gl-details">
                         <div class="gl-price-rating">
@@ -8703,7 +7810,6 @@ $soonest = $matched[0] ?? null;
                             <span class="gl-tag gl-tag-super">Super Tutor</span>
                         </div>
                     </div>
-
                     <div class="gl-info-grid">
                         <div class="gl-info-box">
                             <p class="gl-info-label">Main Teacher :</p>
@@ -8735,14 +7841,12 @@ $soonest = $matched[0] ?? null;
                             <p class="gl-info-strong">Fri - 8 PM EST</p>
                         </div>
                     </div>
-
                     <div class="gl-card-actions">
                         <a href="#" class="gl-btn gl-btn-primary">Change to this group</a>
                         <a href="#" class="gl-btn gl-btn-secondary">View Group Profile</a>
                     </div>
                 </div>
             </article>
-
             <footer class="gl-modal-footer">
                 <a href="#" class="gl-btn gl-btn-explore">Explore other levels</a>
             </footer>
@@ -8760,16 +7864,13 @@ $soonest = $matched[0] ?? null;
                 </button>
                 <h1 class="pl-card-title">Your Custom plan</h1>
             </div>
-
             <hr class="pl-separator" />
-
             <main class="pl-card-body">
                 <h2 class="pl-section-title">How many Months would you like to Select?</h2>
                 <button class="pl-month-selector">
                     <span class="pl-selected-month">12</span>
                     <img src="../img/subs/arrow-down.svg" alt="Dropdown arrow">
                 </button>
-
                 <section id="pricing-options" class="is-open">
                     <div class="pricing-list-container">
                         <ul class="pricing-list">
@@ -8813,9 +7914,7 @@ $soonest = $matched[0] ?? null;
                     </div>
                 </section>
             </main>
-
             <hr class="pl-separator" />
-
             <div class="pl-summary-wrapper">
                 <div class="pl-summary-grid">
                     <div class="pl-summary-period">
@@ -8827,11 +7926,8 @@ $soonest = $matched[0] ?? null;
                         <span class="pl-cost-label">charged per 12 Month</span>
                     </div>
                 </div>
-
             </div>
-
             <hr class="pl-separator" />
-
             <footer class="pl-card-footer">
                 <button class="pl-checkout-btn js-custom-continue">Continue to checkout</button>
             </footer>
@@ -8846,19 +7942,17 @@ $soonest = $matched[0] ?? null;
                         fill="#121117" />
                 </svg>
             </button>
-
             <div class="rm-header">
                 <img src="../img/subs/1.png" alt="Florida 1 Logo" class="rm-logo">
                 <h1 class="rm-title">Change your renewal date</h1>
             </div>
-
             <div class="rm-body">
                 <div class="rm-info">
                     <p class="rm-renewal">Your plan is scheduled to renew on Mar 17.</p>
                     <p class="rm-instructions">You can postpone your renewal by up to 20 days. Your next renewals will
-                        happen every 28 days from the new selected date.</p>
+                        happen every 28 days from the new selected date.
+                    </p>
                 </div>
-
                 <div class="rm-calendar">
                     <div class="rm-calendar-header">
                         <h2 class="rm-month">June 2025</h2>
@@ -8875,7 +7969,6 @@ $soonest = $matched[0] ?? null;
                         <div class="rm-weekday">TH</div>
                         <div class="rm-weekday">FR</div>
                         <div class="rm-weekday">SA</div>
-
                         <div class="rm-day other">23</div>
                         <div class="rm-day other">24</div>
                         <div class="rm-day other">25</div>
@@ -8921,7 +8014,6 @@ $soonest = $matched[0] ?? null;
                     </div>
                 </div>
             </div>
-
             <footer class="rm-footer">
                 <button class="rm-cta">Continue Pausing</button>
             </footer>
@@ -8953,7 +8045,6 @@ $soonest = $matched[0] ?? null;
             </div>
         </div>
     </section>
-
     <div class="ps-container">
         <button class="ps-close" aria-label="Close">
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -8962,12 +8053,10 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </button>
-
         <div class="ps-header">
             <img src="../img/subs/group-section/1.png" alt="Florida 1 Logo" class="ps-logo">
             <h1 class="ps-title">Pause your subscription with Florida 1</h1>
         </div>
-
         <div class="ps-body">
             <div class="ps-info">
                 <p class="ps-renewal">Your subscription is scheduled to renew on <strong>June 18.</strong></p>
@@ -8978,7 +8067,6 @@ $soonest = $matched[0] ?? null;
                     of this cycle within pause will be added to your credit.
                 </p>
             </div>
-
             <div class="ps-calendar">
                 <div class="ps-calendar__header">
                     <h2 class="ps-month">June 2025</h2>
@@ -8987,7 +8075,6 @@ $soonest = $matched[0] ?? null;
                         <button class="ps-nav__btn is-next" aria-label="Next month"></button>
                     </div>
                 </div>
-
                 <div class="ps-grid">
                     <div class="ps-weekday">SU</div>
                     <div class="ps-weekday">MO</div>
@@ -8996,7 +8083,6 @@ $soonest = $matched[0] ?? null;
                     <div class="ps-weekday">TH</div>
                     <div class="ps-weekday">FR</div>
                     <div class="ps-weekday">SA</div>
-
                     <div class="ps-day is-other">23</div>
                     <div class="ps-day is-other">24</div>
                     <div class="ps-day is-other">25</div>
@@ -9042,13 +8128,10 @@ $soonest = $matched[0] ?? null;
                 </div>
             </div>
         </div>
-
         <footer class="ps-footer">
             <button class="ps-cta">Continue Pausing</button>
         </footer>
     </div>
-
-
     <section id="pause-confirmation">
         <div class="pause-modal">
             <button class="icon-button back-button" aria-label="Go back">
@@ -9065,10 +8148,8 @@ $soonest = $matched[0] ?? null;
                         fill="#121117" />
                 </svg>
             </button>
-
             <div class="modal-content-container">
                 <h1 class="modal-title-sub">Let’s confirm your pause details</h1>
-
                 <div class="details-card">
                     <div class="pause-info">
                         <img class="course-image" src="../img/subs/group-section/1.png" alt="Course thumbnail">
@@ -9081,17 +8162,16 @@ $soonest = $matched[0] ?? null;
                     <ul class="info-list">
                         <li>Your subscription will renew on June 20.</li>
                         <li>The credit of $48 from the 8 lessons of this cycle scheduled during the pause will be added
-                            to your account.</li>
+                            to your account.
+                        </li>
                         <li>We won't charge you while you're paused.</li>
                         <li>You can cancel anytime.</li>
                     </ul>
                 </div>
-
                 <button class="confirm-button confirm-pause">Confirm Pause subscription</button>
             </div>
         </div>
     </section>
-
     <section id="subscription-paused" class="sp-wrapper" data-start="2025-03-18" data-end="2025-03-29">
         <div class="sp-card">
             <button class="sp-close" aria-label="Close modal">
@@ -9101,17 +8181,15 @@ $soonest = $matched[0] ?? null;
                         fill="#121117" />
                 </svg>
             </button>
-
             <img class="sp-icon" src="../img/subs/group-section/1.png" alt="Subscription status">
             <h1 class="sp-title">Subscription Paused</h1>
-
             <div class="sp-desc">
                 <p>Your pause will be from <strong><span id="sp-start">—</span></strong> to <strong><span
                             id="sp-end">—</span></strong>.</p>
                 <p>Your subscription will renew on <strong><span id="sp-renew">—</span></strong>. You can still attend
-                    your lessons before that.</p>
+                    your lessons before that.
+                </p>
             </div>
-
             <button class="sp-btn">Done</button>
         </div>
     </section>
@@ -9123,34 +8201,55 @@ $soonest = $matched[0] ?? null;
                         d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
                         fill="#121117" />
                 </svg>
-
             </button>
             <div>
-
                 <img src="../img/subs/try-pause.png" alt="">
             </div>
-
             <div class="subs-step1" id="subsStep1">
                 <h2>Try Pausing Before You Cancel</h2>
             </div>
             <div class="subs-step2 subs-hidden" id="subsStep2">
                 <h2 class="subs-h2">Try Pausing Before You <br> Cancel</h2>
                 <p>Busy at the moment? You can <b>pause your subscription</b> for up to <b>20 days</b> instead of
-                    cancelling.</p>
+                    cancelling.
+                </p>
                 <button class="subs-btn subs-btn-pause">Pause subscription</button>
-                <button class="subs-btn subs-btn-cancel ">Proceed with cancellation</button>
+                <button class="subs-btn subs-btn-cancel">Proceed with cancellation</button>
             </div>
         </div>
     </div>
 
 
+    <div class="subs-overlay-for-teachers" id="subsModal-for-teachers">
+        <div class="subs-box">
+            <button class="subs-close" id="subsClose-teacher">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <div>
+                <img src="../img/subs/try-pause.png" alt="">
+            </div>
+            <div class="subs-step1" id="subsStep1-teacher">
+                <h2>Try Pausing Before You Cancel</h2>
+            </div>
+            <div class="subs-step2 subs-hidden" id="subsStep2-teacher">
+                <h2 class="subs-h2">Try Pausing Before You <br> Cancel</h2>
+                <p>Busy at the moment? You can <b>pause your subscription</b> for up to <b>20 days</b> instead of
+                    cancelling.
+                </p>
+                <button class="subs-btn subs-btn-pause-teacher">Pause subscription</button>
+                <button class="subs-btn subs-btn-cancel-teacher">Proceed with cancellation</button>
+            </div>
+        </div>
+    </div>
     <section class="backdrop"></section>
     <section class="backdrop_nested"></section>
     <section class="calendar_backdrop"></section>
     <!-- prefer to share your feedback for Florida -->
-
 </div>
-
 <section id="cm-modal">
     <div class="cm-modal-container">
         <button class="cm-close-btn" aria-label="Close">
@@ -9160,12 +8259,10 @@ $soonest = $matched[0] ?? null;
                     fill="#121117" />
             </svg>
         </button>
-
         <div class="cm-header">
             <h1>Why would you like to cancel?</h1>
             <p>This stays between us, so be honest.</p>
         </div>
-
         <nav class="cm-reasons" aria-label="Cancellation reasons">
             <a href="#" class="cm-reason cm-reason-1">
                 <div class="cm-reason-content">
@@ -9174,7 +8271,6 @@ $soonest = $matched[0] ?? null;
                 </div>
                 <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
             </a>
-
             <a href="#" class="cm-reason cm-reason-2">
                 <div class="cm-reason-content">
                     <img class="cm-reason-icon" src="../img/subs/2-a.png" alt="">
@@ -9182,14 +8278,12 @@ $soonest = $matched[0] ?? null;
                 </div>
                 <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
             </a>
-
             <a href="#" class="cm-reason cm-reason-3">
                 <div class="cm-reason-content">
                     <img class="cm-reason-icon" src="../img/subs/3-a.png" alt="">
                     <span>I'd like to try private classes</span>
                 </div>
                 <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
-
                 <a href="#" class="cm-reason cm-reason-4">
                     <div class="cm-reason-content">
                         <img class="cm-reason-icon" src="../img/subs/4-a.png" alt="">
@@ -9197,7 +8291,6 @@ $soonest = $matched[0] ?? null;
                     </div>
                     <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
                 </a>
-
                 <a href="#" class="cm-reason cm-reason-5">
                     <div class="cm-reason-content">
                         <img class="cm-reason-icon" src="../img/subs/5-a.png" alt="">
@@ -9205,7 +8298,6 @@ $soonest = $matched[0] ?? null;
                     </div>
                     <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
                 </a>
-
                 <a href="#" class="cm-reason cm-reason-6">
                     <div class="cm-reason-content">
                         <img class="cm-reason-icon" src="../img/subs/6-a.png" alt="">
@@ -9213,7 +8305,6 @@ $soonest = $matched[0] ?? null;
                     </div>
                     <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
                 </a>
-
                 <a href="#" class="cm-reason cm-reason-7">
                     <div class="cm-reason-content">
                         <img class="cm-reason-icon" src="../img/subs/7-a.png" alt="">
@@ -9222,6 +8313,1406 @@ $soonest = $matched[0] ?? null;
                     <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
                 </a>
         </nav>
+    </div>
+</section>
+
+<section id="cm-modal-teachers">
+    <div class="cm-modal-container">
+        <button class="cm-close-btn" aria-label="Close">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+        <div class="cm-header">
+            <h1>Why Would You Like To Cancel?</h1>
+            <p>This stays between us, so be honest.</p>
+        </div>
+        <nav class="cm-reasons" aria-label="Cancellation reasons">
+            <a href="#" class="cm-reason cm-reason-1-teachers">
+                <div class="cm-reason-content">
+                    <img class="cm-reason-icon" src="../img/subs/3-a.png" alt="">
+
+                    <span>I’ve achieved my goals</span>
+                </div>
+                <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+            </a>
+            <a href="#" class="cm-reason cm-reason-2-teachers">
+                <div class="cm-reason-content">
+                    <img class="cm-reason-icon" src="../img/subs/7-a.png" alt="">
+
+                    <span>My tutor isn’t available</span>
+                </div>
+                <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+            </a>
+            <a href="#" class="cm-reason cm-reason-3-teachers">
+                <div class="cm-reason-content">
+                    <img class="cm-reason-icon" src="../img/subs/2-a.png" alt="">
+
+                    <span>It’s too expensive</span>
+                </div>
+                <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+            </a>
+            <a href="#" class="cm-reason cm-reason-4-teachers">
+                <div class="cm-reason-content">
+                    <img class="cm-reason-icon" src="../img/subs/thumbs-down.png" alt="">
+                    <span>I’d like to try another tutor</span>
+                </div>
+                <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+            </a>
+            <a href="#" class="cm-reason cm-reason-5-teachers">
+                <div class="cm-reason-content">
+                    <img class="cm-reason-icon" src="../img/subs/5-a.png" alt="">
+                    <span>I have too many unused lessons</span>
+                </div>
+                <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+            </a>
+            <a href="#" class="cm-reason cm-reason-6-teachers">
+                <div class="cm-reason-content">
+                    <img class="cm-reason-icon" src="../img/subs/6-a.png" alt="">
+                    <span>I’ll study with my tutor outside Latingles</span>
+                </div>
+                <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+            </a>
+            <a href="#" class="cm-reason cm-reason-7-teachers">
+                <div class="cm-reason-content">
+                    <img class="cm-reason-icon" src="../img/subs/1-a.png" alt="">
+
+                    <span>I don’t have time for lessons</span>
+                </div>
+                <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+            </a>
+            <a href="#" class="cm-reason cm-reason-8-teachers">
+                <div class="cm-reason-content">
+                    <svg width="18" height="4" viewBox="0 0 18 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0H4V4H0V0ZM7 0H11V4H7V0ZM18 0H14V4H18V0Z"
+                            fill="#121117"></path>
+                    </svg>
+                    <span>Something else</span>
+                </div>
+                <img class="cm-reason-arrow" src="../img/subs/arrow-right.svg" alt="Select reason">
+            </a>
+        </nav>
+    </div>
+</section>
+
+
+<section id="cp-cancellation-prompt" class="reason-4-modal">
+    <div class="cp-card">
+        <div class="cp-header">
+            <button class="cp-icon-btn cp-back-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="cp-icon-btn cp-close-btn" aria-label="Close dialog">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <div class="cp-text">
+            <h1 class="cp-title">Try pausing before you<br>cancel</h1>
+            <p class="cp-subtitle">Busy at the moment? You can pause your subscription<br>for up to 20 days instead of
+                cancelling.
+            </p>
+        </div>
+        <div class="cp-actions">
+            <button class="cp-btn cp-btn-primary">Pause subscription</button>
+            <a href="#" class="cp-btn cp-btn-secondary proceed-with-cancel">Proceed with cancellation</a>
+        </div>
+    </div>
+</section>
+<section id="cp-cancellation-prompt-sub" class="reason-6-modal">
+    <div class="cp-card">
+        <div class="cp-header">
+            <button class="cp-icon-btn cp-back-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="cp-icon-btn cp-close-btn" aria-label="Close dialog">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <div class="cp-text">
+            <h1 class="cp-title">Review your changes to<br>Recorded Classes Only</h1>
+            <p class="cp-subtitle">Change your plan to Recorded Classes Only</p>
+        </div>
+        <div class="cp-text-sub">
+            <h1 class="cp-title-sub">$36.00 per Month</h1>
+            <p class="cp-subtitle-sub">live classes</p>
+            <img src="../img/subs/arrow-down.svg" alt="">
+            <h1 class="cp-title-sub">$36.00 per Month</h1>
+            <p class="cp-subtitle-sub">Recorded Classes Only</p>
+        </div>
+        <div class="cp-actions-sub">
+            <button class="cp-btn cp-btn-primary-confirm confirm-plan-change">Confirm</button>
+            <a href="#" class="cp-btn cp-btn-secondary proceed-with-cancel">Proceed with cancellation</a>
+        </div>
+    </div>
+</section>
+<section id="bo-modal" class="reason-2-modal">
+    <div class="bo-container">
+        <div class="bo-header">
+            <button class="bo-icon-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="bo-icon-btn" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <main class="bo-content">
+            <div class="bo-text">
+                <h1 class="bo-title">Why not try these budget-friendly options?</h1>
+                <p class="bo-subtitle">Here’s how you can continue practicing even on a tight budget.</p>
+            </div>
+            <div class="bo-options">
+                <a href="#" class="bo-option">
+                    <div class="bo-icon-wrap">
+                        <div class="bo-icon-merged">
+                            <img src="../img/subs/camera.png" alt="Recorded classes icon"
+                                style="position:absolute; top:4.9px; left:0; width:24px; height:14.1px;">
+                        </div>
+                    </div>
+                    <span>Try Recorded Classes Only</span>
+                </a>
+                <a href="#" class="bo-option try-affordable-group">
+                    <div class="bo-icon-wrap">
+                        <div class="bo-icon-merged">
+                            <img src="../img/subs/persons.png" alt="Recorded classes icon"
+                                style="position:absolute; top:1.8px; left:1.1px; width:21.9px; height:20.5px;">
+                        </div>
+                    </div>
+                    <span>Try affordable Groups</span>
+                </a>
+            </div>
+            <a href="#" class="bo-cancel proceed-with-cancel">No thanks, cancel subscription</a>
+        </main>
+    </div>
+</section>
+
+<section id="bo-modal" class="reason-7-modal">
+    <div class="bo-container">
+        <div class="bo-header">
+            <button class="bo-icon-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="bo-icon-btn" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <main class="bo-content">
+            <div class="bo-text">
+                <h1 class="bo-title">Why not try a new way to learn?</h1>
+                <p class="bo-subtitle">Here’s how to make your subscription work better for you.</p>
+            </div>
+            <div class="bo-options">
+                <a href="#" class="bo-option try-smaller-plan">
+                    <div class="bo-icon-wrap">
+                        <div class="bo-icon-merged">
+                            <img src="../img/subs/smallerplan.png" alt="Recorded classes icon"
+                                style="position:absolute; top:4.9px; left:0; width:24px; height:14.1px;">
+                        </div>
+                    </div>
+                    <span>Try a smaller plan</span>
+                </a>
+                <a href="#" class="bo-option try-affordable-group">
+                    <div class="bo-icon-wrap">
+                        <div class="bo-icon-merged">
+                            <img src="../img/subs/persons.png" alt="Recorded classes icon"
+                                style="position:absolute; top:1.8px; left:1.1px; width:21.9px; height:20.5px;">
+                        </div>
+                    </div>
+                    <span>Try a affordable Group</span>
+                </a>
+            </div>
+            <a href="#" class="bo-cancel proceed-with-cancel">No thanks, cancel subscription</a>
+        </main>
+    </div>
+</section>
+<section id="bo-modal" class="reason-8-modal-teacher">
+    <div class="bo-container">
+        <div class="bo-header">
+            <button class="bo-icon-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="bo-icon-btn" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <main class="bo-content">
+            <div class="bo-text">
+                <h1 class="bo-title">Why not try a new way to learn?</h1>
+                <p class="bo-subtitle">Here’s how to make your subscription work better for you.</p>
+            </div>
+            <div class="bo-options">
+                <a href="#" class="bo-option try-smaller-plan">
+                    <div class="bo-icon-wrap">
+                        <div class="bo-icon-merged">
+                            <img src="../img/subs/smallerplan.png" alt="Recorded classes icon"
+                                style="position:absolute; top:4.9px; left:0; width:24px; height:14.1px;">
+                        </div>
+                    </div>
+                    <span>Try a smaller plan</span>
+                </a>
+                <a href="#" class="bo-option try-affordable-group">
+                    <div class="bo-icon-wrap">
+                        <div class="bo-icon-merged">
+                            <img src="../img/subs/persons.png" alt="Recorded classes icon"
+                                style="position:absolute; top:1.8px; left:1.1px; width:21.9px; height:20.5px;">
+                        </div>
+                    </div>
+                    <span>Try a affordable Group</span>
+                </a>
+            </div>
+            <a href="#" class="bo-cancel proceed-with-cancel">No thanks, cancel subscription</a>
+        </main>
+    </div>
+</section>
+<section id="cp-prompt" class="cp-section reason-5-modal">
+    <div class="cp-card">
+        <div class="cp-header">
+            <button class="cp-icon-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="cp-icon-btn" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <main class="cp-body">
+            <div class="cp-intro">
+                <h1 class="cp-heading">Learning on Latingles is secure and convenient.</h1>
+                <p class="cp-subheading">Here’s what you’ll lose when you leave Latingles.</p>
+            </div>
+            <div class="cp-features">
+                <article class="cp-feature">
+                    <img class="cp-feature-icon" src="../img/subs/protection.png" alt="Payment protection icon">
+                    <div class="cp-feature-text">
+                        <h2 class="cp-feature-title">Payment protection</h2>
+                        <p class="cp-feature-desc">If the tutor doesn’t show up, we’ll keep your money safe. We won’t be
+                            able to protect you if you continue outside Latingles.
+                        </p>
+                    </div>
+                </article>
+                <article class="cp-feature">
+                    <img class="cp-feature-icon" src="../img/subs/uniquelearning.png" alt="Payment protection icon">
+                    <div class="cp-feature-text">
+                        <h2 class="cp-feature-title">Unique learning tools</h2>
+                        <p class="cp-feature-desc">Latingles supports your progress by offering simple scheduling, a
+                            classroom with a speaking tracker, progress tests and more.
+                        </p>
+                    </div>
+                </article>
+                <article class="cp-feature">
+                    <img class="cp-feature-icon" src="../img/subs/access.png" alt="Payment protection icon">
+                    <div class="cp-feature-text">
+                        <h2 class="cp-feature-title">Full access to your materials</h2>
+                        <p class="cp-feature-desc">Stay in control of your learning resources, vocab and chats. If you
+                            stop using Latingles, your access will be lost after 180 days.
+                        </p>
+                    </div>
+                </article>
+            </div>
+        </main>
+        <footer class="cp-actions">
+            <a href="#" class="cp-btn cp-btn-primary">Keep learning on latingles</a>
+            <a href="#" class="cp-btn cp-btn-secondary proceed-with-cancel">No thanks, cancel subscription</a>
+        </footer>
+    </div>
+</section>
+<section id="tutors-modal" class="reason-3-modal">
+    <div class="app-tutor-modal-container">
+        <div class="app-tutor-modal-header">
+            <div class="app-header-top-row">
+                <button class="app-icon-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                            fill="#121117" />
+                    </svg>
+                </button>
+                <button class="app-icon-btn">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                            fill="#121117" />
+                    </svg>
+                </button>
+            </div>
+            <h1 class="app-modal-title">We have lots of great tutors for you.</h1>
+        </div>
+        <main class="app-tutor-list">
+            <article class="app-tutor-card">
+                <div class="app-tutor-card-main">
+                    <div class="app-tutor-avatar-wrapper">
+                        <img class="app-tutor-avatar" src="../img/subs/tutor-1.png" alt="Avatar of Julia">
+                        <div class="app-status-indicator app-offline"></div>
+                    </div>
+                    <div class="app-tutor-details">
+                        <div class="app-tutor-info">
+                            <div class="app-tutor-name-wrapper">
+                                <h2 class="app-tutor-name">Julia</h2>
+                                <img class="app-country-flag" src="../img/subs/flag/4.png" alt="Spain flag">
+                            </div>
+                            <span class="app-super-tutor-badge">Super Tutor</span>
+                        </div>
+                        <div class="app-tutor-stats">
+                            <div class="app-stat-item">
+                                <span class="app-price">$28</span>
+                                <span class="app-price-label">per lesson</span>
+                            </div>
+                            <div class="app-stat-item">
+                                <div class="app-rating">
+                                    <img src="../img/subs/star.svg" alt="Star icon">
+                                    <span class="app-rating-score">5</span>
+                                </div>
+                                <span class="app-reviews">24 reviews</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="app-tutor-description">Full time professional and certified tutor/ +3 years
+                    experience
+                </p>
+            </article>
+            <article class="app-tutor-card">
+                <div class="app-tutor-card-main">
+                    <div class="app-tutor-avatar-wrapper">
+                        <img class="app-tutor-avatar" src="../img/subs/12-1.png" alt="Avatar of Julia">
+                        <div class="app-status-indicator app-offline"></div>
+                    </div>
+                    <div class="app-tutor-details">
+                        <div class="app-tutor-info">
+                            <div class="app-tutor-name-wrapper">
+                                <h2 class="app-tutor-name">Mónica</h2>
+                                <img class="app-country-flag" src="../img/subs/flag/5.png" alt="Spain flag">
+                            </div>
+                            <span class="app-super-tutor-badge">Super Tutor</span>
+                        </div>
+                        <div class="app-tutor-stats">
+                            <div class="app-stat-item">
+                                <span class="app-price">$28</span>
+                                <span class="app-price-label">per lesson</span>
+                            </div>
+                            <div class="app-stat-item">
+                                <div class="app-rating">
+                                    <img src="../img/subs/star.svg" alt="Star icon">
+                                    <span class="app-rating-score">5</span>
+                                </div>
+                                <span class="app-reviews">24 reviews</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="app-tutor-description">Certified native Spanish tutor. Take your Spanish to the next level!
+                    Fun and functional methodology. Lessons focused on your needs!
+                </p>
+            </article>
+            <!-- repeat same pattern for other tutor cards -->
+        </main>
+        <footer class="app-tutor-modal-footer">
+            <a href="#" class="app-btn app-btn-primary">View more tutors</a>
+            <a href="#" class="app-btn app-btn-link proceed-with-cancel">No thanks, cancel subscription</a>
+        </footer>
+    </div>
+</section>
+
+<section id="tutors-modal-teacher" class="reason-2-modal-teacher">
+    <div class="app-tutor-modal-container">
+        <div class="app-tutor-modal-header">
+            <div class="app-header-top-row">
+                <button class="app-icon-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                            fill="#121117" />
+                    </svg>
+                </button>
+                <button class="app-icon-btn">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                            fill="#121117" />
+                    </svg>
+                </button>
+            </div>
+            <h1 class="app-modal-title">Why not try a different tutor?</h1>
+        </div>
+        <main class="app-tutor-list">
+            <article class="app-tutor-card">
+                <div class="app-tutor-card-main">
+                    <div class="app-tutor-avatar-wrapper">
+                        <img class="app-tutor-avatar" src="../img/subs/tutor-1.png" alt="Avatar of Julia">
+                        <div class="app-status-indicator app-offline"></div>
+                    </div>
+                    <div class="app-tutor-details">
+                        <div class="app-tutor-info">
+                            <div class="app-tutor-name-wrapper">
+                                <h2 class="app-tutor-name">Julia</h2>
+                                <img class="app-country-flag" src="../img/subs/flag/4.png" alt="Spain flag">
+                            </div>
+                            <span class="app-super-tutor-badge">Super Tutor</span>
+                        </div>
+                        <div class="app-tutor-stats">
+                            <div class="app-stat-item">
+                                <span class="app-price">$28</span>
+                                <span class="app-price-label">per lesson</span>
+                            </div>
+                            <div class="app-stat-item">
+                                <div class="app-rating">
+                                    <img src="../img/subs/star.svg" alt="Star icon">
+                                    <span class="app-rating-score">5</span>
+                                </div>
+                                <span class="app-reviews">24 reviews</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="app-tutor-description">Full time professional and certified tutor/ +3 years
+                    experience
+                </p>
+            </article>
+            <article class="app-tutor-card">
+                <div class="app-tutor-card-main">
+                    <div class="app-tutor-avatar-wrapper">
+                        <img class="app-tutor-avatar" src="../img/subs/12-1.png" alt="Avatar of Julia">
+                        <div class="app-status-indicator app-offline"></div>
+                    </div>
+                    <div class="app-tutor-details">
+                        <div class="app-tutor-info">
+                            <div class="app-tutor-name-wrapper">
+                                <h2 class="app-tutor-name">Mónica</h2>
+                                <img class="app-country-flag" src="../img/subs/flag/5.png" alt="Spain flag">
+                            </div>
+                            <span class="app-super-tutor-badge">Super Tutor</span>
+                        </div>
+                        <div class="app-tutor-stats">
+                            <div class="app-stat-item">
+                                <span class="app-price">$28</span>
+                                <span class="app-price-label">per lesson</span>
+                            </div>
+                            <div class="app-stat-item">
+                                <div class="app-rating">
+                                    <img src="../img/subs/star.svg" alt="Star icon">
+                                    <span class="app-rating-score">5</span>
+                                </div>
+                                <span class="app-reviews">24 reviews</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="app-tutor-description">Certified native Spanish tutor. Take your Spanish to the next level!
+                    Fun and functional methodology. Lessons focused on your needs!
+                </p>
+            </article>
+            <!-- repeat same pattern for other tutor cards -->
+        </main>
+        <footer class="app-tutor-modal-footer">
+            <a href="#" class="app-btn app-btn-primary">View more tutors</a>
+            <a href="#" class="app-btn app-btn-link proceed-with-cancel">No thanks, cancel subscription</a>
+        </footer>
+    </div>
+</section>
+<section id="tutors-modal-teacher-2" class="reason-4-modal-teacher">
+    <div class="app-tutor-modal-container">
+        <div class="app-tutor-modal-header">
+            <div class="app-header-top-row">
+                <button class="app-icon-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                            fill="#121117" />
+                    </svg>
+                </button>
+                <button class="app-icon-btn">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                            fill="#121117" />
+                    </svg>
+                </button>
+            </div>
+            <h1 class="app-modal-title">We have lots of great tutors for you.</h1>
+        </div>
+        <main class="app-tutor-list">
+            <article class="app-tutor-card">
+                <div class="app-tutor-card-main">
+                    <div class="app-tutor-avatar-wrapper">
+                        <img class="app-tutor-avatar" src="../img/subs/tutor-1.png" alt="Avatar of Julia">
+                        <div class="app-status-indicator app-offline"></div>
+                    </div>
+                    <div class="app-tutor-details">
+                        <div class="app-tutor-info">
+                            <div class="app-tutor-name-wrapper">
+                                <h2 class="app-tutor-name">Julia</h2>
+                                <img class="app-country-flag" src="../img/subs/flag/4.png" alt="Spain flag">
+                            </div>
+                            <span class="app-super-tutor-badge">Super Tutor</span>
+                        </div>
+                        <div class="app-tutor-stats">
+                            <div class="app-stat-item">
+                                <span class="app-price">$28</span>
+                                <span class="app-price-label">per lesson</span>
+                            </div>
+                            <div class="app-stat-item">
+                                <div class="app-rating">
+                                    <img src="../img/subs/star.svg" alt="Star icon">
+                                    <span class="app-rating-score">5</span>
+                                </div>
+                                <span class="app-reviews">24 reviews</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="app-tutor-description">Full time professional and certified tutor/ +3 years
+                    experience
+                </p>
+            </article>
+            <article class="app-tutor-card">
+                <div class="app-tutor-card-main">
+                    <div class="app-tutor-avatar-wrapper">
+                        <img class="app-tutor-avatar" src="../img/subs/12-1.png" alt="Avatar of Julia">
+                        <div class="app-status-indicator app-offline"></div>
+                    </div>
+                    <div class="app-tutor-details">
+                        <div class="app-tutor-info">
+                            <div class="app-tutor-name-wrapper">
+                                <h2 class="app-tutor-name">Mónica</h2>
+                                <img class="app-country-flag" src="../img/subs/flag/5.png" alt="Spain flag">
+                            </div>
+                            <span class="app-super-tutor-badge">Super Tutor</span>
+                        </div>
+                        <div class="app-tutor-stats">
+                            <div class="app-stat-item">
+                                <span class="app-price">$28</span>
+                                <span class="app-price-label">per lesson</span>
+                            </div>
+                            <div class="app-stat-item">
+                                <div class="app-rating">
+                                    <img src="../img/subs/star.svg" alt="Star icon">
+                                    <span class="app-rating-score">5</span>
+                                </div>
+                                <span class="app-reviews">24 reviews</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="app-tutor-description">Certified native Spanish tutor. Take your Spanish to the next level!
+                    Fun and functional methodology. Lessons focused on your needs!
+                </p>
+            </article>
+            <!-- repeat same pattern for other tutor cards -->
+        </main>
+        <footer class="app-tutor-modal-footer">
+            <a href="#" class="app-btn app-btn-primary">View more tutors</a>
+            <a href="#" class="app-btn app-btn-link proceed-with-cancel">No thanks, cancel subscription</a>
+        </footer>
+    </div>
+</section>
+<section id="cp-change-plan-teacher" class="reason-5-modal-teacher">
+    <div class="cp-card">
+        <div class="cp-header">
+            <button class="cp-icon-btn cp-back-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="cp-icon-btn cp-close-btn" aria-label="Close dialog">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <div>
+            <div>
+                <img src="../img/subs/1.png" alt="" class="pln-avatar">
+            </div>
+            <h1 class="modal-title">
+                Why not try a plan that fits your schedule?
+            </h1>
+        </div>
+        <div class="plan-options">
+            <div class="pln-plan-option" role="radio" aria-checked="false" tabindex="-1">
+                <h4>6 lessons</h4>
+                <p>$123 every 4 weeks</p>
+            </div>
+            <div class="pln-plan-option" role="radio" aria-checked="false" tabindex="-2">
+                <h4>5 lessons</h4>
+                <p>$123 every 4 weeks</p>
+            </div>
+            <div class="pln-plan-option" role="radio" aria-checked="false" tabindex="-3">
+                <h4>4 lessons</h4>
+                <p>$123 every 4 weeks</p>
+            </div>
+            <div class="plan-option" id="plan-custom-1">
+                <label for="plan-custom" class="plan-label">
+                    <div class="custom-plan-text">
+                        <span class="plan-name">Custom plan</span>
+                        <p>Choose the number of <b>months</b> if that suits you better.</p>
+                    </div>
+                    <img src="../img/subs/calendar.png" alt="" />
+                </label>
+            </div>
+        </div>
+        <div class="cp-actions-plan">
+            <button class="cp-btn cp-btn-primary-confirm confirm-checkout-teacher">Continue</button>
+
+        </div>
+    </div>
+</section>
+
+<section id="cp-prompt" class="cp-section reason-6-modal-teacher">
+    <div class="cp-card">
+        <div class="cp-header">
+            <button class="cp-icon-btn cp-back-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="cp-icon-btn cp-close-btn" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <main class="cp-body">
+            <div class="cp-intro">
+                <h1 class="cp-heading">Learning on Latingles is secure and convenient.</h1>
+                <p class="cp-subheading">Here’s what you’ll lose when you leave Latingles.</p>
+            </div>
+            <div class="cp-features">
+                <article class="cp-feature">
+                    <img class="cp-feature-icon" src="../img/subs/protection.png" alt="Payment protection icon">
+                    <div class="cp-feature-text">
+                        <h2 class="cp-feature-title">Payment protection</h2>
+                        <p class="cp-feature-desc">If the tutor doesn’t show up, we’ll keep your money safe. We won’t be
+                            able to protect you if you continue outside Latingles.
+                        </p>
+                    </div>
+                </article>
+                <article class="cp-feature">
+                    <img class="cp-feature-icon" src="../img/subs/uniquelearning.png" alt="Payment protection icon">
+                    <div class="cp-feature-text">
+                        <h2 class="cp-feature-title">Unique learning tools</h2>
+                        <p class="cp-feature-desc">Latingles supports your progress by offering simple scheduling, a
+                            classroom with a speaking tracker, progress tests and more.
+                        </p>
+                    </div>
+                </article>
+                <article class="cp-feature">
+                    <img class="cp-feature-icon" src="../img/subs/access.png" alt="Payment protection icon">
+                    <div class="cp-feature-text">
+                        <h2 class="cp-feature-title">Full access to your materials</h2>
+                        <p class="cp-feature-desc">Stay in control of your learning resources, vocab and chats. If you
+                            stop using Latingles, your access will be lost after 180 days.
+                        </p>
+                    </div>
+                </article>
+            </div>
+        </main>
+        <footer class="cp-actions">
+            <a href="#" class="cp-btn cp-btn-primary">Keep learning on latingles</a>
+            <a href="#" class="cp-btn cp-btn-secondary proceed-with-cancel">No thanks, cancel subscription</a>
+        </footer>
+    </div>
+</section>
+
+<section id="cp-change-plan-teacher" class="reason-7-modal-teacher">
+    <div class="cp-card">
+        <div class="cp-header">
+            <button class="cp-icon-btn cp-back-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="cp-icon-btn cp-close-btn" aria-label="Close dialog">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <div>
+            <div>
+                <img src="../img/subs/1.png" alt="" class="pln-avatar">
+            </div>
+            <h1 class="modal-title">
+                Why not try a plan that fits your schedule?
+            </h1>
+        </div>
+        <div class="plan-options">
+            <div class="pln-plan-option" role="radio" aria-checked="false" tabindex="-1">
+                <h4>6 lessons</h4>
+                <p>$123 every 4 weeks</p>
+            </div>
+            <div class="pln-plan-option" role="radio" aria-checked="false" tabindex="-2">
+                <h4>5 lessons</h4>
+                <p>$123 every 4 weeks</p>
+            </div>
+            <div class="pln-plan-option" role="radio" aria-checked="false" tabindex="-3">
+                <h4>4 lessons</h4>
+                <p>$123 every 4 weeks</p>
+            </div>
+            <div class="plan-option" id="plan-custom-1">
+                <label for="plan-custom" class="plan-label">
+                    <div class="custom-plan-text">
+                        <span class="plan-name">Custom plan</span>
+                        <p>Choose the number of <b>months</b> if that suits you better.</p>
+                    </div>
+                    <img src="../img/subs/calendar.png" alt="" />
+                </label>
+            </div>
+        </div>
+        <div class="cp-actions-plan">
+            <button class="cp-btn cp-btn-primary-confirm confirm-checkout-teacher">Continue</button>
+
+        </div>
+    </div>
+</section>
+
+<section id="bo-modal-teacher" class="reason-3-modal-teacher">
+    <div class="bo-container">
+        <div class="bo-header">
+            <button class="bo-icon-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="bo-icon-btn" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <main class="bo-content">
+            <div class="bo-text">
+                <h1 class="bo-title">Why not try these budget-friendly options?</h1>
+                <p class="bo-subtitle">Here’s how you can continue practicing even on a tight budget.</p>
+            </div>
+            <div class="bo-options">
+                <a href="#" class="bo-option">
+                    <div class="bo-icon-wrap">
+                        <div class="bo-icon-merged">
+                            <img src="../img/subs/camera.png" alt="Recorded classes icon"
+                                style="position:absolute; top:4.9px; left:0; width:24px; height:14.1px;">
+                        </div>
+                    </div>
+                    <span>Try Recorded Classes Only</span>
+                </a>
+                <a href="#" class="bo-option try-affordable-group">
+                    <div class="bo-icon-wrap">
+                        <div class="bo-icon-merged">
+                            <img src="../img/subs/persons.png" alt="Recorded classes icon"
+                                style="position:absolute; top:1.8px; left:1.1px; width:21.9px; height:20.5px;">
+                        </div>
+                    </div>
+                    <span>Try affordable Groups</span>
+                </a>
+            </div>
+            <a href="#" class="bo-cancel proceed-with-cancel">No thanks, cancel subscription</a>
+        </main>
+    </div>
+</section>
+<section id="cancellation-confirmation" class="app-cancellation-section">
+    <div class="app-cancellation-modal">
+        <button class="app-modal-close-btn" aria-label="Close">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+        <div class="app-modal-header">
+            <img class="app-modal-icon" src="../img/subs/cancel-plan.png" alt="Subscription cancelled icon">
+            <h1 class="app-modal-title">You’ve cancelled your subscription.</h1>
+        </div>
+        <div class="app-modal-body">
+            <p class="app-modal-description">Your plan expires on April 07. We’ll be happy to welcome you back anytime!
+            </p>
+            <a href="#" role="button" class="app-modal-button">Okay, thanks!</a>
+        </div>
+    </div>
+</section>
+<section id="plan-Change-confirmation" class="app-cancellation-section">
+    <div class="app-cancellation-modal">
+        <button class="app-modal-close-btn" aria-label="Close">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+        <div class="app-modal-header">
+            <img class="app-modal-icon" src="../img/subs/cancel-plan.png" alt="Subscription cancelled icon">
+            <h1 class="app-modal-title">You’ve Changed your Plan.</h1>
+        </div>
+        <div class="app-modal-body">
+            <p class="app-modal-description">Your plan expires on April 07. We’ll be happy to welcome you back anytime!
+            </p>
+            <a href="#" role="button" class="app-modal-button">Okay, thanks!</a>
+        </div>
+    </div>
+</section>
+<section id="cp-change-plan">
+    <div class="cp-card">
+        <div class="cp-header">
+            <button class="cp-icon-btn cp-back-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="cp-icon-btn cp-close-btn" aria-label="Close dialog">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <div>
+            <h1 class="modal-title">
+                Why not try a plan that fits your schedule?
+            </h1>
+        </div>
+        <div class="plan-options">
+            <div class="plan-option">
+                <input type="radio" name="plan" id="plan-1" class="visually-hidden">
+                <label for="plan-1" class="plan-label">
+                    <span class="plan-name">1 Month</span>
+                    <span class="plan-price"><b>$36.00</b> per Month</span>
+                </label>
+            </div>
+            <div class="plan-option">
+                <input type="radio" name="plan" id="plan-4" class="visually-hidden">
+                <label for="plan-4" class="plan-label">
+                    <span class="plan-name">4 Months</span>
+                    <span class="plan-price"><b>$72.00</b> per 4 Month</span>
+                </label>
+            </div>
+            <div class="plan-option">
+                <input type="radio" name="plan" id="plan-6" class="visually-hidden" checked>
+                <label for="plan-6" class="plan-label">
+                    <span class="plan-name">6 Months</span>
+                    <span class="plan-price"><b>$108.00</b> per 6 Month</span>
+                </label>
+            </div>
+            <div class="plan-option">
+                <input type="radio" name="plan" id="plan-9" class="visually-hidden">
+                <label for="plan-9" class="plan-label">
+                    <span class="plan-name">9 Months</span>
+                    <span class="plan-price"><b>$144.00</b> per 9 Month</span>
+                </label>
+            </div>
+            <div class="plan-option">
+                <input type="radio" name="plan" id="plan-12" class="visually-hidden">
+                <label for="plan-12" class="plan-label">
+                    <div class="plan-name-wrapper">
+                        <span class="plan-name">12 Months</span>
+                        <span class="popular-badge">Popular</span>
+                    </div>
+                    <span class="plan-price"><b>$180.00</b> per 12 Month</span>
+                </label>
+            </div>
+            <div class="plan-option" id="plan-custom-1">
+                <label for="plan-custom" class="plan-label">
+                    <div class="custom-plan-text">
+                        <span class="plan-name">Custom plan</span>
+                        <p>Choose the number of <b>months</b> if that suits you better.</p>
+                    </div>
+                    <img src="../img/subs/calendar.png" alt="" />
+                </label>
+            </div>
+        </div>
+        <div class="cp-actions-plan">
+            <button class="cp-btn cp-btn-primary-confirm confirm-checkout">Confirm</button>
+            <a href="#" class="cp-btn cp-btn-secondary cp-btn-sub proceed-with-cancel">Proceed with cancellation</a>
+        </div>
+    </div>
+</section>
+<section id="upgrade-plan-modal">
+    <div class="upgrade-modal-container">
+        <div class="modal-header-up">
+            <button class="icon-button-up upgrade-back-btn" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="icon-button-up upgrade-close-btn" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+        <main class="modal-body">
+            <div class="text-content">
+                <h1 class="title">Upgrade Your Plan Instead?</h1>
+                <p class="subtitle">Get a bigger plan so you don’t have to add extra lessons every cycle.</p>
+            </div>
+            <div class="options-list">
+                <a href="#upgrade" class="option-item upgrade-yes-btn">
+                    <img src="../img/cour/icons/revision.png" alt="" class="option-icon">
+                    <div class="option-details">
+                        <span class="option-title">Yes Upgrade Now</span>
+                        <span class="option-description">Get more lessons every cycvle</span>
+                    </div>
+                </a>
+                <a href="#continue" class="option-item continue-adding-btn">
+                    <img src="../img/cour/icons/revision.png" alt="" class="option-icon">
+                    <div class="option-details">
+                        <span class="option-title">Continue adding extra lesson</span>
+                        <span class="option-description">one time chnage will not affect next xyxle</span>
+                    </div>
+                </a>
+            </div>
+        </main>
+    </div>
+</section>
+
+<section id="plan-upgrade" class="pln-upgrade-section">
+    <div class="pln-card">
+        <div class="pln-card-header">
+            <button class="pln-icon-btn pl-back" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="pln-icon-btn pl-close" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="pln-card-content">
+            <img src="../img/subs/1.png" alt="User avatar" class="pln-avatar">
+
+            <h1 class="pln-heading">
+                Upgrade your plan to <span class="pln-highlight">improve your English skills faster</span>
+            </h1>
+
+            <p class="pln-current-plan">
+                <strong>Current plan:</strong> 8 lessons • $61.44 every 4 weeks
+            </p>
+
+            <div class="pln-plan-options" role="radiogroup" aria-labelledby="pln-heading">
+                <div class="pln-plan-option active" role="radio" aria-checked="true" tabindex="0">
+                    <h4>12 lessons</h4>
+                    <p>$92 every 4 weeks</p>
+                </div>
+                <div class="pln-plan-option" role="radio" aria-checked="false" tabindex="-1">
+                    <h4>16 lessons</h4>
+                    <p>$123 every 4 weeks</p>
+                </div>
+                <div class="pln-plan-option custom-plan-option custom-plan-option" role="radio" aria-checked="false"
+                    tabindex="-1">
+                    <h4>Custom plans</h4>
+                    <p>Choose the right number of lessons for you</p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="pln-card-footer">
+            <p class="pln-price-note">Prices are for our standard lesson time of 50 min</p>
+            <button class="pln-continue-btn">Continue</button>
+        </footer>
+    </div>
+</section>
+
+<section id="plan-downgrade" class="pln-upgrade-section">
+    <div class="pln-card">
+        <div class="pln-card-header">
+            <button class="pln-icon-btn pl-back" aria-label="Go back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+            <button class="pln-icon-btn pl-close" aria-label="Close">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                        fill="#121117" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="pln-card-content">
+            <img src="../img/subs/1.png" alt="User avatar" class="pln-avatar">
+
+            <h1 class="pln-heading">
+                Change your plan with Daniela
+            </h1>
+
+
+
+            <div class="pln-plan-options" role="radiogroup" aria-labelledby="pln-heading">
+                <div class="pln-plan-option active" role="radio" aria-checked="true" tabindex="0">
+                    <h4>8 lessons</h4>
+                    <p>$92 every 4 weeks</p>
+                    <span class="current-plan-badge">Current Plan</span>
+                </div>
+                <div class="pln-plan-option" role="radio" aria-checked="false" tabindex="-1">
+                    <h4>6 lessons</h4>
+                    <p>$123 every 4 weeks</p>
+                </div>
+                <div class="pln-plan-option" role="radio" aria-checked="false" tabindex="-2">
+                    <h4>5 lessons</h4>
+                    <p>$123 every 4 weeks</p>
+                </div>
+                <div class="pln-plan-option" role="radio" aria-checked="false" tabindex="-3">
+                    <h4>4 lessons</h4>
+                    <p>$123 every 4 weeks</p>
+                </div>
+                <div class="pln-plan-option custom-plan-option" role="radio" aria-checked="false" tabindex="-4">
+                    <h4>Custom plans</h4>
+                    <p>Choose the right number of lessons for you</p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="pln-card-footer">
+            <p class="pln-price-note">Prices are for our standard lesson time of 50 min</p>
+            <button class="pln-continue-btn">Continue</button>
+        </footer>
+    </div>
+</section>
+<!-- <main class="change-review-card">
+    <div class="card-header">
+        <button class="icon-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+        <button class="icon-btn">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+    </div>
+
+    <div class="card-body-sub">
+        <section class="review-details">
+            <img src="../img/subs/1.png" alt="User avatar" class="avatar">
+            <h1 class="main-title">Review your changes</h1>
+            <div class="plan-comparison">
+                <div class="plan-info">
+                    <h2 class="plan-title">2 lessons per week</h2>
+                    <p class="plan-description">8 lessons · $61 every 4 weeks</p>
+                </div>
+                <img src="../img/subs/arrow-dow-2n.svg" alt="Change to" class="arrow-icon">
+                <div class="plan-info">
+                    <h2 class="plan-title">3 lessons per week</h2>
+                    <p class="plan-description">12 lessons · $92 every 4 weeks</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="separator">
+
+        <section class="upgrade-options">
+            <h2 class="section-title">When do you want to upgrade?</h2>
+            <div class="radio-group">
+                <label class="radio-option selected">
+                    <input type="radio" name="upgrade-time" value="now" class="sr-only" checked>
+                    <div class="radio-content">
+                        <div class="radio-header">
+                            <div class="radio-title">
+                                <img src="${ASSET_PATH}/6712_11402.svg" alt="">
+                                <span>Now</span>
+                            </div>
+                            <div class="radio-visual"></div>
+                        </div>
+                        <p class="radio-description">Start your new plan and make a payment today. Schedule all your
+                            remaining lessons from the current plan before Apr 07.</p>
+                    </div>
+                </label>
+                <label class="radio-option selected">
+                    <input type="radio" name="upgrade-time" value="now" class="sr-only" checked>
+                    <div class="radio-content">
+                        <div class="radio-header">
+                            <div class="radio-title">
+                                <img src="${ASSET_PATH}/6712_11402.svg" alt="">
+                                <span>Now</span>
+                            </div>
+                            <div class="radio-visual"></div>
+                        </div>
+                        <p class="radio-description">Your total is $100 and includes a $11 processing fee. We’ll renew
+                            your plan automatically using your saved payment method.</p>
+                    </div>
+                </label>
+            </div>
+        </section>
+    </div>
+
+    <footer class="card-footer">
+        <button class="checkout-button">Continue to checkout</button>
+    </footer>
+</main> -->
+
+<div class="pe__card" data-billing-weeks="4" data-min-lessons="1" data-max-lessons="30" data-price-per-lesson="8.36"
+    data-initial-lessons="11">
+    <div class="pe__header">
+        <button class="pe-btn--icon pe-back" aria-label="Go back" data-action="back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+        <button class="pe-btn--icon pe-close" aria-label="Close" data-action="close">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+    </div>
+
+    <main class="pe__content">
+        <div class="pe-info">
+            <h1 class="pe-info__title">Create a plan that works best for you</h1>
+            <p class="pe-current">
+                <span class="pe-current__label">Current plan: </span>
+                <span class="pe-current__details">8 lessons • $61.44 every 4 weeks</span>
+            </p>
+        </div>
+
+        <div class="pe-config" role="group" aria-label="Lesson configurator">
+            <div class="pe-lesson">
+                <button class="pe-stepper__btn" aria-label="Decrease lessons" data-action="decrement">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="2" viewBox="0 0 16 2" fill="none">
+                        <path d="M0 0H16V2H0V0Z" fill="#121117"></path>
+                    </svg>
+                </button>
+
+                <div class="pe-display" aria-live="polite">
+                    <p class="pe-display__count" data-field="count">11</p>
+                    <p class="pe-display__freq">
+                        <span data-field="label">lessons every </span>
+                        <span data-field="weeks">4</span> weeks
+                    </p>
+                </div>
+
+                <button class="pe-stepper__btn" aria-label="Increase lessons" data-action="increment">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M13 4H11V11H4V13H11V20H13V13H20V11H13V4Z"
+                            fill="#121117"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <hr class="pe-separator">
+
+            <p class="pe-price">
+                <strong class="pe-price__amount" data-field="price">$92</strong>
+                <span class="pe-price__period"> every <span data-field="weeks-2">4</span> weeks</span>
+            </p>
+        </div>
+
+        <button class="pe-btn--primary pln-continue-btn" data-action="continue">Continue</button>
+    </main>
+</div>
+
+<section id="lesson-confirmation" class="app-lesson-section">
+    <div class="app-cancellation-modal">
+        <button class="app-modal-close-btn" aria-label="Close">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+        <div class="app-modal-header">
+            <img class="app-modal-icon" src="../img/subs/lesson-add.png" alt="Subscription cancelled icon">
+            <h1 class="app-modal-title">We have confirmed your change.</h1>
+        </div>
+        <div class="app-modal-body">
+            <p class="app-modal-description">starting may 01, your weekly plan will be 7 lessons every 4 week
+            </p>
+            <a href="#" role="button" class="app-modal-button">Okay, thanks!</a>
+        </div>
+    </div>
+</section>
+
+
+<section id="pp-modal" class="pp-modal" data-next-bill="">
+    <div class="pp-card">
+        <button class="pp-close" aria-label="Close">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+
+        <div class="pp-head">
+            <h1 class="pp-title">Pause Your Subscription Payment For Up To 20 Days</h1>
+            <p class="pp-subtitle">Pause your subscription payment for up to 20 days</p>
+        </div>
+
+        <main class="pp-body">
+            <div class="pp-selector">
+                <div class="pp-display">
+                    <span class="pp-count" aria-live="polite">1</span>
+                    <span class="pp-unit">day</span>
+                </div>
+
+                <!-- Accessible range input kept in sync with the custom slider -->
+                <input class="pp-range pp-sr-only" type="range" min="1" max="20" value="1" aria-label="Pause days">
+
+                <div class="pp-slider-wrap">
+                    <div class="pp-slider">
+                        <div class="pp-rail"></div>
+                        <div class="pp-fill" style="width: 7.6%;"></div>
+                        <div class="pp-thumb" role="slider" tabindex="0" aria-valuemin="1" aria-valuemax="20"
+                            aria-valuenow="1" aria-label="Pause days"></div>
+                    </div>
+                </div>
+
+                <p class="pp-note">
+                    Your payment will be paused until <strong class="pp-date">—</strong>
+                </p>
+            </div>
+        </main>
+
+        <footer class="pp-actions">
+            <button class="pp-continue">Continue</button>
+        </footer>
+    </div>
+</section>
+<section id="pp-confirmation-modal">
+    <div class="pp-confirm-card">
+        <button class="pp-icon-btn pp-back-btn" aria-label="Go back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+        <button class="pp-icon-btn pp-close-btn" aria-label="Close modal">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+
+        <h1 class="pp-title">Let’s confirm your pause details</h1>
+
+        <div class="pp-body">
+            <div class="pp-summary">
+                <img class="pp-avatar" src="../img/subs/1.png" alt="User avatar">
+                <div class="pp-details">
+                    <p class="pp-label">You’re pausing until</p>
+                    <p class="pp-date">Mar 22</p>
+                </div>
+            </div>
+            <hr class="pp-separator">
+            <ul class="pp-info-list">
+                <li>Your subscription will renew on Mar 22. You can still schedule and take lessons before that.</li>
+                <li>We won’t charge you while you’re paused.</li>
+                <li>You can cancel anytime.</li>
+            </ul>
+        </div>
+
+        <button class="pp-action-btn">Pause subscription</button>
+    </div>
+</section>
+<section id="pp-confirmed-modal">
+    <div class="pp-card-pause">
+        <button class="pp-close-btn" aria-label="Close">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                    fill="#121117" />
+            </svg>
+        </button>
+
+
+        <div class="pp-card-content">
+            <img class="pp-avatar" src="../img/subs/1.png" alt="User Avatar">
+
+            <h1 class="pp-card-title">Subscription Paused</h1>
+            <p class="pp-card-text">
+                Your subscription has been successfully paused. You can resume it anytime by visiting your account
+                settings. If you have any questions, feel free to contact us
+            </p>
+            <a href="#" class="pp-action-btn-pause">Go back</a>
+        </div>
     </div>
 </section>
 <section id="gm-modal" class="gm-modal-container reason-1-modal">
@@ -9355,907 +9846,689 @@ $soonest = $matched[0] ?? null;
     </div>
 </section>
 
-<section id="cp-cancellation-prompt-sub" class="reason-6-modal">
-    <div class="cp-card">
+<main id="ln-learn-new" class="ln-modal reason-1-modal-teacher">
+    <!-- Back & Close buttons -->
+    <button class="ln-icon-btn ln-back-btn" aria-label="Go back">
 
-        <div class="cp-header">
-            <button class="cp-icon-btn cp-back-btn" aria-label="Go back">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
-                        fill="#121117" />
-                </svg>
-            </button>
-            <button class="cp-icon-btn cp-close-btn" aria-label="Close dialog">
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
-                        fill="#121117" />
-                </svg>
-            </button>
-        </div>
-        <div class="cp-text">
-            <h1 class="cp-title">Review your changes to<br>Recorded Classes Only</h1>
-            <p class="cp-subtitle">Change your plan to Recorded Classes Only</p>
-        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
+                fill="#121117" />
+        </svg>
 
-        <div class="cp-text-sub">
-            <h1 class="cp-title-sub">$36.00 per Month</h1>
-            <p class="cp-subtitle-sub">live classes</p>
-            <img src="../img/subs/arrow-down.svg" alt="">
-            <h1 class="cp-title-sub">$36.00 per Month</h1>
-            <p class="cp-subtitle-sub">Recorded Classes Only</p>
+
+    </button>
+    <button class="ln-icon-btn ln-close-btn" aria-label="Close modal">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                fill="#121117" />
+        </svg>
+
+    </button>
+
+    <!-- Content -->
+    <div class="ln-content">
+        <div class="ln-header">
+            <h1 class="ln-title">Great news! Why not learn something new?</h1>
+            <p class="ln-subtitle">You still have 0 lessons to schedule. Try a new language – open a world of
+                opportunities!</p>
         </div>
 
-        <div class="cp-actions-sub">
-            <button class="cp-btn cp-btn-primary-confirm confirm-plan-change">Confirm</button>
-            <a href="#" class="cp-btn cp-btn-secondary proceed-with-cancel">Proceed with cancellation</a>
-        </div>
-    </div>
-</section>
-<section id="bo-modal" class="reason-2-modal">
-    <div class="bo-container">
-        <div class="bo-header">
-            <button class="bo-icon-btn" aria-label="Go back">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
-                        fill="#121117" />
-                </svg>
-            </button>
-            <button class="bo-icon-btn" aria-label="Close">
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
-                        fill="#121117" />
-                </svg>
-            </button>
-        </div>
+        <!-- Subjects grid -->
+        <div class="ln-grid">
 
-        <main class="bo-content">
-            <div class="bo-text">
-                <h1 class="bo-title">Why not try these budget-friendly options?</h1>
-                <p class="bo-subtitle">Here’s how you can continue practicing even on a tight budget.</p>
-            </div>
-
-            <div class="bo-options">
-                <a href="#" class="bo-option">
-                    <div class="bo-icon-wrap">
-                        <div class="bo-icon-merged">
-                            <img src="../img/subs/camera.png" alt="Recorded classes icon"
-                                style="position:absolute; top:4.9px; left:0; width:24px; height:14.1px;">
-                        </div>
+            <!-- English -->
+            <a href="#" class="ln-subject">
+                <h2 class="ln-subject-name">English</h2>
+                <div class="ln-flags">
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/us.svg.png" alt="">
                     </div>
-                    <span>Try Recorded Classes Only</span>
-                </a>
-
-                <a href="#" class="bo-option try-affordable-group">
-                    <div class="bo-icon-wrap">
-                        <div class="bo-icon-merged">
-                            <img src="../img/subs/persons.png" alt="Recorded classes icon"
-                                style="position:absolute; top:1.8px; left:1.1px; width:21.9px; height:20.5px;">
-                        </div>
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/gb.svg.png" alt="">
                     </div>
-                    <span>Try affordable Groups</span>
-                </a>
-            </div>
-
-            <a href="#" class="bo-cancel proceed-with-cancel">No thanks, cancel subscription</a>
-        </main>
-    </div>
-</section>
-
-<section id="bo-modal" class="reason-7-modal">
-    <div class="bo-container">
-        <div class="bo-header">
-            <button class="bo-icon-btn" aria-label="Go back">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
-                        fill="#121117" />
-                </svg>
-            </button>
-            <button class="bo-icon-btn" aria-label="Close">
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
-                        fill="#121117" />
-                </svg>
-            </button>
-        </div>
-
-        <main class="bo-content">
-            <div class="bo-text">
-                <h1 class="bo-title">Why not try a new way to learn?</h1>
-                <p class="bo-subtitle">Here’s how to make your subscription work better for you.</p>
-            </div>
-
-            <div class="bo-options">
-                <a href="#" class="bo-option try-smaller-plan">
-                    <div class="bo-icon-wrap">
-                        <div class="bo-icon-merged">
-                            <img src="../img/subs/smallerplan.png" alt="Recorded classes icon"
-                                style="position:absolute; top:4.9px; left:0; width:24px; height:14.1px;">
-                        </div>
-                    </div>
-                    <span>Try a smaller plan</span>
-                </a>
-
-                <a href="#" class="bo-option try-affordable-group">
-                    <div class="bo-icon-wrap">
-                        <div class="bo-icon-merged">
-                            <img src="../img/subs/persons.png" alt="Recorded classes icon"
-                                style="position:absolute; top:1.8px; left:1.1px; width:21.9px; height:20.5px;">
-                        </div>
-                    </div>
-                    <span>Try a affordable Group</span>
-                </a>
-            </div>
-
-            <a href="#" class="bo-cancel proceed-with-cancel">No thanks, cancel subscription</a>
-        </main>
-    </div>
-</section>
-<section id="cp-prompt" class="cp-section reason-5-modal">
-    <div class="cp-card">
-        <div class="cp-header">
-            <button class="cp-icon-btn" aria-label="Go back">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
-                        fill="#121117" />
-                </svg>
-            </button>
-            <button class="cp-icon-btn" aria-label="Close">
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
-                        fill="#121117" />
-                </svg>
-            </button>
-        </div>
-
-        <main class="cp-body">
-            <div class="cp-intro">
-                <h1 class="cp-heading">Learning on Latingles is secure and convenient.</h1>
-                <p class="cp-subheading">Here’s what you’ll lose when you leave Latingles.</p>
-            </div>
-
-            <div class="cp-features">
-                <article class="cp-feature">
-                    <img class="cp-feature-icon" src="../img/subs/protection.png" alt="Payment protection icon">
-                    <div class="cp-feature-text">
-                        <h2 class="cp-feature-title">Payment protection</h2>
-                        <p class="cp-feature-desc">If the tutor doesn’t show up, we’ll keep your money safe. We won’t be
-                            able to protect you if you continue outside Latingles.</p>
-                    </div>
-                </article>
-                <article class="cp-feature">
-                    <img class="cp-feature-icon" src="../img/subs/uniquelearning.png" alt="Payment protection icon">
-
-                    <div class="cp-feature-text">
-                        <h2 class="cp-feature-title">Unique learning tools</h2>
-                        <p class="cp-feature-desc">Latingles supports your progress by offering simple scheduling, a
-                            classroom with a speaking tracker, progress tests and more.</p>
-                    </div>
-                </article>
-                <article class="cp-feature">
-                    <img class="cp-feature-icon" src="../img/subs/access.png" alt="Payment protection icon">
-                    <div class="cp-feature-text">
-                        <h2 class="cp-feature-title">Full access to your materials</h2>
-                        <p class="cp-feature-desc">Stay in control of your learning resources, vocab and chats. If you
-                            stop using Latingles, your access will be lost after 180 days.</p>
-                    </div>
-                </article>
-            </div>
-        </main>
-
-        <footer class="cp-actions">
-            <a href="#" class="cp-btn cp-btn-primary">Keep learning on latingles</a>
-            <a href="#" class="cp-btn cp-btn-secondary proceed-with-cancel">No thanks, cancel subscription</a>
-        </footer>
-    </div>
-</section>
-<section id="tutors-modal" class="reason-3-modal">
-    <div class="app-tutor-modal-container">
-        <div class="app-tutor-modal-header">
-            <div class="app-header-top-row">
-                <button class="app-icon-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
-                            fill="#121117" />
-                    </svg>
-                </button>
-                <button class="app-icon-btn">
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
-                            fill="#121117" />
-                    </svg>
-                </button>
-            </div>
-            <h1 class="app-modal-title">We have lots of great tutors for you.</h1>
-        </div>
-
-        <main class="app-tutor-list">
-            <article class="app-tutor-card">
-                <div class="app-tutor-card-main">
-                    <div class="app-tutor-avatar-wrapper">
-                        <img class="app-tutor-avatar" src="../img/subs/tutor-1.png" alt="Avatar of Julia">
-                        <div class="app-status-indicator app-offline"></div>
-                    </div>
-                    <div class="app-tutor-details">
-                        <div class="app-tutor-info">
-                            <div class="app-tutor-name-wrapper">
-                                <h2 class="app-tutor-name">Julia</h2>
-                                <img class="app-country-flag" src="../img/subs/flag/4.png" alt="Spain flag">
-                            </div>
-                            <span class="app-super-tutor-badge">Super Tutor</span>
-                        </div>
-                        <div class="app-tutor-stats">
-                            <div class="app-stat-item">
-                                <span class="app-price">$28</span>
-                                <span class="app-price-label">per lesson</span>
-                            </div>
-                            <div class="app-stat-item">
-                                <div class="app-rating">
-                                    <img src="../img/subs/star.svg" alt="Star icon">
-                                    <span class="app-rating-score">5</span>
-                                </div>
-                                <span class="app-reviews">24 reviews</span>
-                            </div>
-                        </div>
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/ca.svg.png" alt="">
                     </div>
 
                 </div>
-                <p class="app-tutor-description">Full time professional and certified tutor/ +3 years
-                    experience</p>
-            </article>
+            </a>
 
-            <article class="app-tutor-card">
-                <div class="app-tutor-card-main">
-                    <div class="app-tutor-avatar-wrapper">
-                        <img class="app-tutor-avatar" src="../img/subs/12-1.png" alt="Avatar of Julia">
-                        <div class="app-status-indicator app-offline"></div>
+            <!-- Spanish -->
+            <a href="#" class="ln-subject">
+                <h2 class="ln-subject-name">Spanish</h2>
+                <div class="ln-flags">
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/es.svg.png" alt="">
                     </div>
-                    <div class="app-tutor-details">
-                        <div class="app-tutor-info">
-                            <div class="app-tutor-name-wrapper">
-                                <h2 class="app-tutor-name">Mónica</h2>
-                                <img class="app-country-flag" src="../img/subs/flag/5.png" alt="Spain flag">
-                            </div>
-                            <span class="app-super-tutor-badge">Super Tutor</span>
-                        </div>
-                        <div class="app-tutor-stats">
-                            <div class="app-stat-item">
-                                <span class="app-price">$28</span>
-                                <span class="app-price-label">per lesson</span>
-                            </div>
-                            <div class="app-stat-item">
-                                <div class="app-rating">
-                                    <img src="../img/subs/star.svg" alt="Star icon">
-                                    <span class="app-rating-score">5</span>
-                                </div>
-                                <span class="app-reviews">24 reviews</span>
-                            </div>
-                        </div>
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/mx.svg.png" alt="">
+                    </div>
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/ar.svg.png" alt="">
                     </div>
 
                 </div>
-                <p class="app-tutor-description">Certified native Spanish tutor. Take your Spanish to the next level!
-                    Fun and functional methodology. Lessons focused on your needs!</p>
-            </article>
-            <!-- repeat same pattern for other tutor cards -->
-        </main>
+            </a>
 
-        <footer class="app-tutor-modal-footer">
-            <a href="#" class="app-btn app-btn-primary">View more tutors</a>
-            <a href="#" class="app-btn app-btn-link proceed-with-cancel">No thanks, cancel subscription</a>
+            <!-- French -->
+            <a href="#" class="ln-subject">
+                <h2 class="ln-subject-name">French</h2>
+                <div class="ln-flags">
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/fr.svg.png" alt="">
+                    </div>
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/ca.svg.png" alt="">
+                    </div>
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/be.svg.png" alt="">
+                    </div>
+
+                </div>
+            </a>
+
+            <!-- German -->
+            <a href="#" class="ln-subject">
+                <h2 class="ln-subject-name">German</h2>
+                <div class="ln-flags">
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/de.svg.png" alt="">
+                    </div>
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/at.svg.png" alt="">
+                    </div>
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/ch.svg.png" alt="">
+                    </div>
+
+                </div>
+            </a>
+
+            <!-- Chinese -->
+            <a href="#" class="ln-subject">
+                <h2 class="ln-subject-name">Chinese</h2>
+                <div class="ln-flags">
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/cn.svg.png" alt="">
+                    </div>
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/tw.svg.png" alt="">
+                    </div>
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/th.svg.png" alt="">
+                    </div>
+
+                </div>
+            </a>
+
+            <!-- Italian -->
+            <a href="#" class="ln-subject">
+                <h2 class="ln-subject-name">Italian</h2>
+                <div class="ln-flags">
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/it.svg.png" alt="">
+                    </div>
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/ch.svg.png" alt="">
+                    </div>
+                    <div class="ln-flag-merged">
+                        <img src="../img/subs/flag/sm.svg.png" alt="">
+                    </div>
+
+                </div>
+            </a>
+
+            <!-- View All -->
+            <a href="#" class="ln-subject ln-view-all">
+                <h2 class="ln-subject-name">View all subjects</h2>
+                <p class="ln-view-sub">We have more exciting things you can learn</p>
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <footer class="ln-footer">
+            <a href="#" class="ln-cancel proceed-with-cancel">No thanks, cancel subscription</a>
         </footer>
     </div>
-</section>
-<section id="cancellation-confirmation" class="app-cancellation-section">
-    <div class="app-cancellation-modal">
-        <button class="app-modal-close-btn" aria-label="Close">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd"
-                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
-                    fill="#121117" />
-            </svg>
-        </button>
+</main>
+<section class="resubscribe-modal">
+    <button class="close-button" aria-label="Close">
 
-        <div class="app-modal-header">
-            <img class="app-modal-icon" src="../img/subs/cancel-plan.png" alt="Subscription cancelled icon">
-            <h1 class="app-modal-title">You’ve cancelled your subscription.</h1>
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
+                fill="#121117" />
+        </svg>
+
+    </button>
+
+    <div class="modal-content-resubscribe">
+        <div class="modal-header-resubscribe">
+            <img class="avatar" src="../img/subs/9-1.png" alt="Karen's avatar">
+            <h1 class="modal-title">Resubscribe to Karen’s lessons</h1>
         </div>
 
-        <div class="app-modal-body">
-            <p class="app-modal-description">Your plan expires on April 07. We’ll be happy to welcome you back anytime!
-            </p>
-            <a href="#" role="button" class="app-modal-button">Okay, thanks!</a>
+        <div class="plan-summary">
+            <div class="plan-details">
+                <p class="plan-name">4 lessons • $32.00</p>
+                <p class="plan-frequency">every 4 weeks</p>
+            </div>
+            <button class="change-plan-button">Change plan</button>
+        </div>
+
+        <div class="cost-summary">
+            <div class="cost-item">
+                <span class="item-label">4 lessons x $8.00/lesson</span>
+                <span class="item-value">$32.00</span>
+            </div>
+            <div class="cost-item">
+                <span class="item-label">
+                    Taxes & fees
+                    <img src="../img/subs/question-mark.svg" alt="Info icon">
+                </span>
+                <span class="item-value">$3.33</span>
+            </div>
+            <div class="cost-item">
+                <span class="item-label">
+                    Your Latingles credit
+                    <img src="../img/subs/question-mark.svg" alt="Info icon">
+                </span>
+                <span class="item-value credit-value">-$6.40</span>
+            </div>
+        </div>
+
+        <div class="total-row">
+            <span class="total-label">Total</span>
+            <span class="total-value">$28.93</span>
+        </div>
+
+        <hr class="separator">
+
+        <div class="renewal-info">
+            <p class="renewal-title">Renews automatically every 4 weeks</p>
+            <p class="renewal-text">We will charge $35.65 to your saved payment method to add 4 lessons every 4 weeks
+                unless you cancel your subscription.</p>
+        </div>
+
+        <hr class="separator">
+
+        <div class="payment-section">
+            <h2 class="payment-title">Payment method</h2>
+            <div class="payment-selector">
+                <div class="card-info">
+                    <img class="card-icon" src="../img/subs/visa.png" alt="Visa card icon">
+                    <span class="card-details">visa ****7583</span>
+                </div>
+                <img class="dropdown-icon" src="../img/subs/arrow-down.svg" alt="Dropdown arrow">
+            </div>
+            <button class="resubscribe-button">Resubscribe</button>
         </div>
     </div>
 </section>
-<section id="plan-Change-confirmation" class="app-cancellation-section">
-    <div class="app-cancellation-modal">
-        <button class="app-modal-close-btn" aria-label="Close">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd"
-                    d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
-                    fill="#121117" />
-            </svg>
-        </button>
 
-        <div class="app-modal-header">
-            <img class="app-modal-icon" src="../img/subs/cancel-plan.png" alt="Subscription cancelled icon">
-            <h1 class="app-modal-title">You’ve Changed your Plan.</h1>
-        </div>
-
-        <div class="app-modal-body">
-            <p class="app-modal-description">Your plan expires on April 07. We’ll be happy to welcome you back anytime!
-            </p>
-            <a href="#" role="button" class="app-modal-button">Okay, thanks!</a>
-        </div>
-    </div>
-</section>
-<section id="cp-change-plan">
-    <div class="cp-card">
-        <div class="cp-header">
-
-            <button class="cp-icon-btn cp-back-btn" aria-label="Go back">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M3.91406 8.9932L15.9141 8.9932L15.9141 6.99319L3.91406 6.9932L9.20706 1.7002L7.79306 0.286195L0.0860627 7.9932L7.79306 15.7002L9.20706 14.2862L3.91406 8.9932Z"
-                        fill="#121117" />
-                </svg>
-            </button>
-            <button class="cp-icon-btn cp-close-btn" aria-label="Close dialog">
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M1.414 0L0 1.414L4.95 6.364L0 11.314L1.414 12.728L6.364 7.778L11.314 12.728L12.728 11.314L7.778 6.364L12.728 1.414L11.314 0L6.364 4.95L1.414 0Z"
-                        fill="#121117" />
-                </svg>
-            </button>
-        </div>
-
-        <div>
-
-            <h1 class="modal-title">
-                Why not try a plan that fits your schedule?
-            </h1>
-        </div>
-
-        <div class="plan-options">
-            <div class="plan-option">
-                <input type="radio" name="plan" id="plan-1" class="visually-hidden">
-                <label for="plan-1" class="plan-label">
-                    <span class="plan-name">1 Month</span>
-                    <span class="plan-price"><b>$36.00</b> per Month</span>
-                </label>
-            </div>
-            <div class="plan-option">
-                <input type="radio" name="plan" id="plan-4" class="visually-hidden">
-                <label for="plan-4" class="plan-label">
-                    <span class="plan-name">4 Months</span>
-                    <span class="plan-price"><b>$72.00</b> per 4 Month</span>
-                </label>
-            </div>
-            <div class="plan-option">
-                <input type="radio" name="plan" id="plan-6" class="visually-hidden" checked>
-                <label for="plan-6" class="plan-label">
-                    <span class="plan-name">6 Months</span>
-                    <span class="plan-price"><b>$108.00</b> per 6 Month</span>
-
-                </label>
-            </div>
-            <div class="plan-option">
-                <input type="radio" name="plan" id="plan-9" class="visually-hidden">
-                <label for="plan-9" class="plan-label">
-                    <span class="plan-name">9 Months</span>
-                    <span class="plan-price"><b>$144.00</b> per 9 Month</span>
-                </label>
-            </div>
-            <div class="plan-option">
-                <input type="radio" name="plan" id="plan-12" class="visually-hidden">
-                <label for="plan-12" class="plan-label">
-                    <div class="plan-name-wrapper">
-                        <span class="plan-name">12 Months</span>
-                        <span class="popular-badge">Popular</span>
-                    </div>
-                    <span class="plan-price"><b>$180.00</b> per 12 Month</span>
-                </label>
-            </div>
-            <div class="plan-option">
-                <input type="radio" name="plan" id="plan-custom" class="visually-hidden">
-                <label for="plan-custom" class="plan-label">
-                    <div class="custom-plan-text">
-                        <span class="plan-name">Custom plan</span>
-                        <p>Choose the number of <b>months</b> if that suits you better.</p>
-                    </div>
-                    <img src="../img/subs/calendar.png" alt="" />
-                </label>
-            </div>
-        </div>
-
-        <div class="cp-actions-plan">
-            <button class="cp-btn cp-btn-primary-confirm confirm-checkout">Confirm</button>
-            <a href="#" class="cp-btn cp-btn-secondary cp-btn-sub proceed-with-cancel">Proceed with cancellation</a>
-        </div>
-    </div>
-</section>
 <?php // 1️⃣ Check if the user has the "student" role in Moodle.
-$context = context_system::instance();
-//$isStudent = user_has_role_assignment($user->id, 5, $context->id); // 5 is usually the student role ID
-
-// Check if the user is a student (5) or teacher (3)
-$isStudent = (
-    is_only_student($user->id)
-);
-
-
-
-if ($isStudent) {
-    // 2️⃣ Fetch all subscriptions from paypal_subscriptions.
-    $paypalSubscriptions = $DB->get_records_sql("SELECT email, status FROM {paypal_subscriptions} ORDER BY id DESC");
-    
-    // 2️⃣ Fetch all subscriptions from local_subscriptions.
-    //$localSubscriptions = $DB->get_records_sql("SELECT sub_email AS email, status FROM {local_subscriptions} ORDER BY id DESC");
-
-    // 2️⃣ Fetch subscriptions from local_subscriptions, normalizing the status.
-    $localSubscriptionsRaw = $DB->get_records_sql("
-        SELECT sub_email AS email, sub_status, sub_history, sub_reference
-        FROM {local_subscriptions}
-        ORDER BY id DESC
-    ");
-
-
-    foreach ($localSubscriptionsRaw as $sub) {
-    $code = (int)$sub->sub_status;
-
-    if ($code === 1) {
-        $sub->status = 'active';
-    } elseif ($code === 5 ) {
-        $sub->status = 'declined';
-    } else {
-        $sub->status = 'inactive';
-    }
-
-    unset($sub->sub_status); // Optional: remove original field.
-    $localSubscriptions[] = $sub;
-}
-
-   // 2️⃣ Fetch all subscriptions from patreon_subscriptions.
-$patreonSubscriptionsRaw = $DB->get_records_sql("
-    SELECT email, status, planid, subscriber_id, price
-    FROM {membership_patreon_subscriptions}
-    ORDER BY id DESC
-");
-$patreonSubscriptions = [];
-foreach ($patreonSubscriptionsRaw as $psub) {
-    $code = $psub->status;
-
-    if ($code === 'active_patron') {
-        $psub->status = 'active';
-    } elseif ($code === 'former_patron') {
-        $psub->status = 'inactive';
-    } else {
-        $psub->status = 'inactive';
-    }
-
-    $patreonSubscriptions[] = $psub;
-}
-
-// ✅ Merge all subscription arrays (PayPal + Local + Patreon).
-$allSubscriptions = array_merge($paypalSubscriptions, $localSubscriptions, $patreonSubscriptions);
-    
-    $subscriptionIsActive = false;
-    $subscriptionIsDeclined = false;
-    $forcedSubscriptionId = '';
-    
-    
-    foreach ($allSubscriptions as $subscription) {
-        if (strtolower(trim($subscription->email)) === strtolower(trim($user->email))) {
-      
-            // Found the user's subscription.
-            if (strtolower($subscription->status) === 'active') {
-                $subscriptionIsActive = true;
-                if($subscription->price)
-                {
-                   $price = $subscription->price;
-                }
-               
-                break; // No need to check further.
-            }
-            
-
-            if($subscription->price)
-                {
-                   $price = $subscription->price;
-                }
-
-            if (strtolower($subscription->status) === 'declined') {
-
-                $subscriptionIsDeclined = true;
-                 $forcedSubscriptionId = $subscription->sub_reference;
-                 //$forcedSubscriptionId = 'cvbv9k';
-                break; // No need to check further.
-            }
-            
-             // If this is a local subscription, sub_history will exist (JSON array).
-        if (!empty($subscription->sub_history)) {
-            $hist = json_decode($subscription->sub_history, true);
-            if (json_last_error() === JSON_ERROR_NONE && is_array($hist)) {
-                // Use the last entry that has a plan_price.
-                for ($i = count($hist) - 1; $i >= 0; $i--) {
-                    if (isset($hist[$i]['plan_price']) && $hist[$i]['plan_price'] !== '') {
-                        $price = (float)$hist[$i]['plan_price']; // e.g., 15.0
-                        break;
-                    }
-                }
-            }
-        }
-
-     
-            
-            
-        }
-    }
-    
-    
-    // 3️⃣ If user subscription is not active, include the file.
-     if (!$subscriptionIsActive) {
-
-    $manualSubscriptions = $DB->get_records_sql("
-        SELECT id, start_date, end_date, status
-        FROM {manual_user_registrations}
-        WHERE userid = ?
-        ORDER BY id DESC
-    ", [$user->id]);
-
-    $hasManual = false;
-    $now = time();
-
-    foreach ($manualSubscriptions as $manualSub) {
-        $hasManual = true;
-        $start = (int)$manualSub->start_date;
-        $end = (int)$manualSub->end_date;
-        $status = strtolower($manualSub->status);
-
-        if ($status === 'active') {
-            if ($start <= $now && $now <= $end) {
-                $subscriptionIsActive = true;
-                exit; // ✅ Valid subscription, stop here
-            } elseif ($start > $now) {
-                // Future subscription
-                echo '<script>';
-                echo 'window.subscriptionStartDate = "' . date('d/m/Y', $start) . '";';
-                echo 'window.subscriptionEndDate = "' . date('d/m/Y', $end) . '";';
-                echo '</script>';
-
-                require_once('user_pay_subscription_dates_modal.php');
-                exit;
-            } elseif ($end < $now) {
-                // ❌ Expired subscription — deactivate and show contact modal
-                $DB->set_field('manual_user_registrations', 'status', 'inactive', ['id' => $manualSub->id]);
-
-                require_once('user_pay_subscription_contact_modal.php');
-                exit;
-            }
-        }
-    }
-
-      if (!$subscriptionIsActive) {
-
-         $subid = $DB->get_field('user_info_data', 'data', [
-    'userid' => $user->id,
-    'fieldid' => $DB->get_field('user_info_field', 'id', ['shortname' => 'SubID'])
-]);
-
-          // Step 2: If SubID exists, check in paypal_subscriptions table
-    if (!empty($subid)) {
-        $record = $DB->get_record('paypal_subscriptions', ['subscription_id' => $subid], 'status');
-
-        if ($record) {
-            $status = $record->status;
-
-            if($status === 'active')
-            {
-                $subscriptionIsActive = true;
-            }
-
-            // Now you can use $status as needed
-            // Example: echo $status;
-        } else {
-            // No matching subscription found
-            $status = null;
-        }
-    } else {
-        // SubID is empty or not set
-        $status = null;
-    }
-
-      }
-      
-
-    // ❌ No manual subscriptions at all or not active
-    if (!$subscriptionIsActive || !$hasManual) {
-        if($subscriptionIsActive)
-        {
-
-        }else{
-            
-            if($hasManual)
-            {
-
-            }else{
-                
-
-                      $subid = $DB->get_field('user_info_data', 'data', [
-                            'userid' => $user->id,
-                            'fieldid' => $DB->get_field('user_info_field', 'id', ['shortname' => 'SubID'])
-                        ]);
-
-                        if($subid)
-                        {
-                            $record = $DB->get_record('paypal_subscriptions', ['subscription_id' => $subid], 'price');
-
-                            if($record)
-                            {
-                                $price = $record->price;
-
-                            }else{
-                              $record = $DB->get_record('local_subscriptions', ['sub_reference' => $subid], 'sub_history');
-
-                                $planprice = null;
-
-                                if ($record && !empty($record->sub_history)) {
-                                    $history = json_decode($record->sub_history, true); // Decode as associative array
-
-                                    if (is_array($history) && isset($history[0]['plan_price'])) {
-                                        $price = $history[0]['plan_price'];
-
-                                        // Optional: echo or use it
-                                        // echo "Plan Price: $planprice";
-                                    }
-                                }
-                            }
-                        }else{
-                            //$price = 73;
-                            
-                        }
-                        
-
-                        // ✅ Declare it global before including the file
-               global $price;
-
-               if($subscriptionIsDeclined)
-               {
-                global $forcedSubscriptionId;
-                     require_once('userSubscritionReTryPayment.php'); 
-                     //require_once('user_pay_subscription.php');
-               }else{
-               require_once('user_pay_subscription.php');
+   $context = context_system::instance();
+   //$isStudent = user_has_role_assignment($user->id, 5, $context->id); // 5 is usually the student role ID
+   
+   // Check if the user is a student (5) or teacher (3)
+   $isStudent = (
+       is_only_student($user->id)
+   );
+   
+   
+   
+   if ($isStudent) {
+       // 2️⃣ Fetch all subscriptions from paypal_subscriptions.
+       $paypalSubscriptions = $DB->get_records_sql("SELECT email, status FROM {paypal_subscriptions} ORDER BY id DESC");
+       
+       // 2️⃣ Fetch all subscriptions from local_subscriptions.
+       //$localSubscriptions = $DB->get_records_sql("SELECT sub_email AS email, status FROM {local_subscriptions} ORDER BY id DESC");
+   
+       // 2️⃣ Fetch subscriptions from local_subscriptions, normalizing the status.
+       $localSubscriptionsRaw = $DB->get_records_sql("
+           SELECT sub_email AS email, sub_status, sub_history, sub_reference
+           FROM {local_subscriptions}
+           ORDER BY id DESC
+       ");
+   
+   
+       foreach ($localSubscriptionsRaw as $sub) {
+       $code = (int)$sub->sub_status;
+   
+       if ($code === 1) {
+           $sub->status = 'active';
+       } elseif ($code === 5 ) {
+           $sub->status = 'declined';
+       } else {
+           $sub->status = 'inactive';
+       }
+   
+       unset($sub->sub_status); // Optional: remove original field.
+       $localSubscriptions[] = $sub;
+   }
+   
+      // 2️⃣ Fetch all subscriptions from patreon_subscriptions.
+   $patreonSubscriptionsRaw = $DB->get_records_sql("
+       SELECT email, status, planid, subscriber_id, price
+       FROM {membership_patreon_subscriptions}
+       ORDER BY id DESC
+   ");
+   $patreonSubscriptions = [];
+   foreach ($patreonSubscriptionsRaw as $psub) {
+       $code = $psub->status;
+   
+       if ($code === 'active_patron') {
+           $psub->status = 'active';
+       } elseif ($code === 'former_patron') {
+           $psub->status = 'inactive';
+       } else {
+           $psub->status = 'inactive';
+       }
+   
+       $patreonSubscriptions[] = $psub;
+   }
+   
+   // ✅ Merge all subscription arrays (PayPal + Local + Patreon).
+   $allSubscriptions = array_merge($paypalSubscriptions, $localSubscriptions, $patreonSubscriptions);
+       
+       $subscriptionIsActive = false;
+       $subscriptionIsDeclined = false;
+       $forcedSubscriptionId = '';
+       
+       
+       foreach ($allSubscriptions as $subscription) {
+           if (strtolower(trim($subscription->email)) === strtolower(trim($user->email))) {
+         
+               // Found the user's subscription.
+               if (strtolower($subscription->status) === 'active') {
+                   $subscriptionIsActive = true;
+                   if($subscription->price)
+                   {
+                      $price = $subscription->price;
+                   }
+                  
+                   break; // No need to check further.
                }
                
-            }
-          
-        }
+   
+               if($subscription->price)
+                   {
+                      $price = $subscription->price;
+                   }
+   
+               if (strtolower($subscription->status) === 'declined') {
+   
+                   $subscriptionIsDeclined = true;
+                    $forcedSubscriptionId = $subscription->sub_reference;
+                    //$forcedSubscriptionId = 'cvbv9k';
+                   break; // No need to check further.
+               }
+               
+                // If this is a local subscription, sub_history will exist (JSON array).
+           if (!empty($subscription->sub_history)) {
+               $hist = json_decode($subscription->sub_history, true);
+               if (json_last_error() === JSON_ERROR_NONE && is_array($hist)) {
+                   // Use the last entry that has a plan_price.
+                   for ($i = count($hist) - 1; $i >= 0; $i--) {
+                       if (isset($hist[$i]['plan_price']) && $hist[$i]['plan_price'] !== '') {
+                           $price = (float)$hist[$i]['plan_price']; // e.g., 15.0
+                           break;
+                       }
+                   }
+               }
+           }
+   
         
-    }
-}
-}else{
-    require_login();
-    if(!is_siteadmin($user->id)){
-        if (!$isteacher) {
-        $price = 73;
-               global $price;
-               require_once('user_pay_subscription.php');
-            }
-    }
-}
-
-?>
-
-
-
-
+               
+               
+           }
+       }
+       
+       
+       // 3️⃣ If user subscription is not active, include the file.
+        if (!$subscriptionIsActive) {
+   
+       $manualSubscriptions = $DB->get_records_sql("
+           SELECT id, start_date, end_date, status
+           FROM {manual_user_registrations}
+           WHERE userid = ?
+           ORDER BY id DESC
+       ", [$user->id]);
+   
+       $hasManual = false;
+       $now = time();
+   
+       foreach ($manualSubscriptions as $manualSub) {
+           $hasManual = true;
+           $start = (int)$manualSub->start_date;
+           $end = (int)$manualSub->end_date;
+           $status = strtolower($manualSub->status);
+   
+           if ($status === 'active') {
+               if ($start <= $now && $now <= $end) {
+                   $subscriptionIsActive = true;
+                   exit; // ✅ Valid subscription, stop here
+               } elseif ($start > $now) {
+                   // Future subscription
+                   echo '<script>';
+                   echo 'window.subscriptionStartDate = "' . date('d/m/Y', $start) . '";';
+                   echo 'window.subscriptionEndDate = "' . date('d/m/Y', $end) . '";';
+                   echo '</script>';
+   
+                   require_once('user_pay_subscription_dates_modal.php');
+                   exit;
+               } elseif ($end < $now) {
+                   // ❌ Expired subscription — deactivate and show contact modal
+                   $DB->set_field('manual_user_registrations', 'status', 'inactive', ['id' => $manualSub->id]);
+   
+                   require_once('user_pay_subscription_contact_modal.php');
+                   exit;
+               }
+           }
+       }
+   
+         if (!$subscriptionIsActive) {
+   
+            $subid = $DB->get_field('user_info_data', 'data', [
+       'userid' => $user->id,
+       'fieldid' => $DB->get_field('user_info_field', 'id', ['shortname' => 'SubID'])
+   ]);
+   
+             // Step 2: If SubID exists, check in paypal_subscriptions table
+       if (!empty($subid)) {
+           $record = $DB->get_record('paypal_subscriptions', ['subscription_id' => $subid], 'status');
+   
+           if ($record) {
+               $status = $record->status;
+   
+               if($status === 'active')
+               {
+                   $subscriptionIsActive = true;
+               }
+   
+               // Now you can use $status as needed
+               // Example: echo $status;
+           } else {
+               // No matching subscription found
+               $status = null;
+           }
+       } else {
+           // SubID is empty or not set
+           $status = null;
+       }
+   
+         }
+         
+   
+       // ❌ No manual subscriptions at all or not active
+       if (!$subscriptionIsActive || !$hasManual) {
+           if($subscriptionIsActive)
+           {
+   
+           }else{
+               
+               if($hasManual)
+               {
+   
+               }else{
+                   
+   
+                         $subid = $DB->get_field('user_info_data', 'data', [
+                               'userid' => $user->id,
+                               'fieldid' => $DB->get_field('user_info_field', 'id', ['shortname' => 'SubID'])
+                           ]);
+   
+                           if($subid)
+                           {
+                               $record = $DB->get_record('paypal_subscriptions', ['subscription_id' => $subid], 'price');
+   
+                               if($record)
+                               {
+                                   $price = $record->price;
+   
+                               }else{
+                                 $record = $DB->get_record('local_subscriptions', ['sub_reference' => $subid], 'sub_history');
+   
+                                   $planprice = null;
+   
+                                   if ($record && !empty($record->sub_history)) {
+                                       $history = json_decode($record->sub_history, true); // Decode as associative array
+   
+                                       if (is_array($history) && isset($history[0]['plan_price'])) {
+                                           $price = $history[0]['plan_price'];
+   
+                                           // Optional: echo or use it
+                                           // echo "Plan Price: $planprice";
+                                       }
+                                   }
+                               }
+                           }else{
+                               //$price = 73;
+                               
+                           }
+                           
+   
+                           // ✅ Declare it global before including the file
+                  global $price;
+   
+                  if($subscriptionIsDeclined)
+                  {
+                   global $forcedSubscriptionId;
+                        require_once('userSubscritionReTryPayment.php'); 
+                        //require_once('user_pay_subscription.php');
+                  }else{
+                  require_once('user_pay_subscription.php');
+                  }
+                  
+               }
+             
+           }
+           
+       }
+   }
+   }else{
+       require_login();
+       if(!is_siteadmin($user->id)){
+           if (!$isteacher) {
+           $price = 73;
+                  global $price;
+                  require_once('user_pay_subscription.php');
+               }
+       }
+   }
+   require_once('./subscriptionModal/teacherSubscription.php');
+     require_once('./subscriptionModal/groupSubscription.php');
+   ?>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="../js/calendar.js?v=<?php echo time(); ?>"></script>
 <script src="../js/MessageTypingArea.js?v=<?php echo time(); ?>"></script>
 <script src="../js/script.js?v=<?php echo time(); ?>"></script>
 <script src="../js/modifyindex.js?v=<?php echo time(); ?>"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
 <?php
-
-/**
- * Return true if $sectionname is for the given teacher ($fname, $lname).
- * Accepts formats like "Teacher Axley P." or "Teacher Axley Patel".
- */
-function section_is_for_teacher(?string $sectionname, string $fname, string $lname): bool {
-    if (empty($sectionname)) {
-        return false;
-    }
-
-    // 1) Extract the part after the word "Teacher" if present
-    $teacherpart = $sectionname;
-    if (preg_match('/\bTeacher\b[[:space:]:\-–—]*(.+)$/ui', $sectionname, $m)) {
-        $teacherpart = trim($m[1]);
-    }
-
-    // 2) Normalize spacing & strip noisy chars (keep letters, digits, space, dot, hyphen, apostrophe)
-    $teacherpart = preg_replace('/\s+/u', ' ', $teacherpart);
-    $teacherpart = trim(preg_replace("/[^\p{L}\p{N}\s.\-']+/u", '', $teacherpart));
-
-    if ($teacherpart === '') {
-        return false;
-    }
-
-    // 3) Split into tokens and pick first & last token
-    $pieces = preg_split('/\s+/u', $teacherpart, -1, PREG_SPLIT_NO_EMPTY);
-    if (!$pieces || count($pieces) < 1) {
-        return false;
-    }
-    $tFirst = $pieces[0];
-    $tLast  = count($pieces) > 1 ? end($pieces) : '';
-
-    // 4) Lowercase comparisons (Moodle-safe)
-    $fnameL = core_text::strtolower(trim($fname));
-    $lnameL = core_text::strtolower(trim($lname));
-    $tFirstL = core_text::strtolower($tFirst);
-    $tLastL  = core_text::strtolower(rtrim($tLast, '.')); // allow "P."
-
-    // Derive last-name initial (first letter in the surname)
-    $lnameInitial = '';
-    if (preg_match('/\p{L}/u', $lname, $mm)) { // first letter-like char
-        $lnameInitial = core_text::strtolower($mm[0]);
-    }
-
-    // Must match first name exactly, and last either full match or initial match
-    $firstMatches = ($tFirstL === $fnameL);
-    $lastMatches  = ($tLastL === $lnameL) || ($tLastL !== '' && $tLastL === $lnameInitial);
-
-    return $firstMatches && $lastMatches;
-}
-
-
-/**
- * From a CM availability JSON, find the profile condition "email == X"
- * and return the matching user record (or null if not found).
- *
- * @param string|null $availabilityjson  Raw JSON from $cm->availability
- * @param string      $fields            Fields to select from 'user' (default small set; use '*' if you need all)
- * @return stdClass|null                 user record or null
- */
-function availability_extract_user(?string $availabilityjson, string $fields = 'id,firstname,lastname,email'): ?stdClass {
-    global $DB;
-
-    if (empty($availabilityjson)) {
-        return null;
-    }
-
-    $tree = json_decode($availabilityjson, true);
-    if (!is_array($tree)) {
-        // Uncomment to debug malformed JSON:
-        // error_log('availability JSON decode error: ' . json_last_error_msg() . ' | payload: ' . $availabilityjson);
-        return null;
-    }
-
-    // DFS over the availability tree
-    $stack = [$tree];
-    while ($stack) {
-        $node = array_pop($stack);
-        if (!is_array($node)) {
-            continue;
-        }
-
-        // Check a profile condition node
-        if (($node['type'] ?? null) === 'profile') {
-            // Moodle stores profile field under 'sf' (short field). Fallback to 'field' just in case.
-            $field = strtolower((string)($node['sf'] ?? $node['field'] ?? ''));
-            if ($field === 'email') {
-                // Value usually in 'v'; fallback to 'value'
-                $val = $node['v'] ?? $node['value'] ?? null;
-                if (is_string($val) && $val !== '') {
-                    $email = trim($val);
-
-                    // Resolve user by email (case-insensitive), not deleted
-                    $user = $DB->get_record_select(
-                        'user',
-                        'LOWER(email) = LOWER(:email) AND deleted = 0',
-                        ['email' => $email],
-                        $fields
-                    );
-                    return $user ?: null;
-                }
-            }
-        }
-
-        // Traverse children under 'c'
-        if (!empty($node['c']) && is_array($node['c'])) {
-            foreach ($node['c'] as $child) {
-                if (is_array($child)) {
-                    $stack[] = $child;
-                }
-            }
-        }
-
-        // Some trees include 'showc' (often [true]); only push arrays
-        if (!empty($node['showc']) && is_array($node['showc'])) {
-            foreach ($node['showc'] as $child) {
-                if (is_array($child)) {
-                    $stack[] = $child;
-                }
-            }
-        }
-    }
-
-    return null;
-}
-
-/**
- * Convenience: nice date/time bits in user TZ.
- */
-function format_session_times(int $startts, int $endts): array {
-    if ($endts <= $startts) {
-        $endts = $startts + 3600; // fallback 60m
-    }
-    $fullDayName    = userdate($startts, '%A');       // Monday
-    $displayDate    = userdate($startts, '%B %e');    // August 23
-    $formattedStart = trim(userdate($startts, '%l:%M %p'));
-    $formattedEnd   = trim(userdate($endts,   '%l:%M %p'));
-    return [$displayDate, $fullDayName . ' at ' . $formattedStart . ' - ' . $formattedEnd];
-}
-
-
-/**
- * Is this the first section of a course?
- *
- * @param int  $courseid
- * @param int  $sectionid   primary key from {course_sections}
- * @param bool $includegeneral  true = section 0 counts as first; false = start at section 1
- * @param bool $onlyvisible     true = ignore hidden sections when finding the first
- * @return bool
- */
-function is_first_section(int $courseid, int $sectionid, bool $includegeneral = true, bool $onlyvisible = false): bool {
-    global $DB;
-
-    // Get the target section's section number in this course.
-    $target = $DB->get_record('course_sections',
-        ['id' => $sectionid, 'course' => $courseid],
-        'id, course, section, visible', IGNORE_MISSING);
-
-    if (!$target) {
-        return false; // not in that course or doesn't exist
-    }
-
-    $where  = 'course = ?';
-    $params = [$courseid];
-
-    if (!$includegeneral) {
-        $where .= ' AND section > 0';
-    }
-    if ($onlyvisible) {
-        $where .= ' AND visible = 1';
-    }
-
-    $minsection = $DB->get_field_sql("SELECT MIN(section) FROM {course_sections} WHERE $where", $params);
-
-    if ($minsection === null) {
-        return false; // course has no sections?
-    }
-
-    return ((int)$target->section === (int)$minsection);
-}
-
-
-?>
-
-
-
-
+   /**
+    * Return true if $sectionname is for the given teacher ($fname, $lname).
+    * Accepts formats like "Teacher Axley P." or "Teacher Axley Patel".
+    */
+   function section_is_for_teacher(?string $sectionname, string $fname, string $lname): bool {
+       if (empty($sectionname)) {
+           return false;
+       }
+   
+       // 1) Extract the part after the word "Teacher" if present
+       $teacherpart = $sectionname;
+       if (preg_match('/\bTeacher\b[[:space:]:\-–—]*(.+)$/ui', $sectionname, $m)) {
+           $teacherpart = trim($m[1]);
+       }
+   
+       // 2) Normalize spacing & strip noisy chars (keep letters, digits, space, dot, hyphen, apostrophe)
+       $teacherpart = preg_replace('/\s+/u', ' ', $teacherpart);
+       $teacherpart = trim(preg_replace("/[^\p{L}\p{N}\s.\-']+/u", '', $teacherpart));
+   
+       if ($teacherpart === '') {
+           return false;
+       }
+   
+       // 3) Split into tokens and pick first & last token
+       $pieces = preg_split('/\s+/u', $teacherpart, -1, PREG_SPLIT_NO_EMPTY);
+       if (!$pieces || count($pieces) < 1) {
+           return false;
+       }
+       $tFirst = $pieces[0];
+       $tLast  = count($pieces) > 1 ? end($pieces) : '';
+   
+       // 4) Lowercase comparisons (Moodle-safe)
+       $fnameL = core_text::strtolower(trim($fname));
+       $lnameL = core_text::strtolower(trim($lname));
+       $tFirstL = core_text::strtolower($tFirst);
+       $tLastL  = core_text::strtolower(rtrim($tLast, '.')); // allow "P."
+   
+       // Derive last-name initial (first letter in the surname)
+       $lnameInitial = '';
+       if (preg_match('/\p{L}/u', $lname, $mm)) { // first letter-like char
+           $lnameInitial = core_text::strtolower($mm[0]);
+       }
+   
+       // Must match first name exactly, and last either full match or initial match
+       $firstMatches = ($tFirstL === $fnameL);
+       $lastMatches  = ($tLastL === $lnameL) || ($tLastL !== '' && $tLastL === $lnameInitial);
+   
+       return $firstMatches && $lastMatches;
+   }
+   
+   
+   /**
+    * From a CM availability JSON, find the profile condition "email == X"
+    * and return the matching user record (or null if not found).
+    *
+    * @param string|null $availabilityjson  Raw JSON from $cm->availability
+    * @param string      $fields            Fields to select from 'user' (default small set; use '*' if you need all)
+    * @return stdClass|null                 user record or null
+    */
+   function availability_extract_user(?string $availabilityjson, string $fields = 'id,firstname,lastname,email'): ?stdClass {
+       global $DB;
+   
+       if (empty($availabilityjson)) {
+           return null;
+       }
+   
+       $tree = json_decode($availabilityjson, true);
+       if (!is_array($tree)) {
+           // Uncomment to debug malformed JSON:
+           // error_log('availability JSON decode error: ' . json_last_error_msg() . ' | payload: ' . $availabilityjson);
+           return null;
+       }
+   
+       // DFS over the availability tree
+       $stack = [$tree];
+       while ($stack) {
+           $node = array_pop($stack);
+           if (!is_array($node)) {
+               continue;
+           }
+   
+           // Check a profile condition node
+           if (($node['type'] ?? null) === 'profile') {
+               // Moodle stores profile field under 'sf' (short field). Fallback to 'field' just in case.
+               $field = strtolower((string)($node['sf'] ?? $node['field'] ?? ''));
+               if ($field === 'email') {
+                   // Value usually in 'v'; fallback to 'value'
+                   $val = $node['v'] ?? $node['value'] ?? null;
+                   if (is_string($val) && $val !== '') {
+                       $email = trim($val);
+   
+                       // Resolve user by email (case-insensitive), not deleted
+                       $user = $DB->get_record_select(
+                           'user',
+                           'LOWER(email) = LOWER(:email) AND deleted = 0',
+                           ['email' => $email],
+                           $fields
+                       );
+                       return $user ?: null;
+                   }
+               }
+           }
+   
+           // Traverse children under 'c'
+           if (!empty($node['c']) && is_array($node['c'])) {
+               foreach ($node['c'] as $child) {
+                   if (is_array($child)) {
+                       $stack[] = $child;
+                   }
+               }
+           }
+   
+           // Some trees include 'showc' (often [true]); only push arrays
+           if (!empty($node['showc']) && is_array($node['showc'])) {
+               foreach ($node['showc'] as $child) {
+                   if (is_array($child)) {
+                       $stack[] = $child;
+                   }
+               }
+           }
+       }
+   
+       return null;
+   }
+   
+   /**
+    * Convenience: nice date/time bits in user TZ.
+    */
+   function format_session_times(int $startts, int $endts): array {
+       if ($endts <= $startts) {
+           $endts = $startts + 3600; // fallback 60m
+       }
+       $fullDayName    = userdate($startts, '%A');       // Monday
+       $displayDate    = userdate($startts, '%B %e');    // August 23
+       $formattedStart = trim(userdate($startts, '%l:%M %p'));
+       $formattedEnd   = trim(userdate($endts,   '%l:%M %p'));
+       return [$displayDate, $fullDayName . ' at ' . $formattedStart . ' - ' . $formattedEnd];
+   }
+   
+   
+   /**
+    * Is this the first section of a course?
+    *
+    * @param int  $courseid
+    * @param int  $sectionid   primary key from {course_sections}
+    * @param bool $includegeneral  true = section 0 counts as first; false = start at section 1
+    * @param bool $onlyvisible     true = ignore hidden sections when finding the first
+    * @return bool
+    */
+   function is_first_section(int $courseid, int $sectionid, bool $includegeneral = true, bool $onlyvisible = false): bool {
+       global $DB;
+   
+       // Get the target section's section number in this course.
+       $target = $DB->get_record('course_sections',
+           ['id' => $sectionid, 'course' => $courseid],
+           'id, course, section, visible', IGNORE_MISSING);
+   
+       if (!$target) {
+           return false; // not in that course or doesn't exist
+       }
+   
+       $where  = 'course = ?';
+       $params = [$courseid];
+   
+       if (!$includegeneral) {
+           $where .= ' AND section > 0';
+       }
+       if ($onlyvisible) {
+           $where .= ' AND visible = 1';
+       }
+   
+       $minsection = $DB->get_field_sql("SELECT MIN(section) FROM {course_sections} WHERE $where", $params);
+   
+       if ($minsection === null) {
+           return false; // course has no sections?
+       }
+   
+       return ((int)$target->section === (int)$minsection);
+   }
+   
+   
+   ?>
 <?php
-
 echo $OUTPUT->footer();

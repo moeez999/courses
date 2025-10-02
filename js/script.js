@@ -76,6 +76,7 @@ const elements = {
     ".subscription_dropdown_options_open"
   ),
   addExtraLessonsModalOpen: querySelectorElement(".addExtraLessonsModalOpen"),
+  addextralessons: querySelectorElement(".addextralessons"),
   extraLesson: querySelectorElement(".extraLesson"),
   extraLesson_increment: querySelectorElement(".extraLesson .increment"),
   extraLesson_decrement: querySelectorElement(".extraLesson .decrement"),
@@ -176,95 +177,237 @@ const elements = {
   pausedModal: querySelectorElement("#subscription-paused"),
   confirmPause: querySelectorElement(".confirm-pause"),
 
-
-
-    renewalOption: document.querySelector(".change-your-renewal-date"), // trigger
+  renewalOption: document.querySelector(".change-your-renewal-date"), // trigger
   renewalModal: document.getElementById("renewal-modal"),
   renewalConfirmBtn: document.querySelector("#renewal-modal .rm-cta"),
-  renewalClose: document.querySelector("#renewal-modal .closeIcon"),
+  renewalClose: document.querySelector("#renewal-modal .rm-close"),
   renewalBack: document.querySelector("#renewal-modal .goBack"),
   renewalNotification: document.querySelector(".renewal-card"),
   renewalNotificationClose: document.querySelector("renewal-card .closeIcon"),
   renewalNotificationDone: document.querySelector(".renewal-card button"),
 
-
   cancelGroupSubs: querySelectorElement(".cancel-group-subsciption"),
+  cancelteacherSubs: querySelectorElement(".cancel-teachers-subsciption"),
   tryPauseModal: querySelectorElement("#subsModal"),
+  tryPauseModalTeachers: querySelectorElement("#subsModal-for-teachers"),
   subsStep1: querySelectorElement("#subsStep1"),
   subsStep2: querySelectorElement("#subsStep2"),
   subsClose: querySelectorElement("#subsClose"),
-  subBtnPause : querySelectorElement(".subs-btn-pause"),
-  subBtnCancel : querySelectorElement(".subs-btn-cancel"),
-  cmModal : querySelectorElement("#cm-modal"),
+  subBtnPause: querySelectorElement(".subs-btn-pause"),
+    subsStep1Teacher: querySelectorElement("#subsStep1-teacher"),
+  subsStep2Teacher: querySelectorElement("#subsStep2-teacher"),
+  subsCloseTeacher: querySelectorElement("#subsClose-teacher"),
+  subBtnPauseTeacher: querySelectorElement(".subs-btn-pause-teacher"),
+  subBtnCancel: querySelectorElement(".subs-btn-cancel"),
+  subBtnCancelTeacher: querySelectorElement(".subs-btn-cancel-teacher"),
+  cmModal: querySelectorElement("#cm-modal"),
+  cmModalTeachers: querySelectorElement("#cm-modal-teachers"),
+   cmModalTeachersClose: querySelectorElement("#cm-modal-teachers .cm-close-btn"),
   // Cancel subscription modals
   cancelMainModal: document.getElementById("cm-modal"),
   cancelMainClose: document.querySelector("#cm-modal .cm-close-btn"),
   cancelReasons: document.querySelectorAll("#cm-modal .cm-reason"),
+  canelReasonsTeacher: document.querySelectorAll(
+    "#cm-modal-teachers .cm-reason"
+  ),
 
   // Group modal (reason 1)
   groupModal: document.getElementById("gm-modal"),
   groupBack: document.querySelector("#gm-modal .gm-header button:first-child"),
   groupClose: document.querySelector("#gm-modal .gm-header button:last-child"),
 
+
+  teacherReason1Modal:querySelectorElement(".reason-1-modal-teacher"),
+  teacherReason1ModalBack:querySelectorElement(".reason-1-modal-teacher .ln-back-btn"),
+  teacherReason1ModalClose:querySelectorElement(".reason-1-modal-teacher .ln-close-btn"),
+
   // Busy cancellation prompt (reason 4)
   cancelPrompt: document.getElementById("cp-cancellation-prompt"),
-  cancelPromptBack: document.querySelector("#cp-cancellation-prompt .cp-back-btn"),
-  cancelPromptClose: document.querySelector("#cp-cancellation-prompt .cp-close-btn"),
+  cancelPromptBack: document.querySelector(
+    "#cp-cancellation-prompt .cp-back-btn"
+  ),
+  cancelPromptClose: document.querySelector(
+    "#cp-cancellation-prompt .cp-close-btn"
+  ),
 
   // Budget options (reason 2)
   budgetModal: document.querySelector(".reason-2-modal"),
-  budgetBack: document.querySelector(".reason-2-modal .bo-header button:first-child"),
-  budgetClose: document.querySelector(".reason-2-modal .bo-header button:last-child"),
+  budgetBack: document.querySelector(
+    ".reason-2-modal .bo-header button:first-child"
+  ),
+  budgetClose: document.querySelector(
+    ".reason-2-modal .bo-header button:last-child"
+  ),
 
+    budgetModalTeacher: document.querySelector(".reason-3-modal-teacher"),
+  budgetBackTeacher: document.querySelector(
+    ".reason-3-modal-teacher .bo-header button:first-child"
+  ),
+  budgetCloseTeacher: document.querySelector(
+    ".reason-3-modal-teacher .bo-header button:last-child"
+  ),
   // Something else (reason 7)
   otherModal: document.querySelector(".reason-7-modal"),
-  otherBack: document.querySelector(".reason-7-modal .bo-header button:first-child"),
-  otherClose: document.querySelector(".reason-7-modal .bo-header button:last-child"),
+  otherBack: document.querySelector(
+    ".reason-7-modal .bo-header button:first-child"
+  ),
+  otherClose: document.querySelector(
+    ".reason-7-modal .bo-header button:last-child"
+  ),
+
+  otherModalTeacher: document.querySelector(".reason-8-modal-teacher"),
+  otherBackTeacher: document.querySelector(
+    ".reason-8-modal-teacher .bo-header button:first-child"
+  ),
+  otherCloseTeacher: document.querySelector(
+    ".reason-8-modal-teacher .bo-header button:last-child"
+  ),
 
   // Tutor outside (reason 5)
   tutorOutsideModal: document.querySelector(".reason-5-modal"),
-  tutorOutsideBack: document.querySelector(".reason-5-modal .cp-header button:first-child"),
-  tutorOutsideClose: document.querySelector(".reason-5-modal .cp-header button:last-child"),
+  tutorOutsideBack: document.querySelector(
+    ".reason-5-modal .cp-header button:first-child"
+  ),
+  tutorOutsideClose: document.querySelector(
+    ".reason-5-modal .cp-header button:last-child"
+  ),
+
+
+    cpPlanChangeTeacher: querySelectorElement("#cp-change-plan-teacher"),
+
+  cpPlanChangeBackBtnTeacher: querySelectorElement("#cp-change-plan-teacher .cp-back-btn"),
+  cpPlanChangeCloseBtnTeacher: querySelectorElement("#cp-change-plan-teacher .cp-close-btn"),
 
   // Reason 3 (Try private classes → tutors modal)
   tutorsModal: document.getElementById("tutors-modal"),
-  tutorsBack: document.querySelector("#tutors-modal .app-header-top-row button:first-child"),
-  tutorsClose: document.querySelector("#tutors-modal .app-header-top-row button:last-child"),
+  tutorsBack: document.querySelector(
+    "#tutors-modal .app-header-top-row button:first-child"
+  ),
+  tutorsClose: document.querySelector(
+    "#tutors-modal .app-header-top-row button:last-child"
+  ),
 
+    tutorsModalTeacher: document.getElementById("tutors-modal-teacher"),
+  tutorsBackTeacher: document.querySelector(
+    "#tutors-modal-teacher .app-header-top-row button:first-child"
+  ),
+  tutorsCloseTeacher: document.querySelector(
+    "#tutors-modal-teacher .app-header-top-row button:last-child"
+  ),
 
-    // Reason 5 (Tutor outside Latingles → cancellation prompt)
+      tutorsModalTeacher2: document.getElementById("tutors-modal-teacher-2"),
+  tutorsBackTeacher2: document.querySelector(
+    "#tutors-modal-teacher-2 .app-header-top-row button:first-child"
+  ),
+  tutorsCloseTeacher2: document.querySelector(
+    "#tutors-modal-teacher-2 .app-header-top-row button:last-child"
+  ),
+
+  // Reason 5 (Tutor outside Latingles → cancellation prompt)
   cancelReason6Modal: document.querySelector(".reason-6-modal"),
-cancelReason6Back: document.querySelector(".reason-6-modal .cp-back-btn"),
-cancelReason6Close: document.querySelector(".reason-6-modal .cp-close-btn"),
-
-proceedWithCancellation:querySelectorElements(".proceed-with-cancel"),
-cancellationConfirmation:querySelectorElement("#cancellation-confirmation"),
-cancelConfirmClose: querySelectorElement(
-  "#cancellation-confirmation .app-modal-close-btn"
-),
-okConfirmBtnPlanChange: querySelectorElement(
-  "#plan-Change-confirmation .app-modal-button"
-),
-cancelConfirmClosePlanChange: querySelectorElement(
-  "#plan-Change-confirmation .app-modal-close-btn"
-),
-okConfirmBtn: querySelectorElement(
-  "#cancellation-confirmation .app-modal-button"
-),
-confirmPlanChange : querySelectorElement(".confirm-plan-change"),
-confirmPlanChangeModal:querySelectorElement("#plan-Change-confirmation"),
-tryAffordableBtn: querySelectorElements(".try-affordable-group"),
-
-trySmallerPlan: querySelectorElement(".try-smaller-plan"),
-cpPlanChange :querySelectorElement("#cp-change-plan"),
-
-cpPlanChangeBackBtn:querySelectorElement("#cp-change-plan .cp-back-btn"),
-cpPlanChangeCloseBtn:querySelectorElement("#cp-change-plan .cp-close-btn"),
+  cancelReason6Back: document.querySelector(".reason-6-modal .cp-back-btn"),
+  cancelReason6Close: document.querySelector(".reason-6-modal .cp-close-btn"),
 
 
-confirmCheckOutBtn : querySelectorElement(".confirm-checkout"),
-checkOutModal: querySelectorElement(".js-checkout-modal"),
-checkOutModalClose:querySelectorElement(".js-checkout-close")
+    cancelReason6ModalTeacher: document.querySelector(".reason-6-modal-teacher"),
+  cancelReason6BackTeacher: document.querySelector(".reason-6-modal-teacher .cp-back-btn"),
+  cancelReason6CloseTeacher: document.querySelector(".reason-6-modal-teacher .cp-close-btn"),
+
+  proceedWithCancellation: querySelectorElements(".proceed-with-cancel"),
+  cancellationConfirmation: querySelectorElement("#cancellation-confirmation"),
+  cancelConfirmClose: querySelectorElement(
+    "#cancellation-confirmation .app-modal-close-btn"
+  ),
+  okConfirmBtnPlanChange: querySelectorElement(
+    "#plan-Change-confirmation .app-modal-button"
+  ),
+  cancelConfirmClosePlanChange: querySelectorElement(
+    "#plan-Change-confirmation .app-modal-close-btn"
+  ),
+  okConfirmBtn: querySelectorElement(
+    "#cancellation-confirmation .app-modal-button"
+  ),
+  confirmPlanChange: querySelectorElement(".confirm-plan-change"),
+  confirmPlanChangeModal: querySelectorElement("#plan-Change-confirmation"),
+  tryAffordableBtn: querySelectorElements(".try-affordable-group"),
+
+  trySmallerPlan: querySelectorElement(".try-smaller-plan"),
+  cpPlanChange: querySelectorElement("#cp-change-plan"),
+
+  cpPlanChangeBackBtn: querySelectorElement("#cp-change-plan .cp-back-btn"),
+  cpPlanChangeCloseBtn: querySelectorElement("#cp-change-plan .cp-close-btn"),
+
+  confirmCheckOutBtn: querySelectorElement(".confirm-checkout"),
+  checkOutModal: querySelectorElement(".js-checkout-modal"),
+  checkOutModalClose: querySelectorElement(".js-checkout-close"),
+
+  customPlanOpen: querySelectorElement("#plan-custom-1"),
+  customPlanModal: querySelectorElement(".js-custom-modal"),
+
+  upgradeOptionModal: querySelectorElement("#upgrade-plan-modal"),
+  upgradePlanModalClose: querySelectorElement(
+    "#upgrade-plan-modal .upgrade-close-btn"
+  ),
+  upgradePlanModalBack: querySelectorElement(
+    "#upgrade-plan-modal .upgrade-back-btn"
+  ),
+  yesUpgradeBtn: querySelectorElement("#upgrade-plan-modal .upgrade-yes-btn"),
+  yesUpgradeBtnSub: querySelectorElement(
+    "#upgrade-plans-lesson .upgrade-yes-btn"
+  ),
+  yesDownGradeBtn: querySelectorElement(
+    "#upgrade-plans-lesson .downgrade-yes-btn"
+  ),
+  up_down_gradeModal: querySelectorElement("#upgrade-plans-lesson"),
+  planUpgradeModal: querySelectorElement("#plan-upgrade"),
+  planUpgradeModalClose: querySelectorElement("#plan-upgrade .pl-close"),
+  planUpgradeModalBack: querySelectorElement("#plan-upgrade .pl-back"),
+
+  planDownGradeModal: querySelectorElement("#plan-downgrade"),
+  planDownGradeModalClose: querySelectorElement("#plan-downgrade .pl-close"),
+  planDownGradeModalBack: querySelectorElement("#plan-downgrade .pl-back"),
+
+  continueAddingBtn: querySelectorElement(
+    "#upgrade-plan-modal .continue-adding-btn"
+  ),
+
+  customPlanOptions: querySelectorElements(".custom-plan-option"),
+  customPlanOptionModal: querySelectorElement(".pe__card"),
+  customPlanOptionsClose: querySelectorElement(".pe__card .pe-close"),
+  customPlanOptionsBack: querySelectorElement(".pe__card .pe-back"),
+
+  planContinueBtns: querySelectorElements(".pln-continue-btn"),
+  planConfirmationModal: querySelectorElement("#lesson-confirmation"),
+  planConfirmationClose: querySelectorElement(
+    "#lesson-confirmation .app-modal-close-btn"
+  ),
+
+  planConfirmationOkBtn: querySelectorElement(
+    "#lesson-confirmation .app-modal-button"
+  ),
+
+  pauseTeacherSubs: querySelectorElement(".pause-teacher-subscription"),
+  pauseTeacherClose: querySelectorElement("#pp-modal .pp-close"),
+  pauseTeacherSubModal: querySelectorElement("#pp-modal"),
+  pauseContinueBtn: querySelectorElement("#pp-modal .pp-continue"),
+  pauseContinueModal: querySelectorElement("#pp-confirmation-modal"),
+  pauseContinueClose: querySelectorElement(
+    "#pp-confirmation-modal .pp-close-btn"
+  ),
+  pauseContinueBack: querySelectorElement(
+    "#pp-confirmation-modal .pp-back-btn"
+  ),
+  pauseActionBtn: querySelectorElement("#pp-confirmation-modal .pp-action-btn"),
+  pauseConfirmedModal: querySelectorElement("#pp-confirmed-modal"),
+  pauseConfirmedBack: querySelectorElement(
+    "#pp-confirmed-modal .pp-action-btn-pause"
+  ),
+  pausedModalConfirmClose: querySelectorElement(
+    "#pp-confirmed-modal .pp-close-btn"
+  ),
+
+  resubscribeBtn: querySelectorElement(".re-subscribe"),
+  resubscribeModal:querySelectorElement(".resubscribe-modal")
 };
 
 // Variables
@@ -305,10 +448,6 @@ elements.ArchiveTutor_open.forEach((element, index) => {
     elements.messageCard[index].classList.toggle("active");
   });
 });
-
-
-
-
 
 window.addEventListener("click", (event) => {
   if (archiveTutorIndex) {
@@ -723,6 +862,23 @@ elements.cancelGroupSubs.addEventListener("click", () => {
     elements.subsStep2.classList.remove("subs-hidden");
   }, 1500);
 });
+elements.cancelteacherSubs.addEventListener("click", () => {
+  // Show modal
+  elements.tryPauseModalTeachers.style.display = "flex";
+
+  // Reset to step1 every time
+  elements.subsStep1Teacher.classList.remove("subs-hidden");
+  elements.subsStep2Teacher.classList.add("subs-hidden");
+
+  // Small delay to trigger CSS transition
+  setTimeout(() => elements.tryPauseModalTeachers.classList.add("subs-show"), 50);
+
+  // After 1.5s switch to step2
+  setTimeout(() => {
+    elements.subsStep1Teacher.classList.add("subs-hidden");
+    elements.subsStep2Teacher.classList.remove("subs-hidden");
+  }, 1500);
+});
 
 // Close modal
 elements.subsClose.addEventListener("click", () => {
@@ -730,21 +886,31 @@ elements.subsClose.addEventListener("click", () => {
   setTimeout(() => (elements.tryPauseModal.style.display = "none"), 300);
 });
 
+elements.subsCloseTeacher.addEventListener("click", () => {
+
+  elements.tryPauseModalTeachers.classList.remove("subs-show");
+  setTimeout(() => (elements.tryPauseModalTeachers.style.display = "none"), 300);
+});
+
 elements.subBtnPause.addEventListener("click", () => {
-    elements.tryPauseModal.classList.remove("subs-show");
+  elements.tryPauseModal.classList.remove("subs-show");
   setTimeout(() => (elements.tryPauseModal.style.display = "none"), 300);
   popupOpen(elements.backdrop, elements.pauseModal);
-
-})
+});
 
 elements.subBtnCancel.addEventListener("click", () => {
-    elements.tryPauseModal.classList.remove("subs-show");
+  elements.tryPauseModal.classList.remove("subs-show");
   setTimeout(() => (elements.tryPauseModal.style.display = "none"), 300);
   popupOpen(elements.backdrop, elements.cmModal);
+});
 
-})
+elements.subBtnCancelTeacher.addEventListener("click", () => {
+  elements.tryPauseModalTeachers.classList.remove("subs-show");
+  setTimeout(() => (elements.tryPauseModalTeachers.style.display = "none"), 300);
+  popupOpen(elements.backdrop, elements.cmModalTeachers);
+});
 
-const closeCmModal = document.querySelector(".cm-close-btn")
+const closeCmModal = document.querySelector(".cm-close-btn");
 
 closeCmModal.addEventListener("click", () => {
   closePopup(elements.cmModal, elements.backdrop);
@@ -771,10 +937,11 @@ elements.renewalConfirmBtn?.addEventListener("click", () => {
 );
 
 // 4. Notification close/done
-[elements.renewalNotificationClose, elements.renewalNotificationDone].forEach((btn) =>
-  btn?.addEventListener("click", () =>
-    closePopup(elements.renewalNotification, elements.backdrop)
-  )
+[elements.renewalNotificationClose, elements.renewalNotificationDone].forEach(
+  (btn) =>
+    btn?.addEventListener("click", () =>
+      closePopup(elements.renewalNotification, elements.backdrop)
+    )
 );
 
 // ===== Cancel Subscription Flow =====
@@ -790,6 +957,9 @@ document.querySelectorAll(".openCancelBtn").forEach((btn) =>
 elements.cancelMainClose?.addEventListener("click", () => {
   closePopup(elements.cancelMainModal, elements.backdrop);
 });
+elements.cmModalTeachersClose?.addEventListener("click", () => {
+  closePopup(elements.cmModalTeachers, elements.backdrop);
+});
 
 // Handle reason clicks
 elements.cancelReasons?.forEach((reason, idx) => {
@@ -804,7 +974,7 @@ elements.cancelReasons?.forEach((reason, idx) => {
       case 2: // too expensive
         popupOpen(elements.backdrop, elements.budgetModal);
         break;
-           case 3: // ← Add this
+      case 3: // ← Add this
         popupOpen(elements.backdrop, elements.tutorsModal);
         break;
       case 4: // busy
@@ -814,7 +984,7 @@ elements.cancelReasons?.forEach((reason, idx) => {
         popupOpen(elements.backdrop, elements.tutorOutsideModal);
         break;
 
-          case 6: // ← Add this
+      case 6: // ← Add this
         popupOpen(elements.backdrop, elements.cancelReason6Modal);
         break;
       case 7: // something else
@@ -827,6 +997,44 @@ elements.cancelReasons?.forEach((reason, idx) => {
   });
 });
 
+elements.canelReasonsTeacher?.forEach((reason, idx) => {
+  reason.addEventListener("click", (e) => {
+    e.preventDefault();
+    elements.cmModalTeachers.classList.remove("active");
+
+    switch (idx + 1) {
+      case 1: // different schedule
+        popupOpen(elements.backdrop, elements.teacherReason1Modal);
+        break;
+      case 2: // too expensive
+        popupOpen(elements.backdrop, elements.tutorsModalTeacher);
+        break;
+      case 3: // ← Add this
+        popupOpen(elements.backdrop, elements.budgetModalTeacher);
+        break;
+      case 4: // busy
+        popupOpen(elements.backdrop, elements.tutorsModalTeacher2);
+        break;
+      case 5: // tutor outside
+        popupOpen(elements.backdrop, elements.cpPlanChangeTeacher);
+        break;
+
+      case 6: // ← Add this
+        popupOpen(elements.backdrop, elements.cancelReason6ModalTeacher);
+        break;
+      case 7: // something else
+        popupOpen(elements.backdrop, elements.cpPlanChangeTeacher);
+        break;
+      case 8: // something else
+        popupOpen(elements.backdrop, elements.otherModalTeacher);
+        break;
+      default:
+        // Fallback → just close
+        closePopup(elements.cmModalTeachers, elements.backdrop);
+    }
+  });
+});
+
 // Group modal back/close
 elements.groupBack?.addEventListener("click", () => {
   elements.groupModal.classList.remove("active");
@@ -835,6 +1043,15 @@ elements.groupBack?.addEventListener("click", () => {
 elements.groupClose?.addEventListener("click", () =>
   closePopup(elements.groupModal, elements.backdrop)
 );
+elements.teacherReason1ModalBack?.addEventListener("click", () => {
+  elements.teacherReason1Modal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cmModalTeachers);
+});
+elements.teacherReason1ModalClose?.addEventListener("click", () =>
+  closePopup(elements.teacherReason1Modal, elements.backdrop)
+);
+
+
 
 // Budget modal back/close
 elements.budgetBack?.addEventListener("click", () => {
@@ -843,6 +1060,14 @@ elements.budgetBack?.addEventListener("click", () => {
 });
 elements.budgetClose?.addEventListener("click", () =>
   closePopup(elements.budgetModal, elements.backdrop)
+);
+
+elements.budgetBackTeacher?.addEventListener("click", () => {
+  elements.budgetModalTeacher.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cmModalTeachers);
+});
+elements.budgetCloseTeacher?.addEventListener("click", () =>
+  closePopup(elements.budgetModalTeacher, elements.backdrop)
 );
 // Tutors modal back → return to main cancel modal
 elements.tutorsBack?.addEventListener("click", () => {
@@ -853,6 +1078,28 @@ elements.tutorsBack?.addEventListener("click", () => {
 // Tutors modal close
 elements.tutorsClose?.addEventListener("click", () =>
   closePopup(elements.tutorsModal, elements.backdrop)
+);
+
+
+elements.tutorsBackTeacher?.addEventListener("click", () => {
+  elements.tutorsModalTeacher.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cmModalTeachers);
+});
+
+// Tutors modal close
+elements.tutorsCloseTeacher?.addEventListener("click", () =>
+  closePopup(elements.tutorsModalTeacher, elements.backdrop)
+);
+
+
+elements.tutorsBackTeacher2?.addEventListener("click", () => {
+  elements.tutorsModalTeacher2.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cmModalTeachers);
+});
+
+// Tutors modal close
+elements.tutorsCloseTeacher2?.addEventListener("click", () =>
+  closePopup(elements.tutorsModalTeacher2, elements.backdrop)
 );
 // Cancel prompt (reason 4) back/close
 elements.cancelPromptBack?.addEventListener("click", () => {
@@ -872,6 +1119,14 @@ elements.otherClose?.addEventListener("click", () =>
   closePopup(elements.otherModal, elements.backdrop)
 );
 
+elements.otherBackTeacher?.addEventListener("click", () => {
+  elements.otherModalTeacher.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cmModalTeachers);
+});
+elements.otherCloseTeacher?.addEventListener("click", () =>
+  closePopup(elements.otherModalTeacher, elements.backdrop)
+);
+
 // Tutor outside (reason 5) back/close
 elements.tutorOutsideBack?.addEventListener("click", () => {
   elements.tutorOutsideModal.classList.remove("active");
@@ -881,16 +1136,32 @@ elements.tutorOutsideClose?.addEventListener("click", () =>
   closePopup(elements.tutorOutsideModal, elements.backdrop)
 );
 
+elements.cpPlanChangeBackBtnTeacher?.addEventListener("click", () => {
+  elements.cpPlanChangeTeacher.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cmModalTeachers);
+});
+elements.cpPlanChangeCloseBtnTeacher?.addEventListener("click", () =>
+  closePopup(elements.cpPlanChangeTeacher, elements.backdrop)
+);
+
 // Reason 5 back → return to main cancel modal
 elements.cancelReason6Back?.addEventListener("click", () => {
   elements.cancelReason6Modal.classList.remove("active");
   popupOpen(elements.backdrop, elements.cancelMainModal);
+});
+elements.cancelReason6BackTeacher?.addEventListener("click", () => {
+  elements.cancelReason6ModalTeacher.classList.remove("active");
+  popupOpen(elements.backdrop, elements.cmModalTeachers);
 });
 
 // Reason 5 close
 elements.cancelReason6Close?.addEventListener("click", () =>
   closePopup(elements.cancelReason6Modal, elements.backdrop)
 );
+elements.cancelReason6CloseTeacher?.addEventListener("click", () =>
+  closePopup(elements.cancelReason6ModalTeacher, elements.backdrop)
+);
+
 
 elements.proceedWithCancellation.forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -920,44 +1191,47 @@ elements.okConfirmBtnPlanChange?.addEventListener("click", () => {
   closePopup(elements.confirmPlanChangeModal, elements.backdrop);
 });
 elements.confirmPlanChange.addEventListener("click", () => {
- if (openContainer) openContainer.classList.remove("active");
-popupOpen(elements.confirmPlanChangeModal, elements.backdrop)
-
+  if (openContainer) openContainer.classList.remove("active");
+  popupOpen(elements.confirmPlanChangeModal, elements.backdrop);
 });
 
 elements.cpPlanChangeBackBtn.addEventListener("click", () => {
-   if (openContainer) openContainer.classList.remove("active");
- elements.cpPlanChange.classList.remove("active");
-popupOpen(elements.otherModal, elements.backdrop)
-
+  if (openContainer) openContainer.classList.remove("active");
+  elements.cpPlanChange.classList.remove("active");
+  popupOpen(elements.otherModal, elements.backdrop);
 });
 
 elements.cpPlanChangeCloseBtn?.addEventListener("click", () => {
   closePopup(elements.cpPlanChange, elements.backdrop);
 });
-elements.tryAffordableBtn.forEach(element => {
-  
-element.addEventListener("click", () => {
- if (openContainer) openContainer.classList.remove("active");
- popupOpen(elements.groupModal, elements.backdrop)
+elements.tryAffordableBtn.forEach((element) => {
+  element.addEventListener("click", () => {
+    if (openContainer) openContainer.classList.remove("active");
+    popupOpen(elements.groupModal, elements.backdrop);
+  });
+});
 
-})});
+elements.trySmallerPlan.addEventListener("click", () => {
+  if (openContainer) openContainer.classList.remove("active");
+  popupOpen(elements.cpPlanChange, elements.backdrop);
+});
+elements.confirmCheckOutBtn.addEventListener("click", () => {
+  if (openContainer) openContainer.classList.remove("active");
+  elements.cpPlanChange.classList.remove("active");
+  popupOpen(elements.checkOutModal, elements.backdrop);
+});
 
-elements.trySmallerPlan.addEventListener("click", ()=> {
-   if (openContainer) openContainer.classList.remove("active");
-   popupOpen(elements.cpPlanChange, elements.backdrop)
-})
-elements.confirmCheckOutBtn.addEventListener("click", ()=> {
-   if (openContainer) openContainer.classList.remove("active");
-    elements.cpPlanChange.classList.remove("active");
-   popupOpen(elements.checkOutModal, elements.backdrop)
-})
+elements.customPlanOpen.addEventListener("click", () => {
+  if (openContainer) openContainer.classList.remove("active");
+  elements.cpPlanChange.classList.remove("active");
+  popupOpen(elements.customPlanModal, elements.backdrop);
+});
 
-elements.checkOutModalClose.addEventListener("click", ()=> {
-   if (openContainer) openContainer.classList.remove("active");
-    elements.cpPlanChange.classList.remove("active");
-   closePopup(elements.checkOutModal, elements.backdrop)
-})
+elements.checkOutModalClose.addEventListener("click", () => {
+  if (openContainer) openContainer.classList.remove("active");
+  elements.cpPlanChange.classList.remove("active");
+  closePopup(elements.checkOutModal, elements.backdrop);
+});
 elements.subscription_dropdown_options_open.forEach((e, i) =>
   e.addEventListener("click", () => {
     detectAndAdjustPositionCustomDeiker(
@@ -989,6 +1263,10 @@ elements.cancel_popup_open.addEventListener("click", () =>
 // );
 
 elements.addExtraLessonsModalOpen.addEventListener("click", () =>
+  popupOpen(elements.backdrop, elements.extraLesson)
+);
+
+elements.addextralessons.addEventListener("click", () =>
   popupOpen(elements.backdrop, elements.extraLesson)
 );
 
@@ -1097,7 +1375,88 @@ elements.confirm_payment_modal_open.addEventListener("click", () => {
   elements.totalAmountShowInBtn.textContent = extraLessonCount * 5 + 0.54;
 
   elements.extraLesson.classList.remove("active");
+  popupOpen(elements.backdrop, elements.upgradeOptionModal);
+});
+
+elements.upgradePlanModalBack.addEventListener("click", () => {
+  elements.upgradeOptionModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.extraLesson);
+});
+
+elements.upgradePlanModalClose.addEventListener("click", () => {
+  popUpClose(elements.backdrop, elements.upgradeOptionModal);
+});
+
+elements.yesUpgradeBtn.addEventListener("click", () => {
+  elements.upgradeOptionModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.planUpgradeModal);
+});
+elements.yesUpgradeBtnSub.addEventListener("click", () => {
+  elements.upgradeOptionModal.classList.remove("active");
+  if (openContainer) openContainer.classList.remove("active");
+  popupOpen(elements.backdrop, elements.planUpgradeModal);
+});
+elements.continueAddingBtn.addEventListener("click", () => {
+  elements.upgradeOptionModal.classList.remove("active");
   popupOpen(elements.backdrop, elements.confirm_payment_modal);
+});
+
+elements.customPlanOptions.forEach((option) => {
+  option.addEventListener("click", () => {
+    popUpClose(elements.backdrop, elements.planUpgradeModal);
+    popUpClose(elements.backdrop, elements.planDownGradeModal);
+
+    popupOpen(elements.backdrop, elements.customPlanOptionModal);
+  });
+});
+
+elements.customPlanOptionsClose.addEventListener("click", () => {
+  popUpClose(elements.backdrop, elements.customPlanOptionModal);
+});
+
+elements.customPlanOptionsBack.addEventListener("click", () => {
+  popUpClose(elements.backdrop, elements.customPlanOptionModal);
+  popupOpen(elements.backdrop, elements.planUpgradeModal);
+});
+
+elements.planContinueBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    popUpClose(elements.backdrop, elements.planUpgradeModal);
+    popUpClose(elements.backdrop, elements.customPlanOptionModal);
+    popupOpen(elements.backdrop, elements.planConfirmationModal);
+  });
+});
+
+elements.planConfirmationClose.addEventListener("click", () => {
+  popUpClose(elements.backdrop, elements.planConfirmationModal);
+});
+
+elements.planConfirmationOkBtn.addEventListener("click", () => {
+  popUpClose(elements.backdrop, elements.planConfirmationModal);
+});
+elements.yesDownGradeBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  e.preventDefault();
+  elements.upgradeOptionModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.planDownGradeModal);
+});
+
+elements.planUpgradeModalClose.addEventListener("click", () => {
+  popUpClose(elements.backdrop, elements.planUpgradeModal);
+});
+
+elements.planUpgradeModalBack.addEventListener("click", () => {
+  elements.planUpgradeModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.upgradeOptionModal);
+});
+
+elements.planDownGradeModalClose.addEventListener("click", () => {
+  popUpClose(elements.backdrop, elements.planDownGradeModal);
+});
+
+elements.planDownGradeModalBack.addEventListener("click", () => {
+  elements.planDownGradeModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.up_down_gradeModal);
 });
 
 elements.confirm_payment_modal_goBack.addEventListener("click", () => {
@@ -1105,6 +1464,48 @@ elements.confirm_payment_modal_goBack.addEventListener("click", () => {
   popupOpen(elements.backdrop, elements.extraLesson);
 });
 
+elements.pauseTeacherSubs.addEventListener("click", () => {
+  popupOpen(elements.backdrop, elements.pauseTeacherSubModal);
+});
+
+elements.pauseTeacherClose.addEventListener("click", () => {
+  popUpClose(elements.pauseTeacherSubModal, elements.backdrop);
+});
+
+elements.pauseContinueBtn.addEventListener("click", () => {
+  elements.pauseTeacherSubModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.pauseContinueModal);
+});
+
+elements.pauseContinueClose.addEventListener("click", () => {
+  popUpClose(elements.pauseContinueModal, elements.backdrop);
+});
+
+elements.pauseContinueBack.addEventListener("click", (e) => {
+  e.stopPropagation();
+  elements.pauseContinueModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.pauseTeacherSubModal);
+});
+
+elements.pauseActionBtn.addEventListener("click", () => {
+  elements.pauseContinueModal.classList.remove("active");
+  popupOpen(elements.backdrop, elements.pauseConfirmedModal);
+});
+
+elements.pauseConfirmedBack.addEventListener("click", () => {
+  popUpClose(elements.backdrop, elements.pauseConfirmedModal);
+});
+
+elements.pausedModalConfirmClose.addEventListener("click", (e) => {
+  e.stopPropagation();
+  popUpClose(elements.backdrop, elements.pauseConfirmedModal);
+});
+
+
+elements.resubscribeBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  popupOpen(elements.backdrop, elements.resubscribeModal);
+});
 // ==================================================
 // ===================== END =======================
 
@@ -1556,640 +1957,8 @@ transferCompleteOpen.addEventListener("click", () => {
   TransferComplete.classList.add("active");
 });
 
-(function () {
-  const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
-  const $ = (sel, ctx = document) => ctx.querySelector(sel);
 
-  // ====== Elements ======
-  const backdrop = $("[data-subscribe-modal]");
-  const openers = $$(".subscribe-modal-open");
-  const closeBtns = $$("[data-subscribe-close]");
-  const planRadios = $$('input[name="plan"]');
 
-  // Summary targets
-  const summaryTitleEl = $(".plan-title-section h4");
-  const summaryLineEl = $(".plan-title-section p b");
-  const scheduledP = $(".features-list .feature-item p");
-
-  // ✅ Use the actual ID present in your HTML
-  const customSelector =
-    $("#plan-selector") || document.querySelector('[id*="plan-selector" i]');
-
-  // Custom selector sub-elements (scoped to the section)
-  const customDropdownBtn = customSelector?.querySelector(".plan-dropdown");
-  const customDropdownValue = customSelector?.querySelector(
-    ".plan-dropdown-value"
-  ); // the "12" in the pill
-  const customDurationNum = customSelector?.querySelector(
-    ".plan-details .duration-number"
-  ); // big "12"
-  const customPriceAmount = customSelector?.querySelector(
-    ".plan-pricing .price-amount"
-  ); // "$180.00"
-  const customPriceDesc = customSelector?.querySelector(
-    ".plan-pricing .price-description"
-  ); // "charged per 12 Month"
-  const planBadge = customSelector?.querySelector(".plan-pricing .plan-badge"); // optional
-  const pricingOptions = customSelector?.querySelector("#pricing-options"); // dropdown list container (keep it inside the section)
-
-  // ====== Plan map for preset radios ======
-  const PLAN_MAP = {
-    "plan-1": { months: 1, price: 36.0, label: "1 Month" },
-    "plan-4": { months: 4, price: 72.0, label: "4 Months" },
-    "plan-6": { months: 6, price: 108.0, label: "6 Months" },
-    "plan-9": { months: 9, price: 144.0, label: "9 Months" },
-    "plan-12": { months: 12, price: 180.0, label: "12 Months" },
-    "plan-custom": { months: null, price: null, label: "Custom plan" },
-  };
-
-  // ====== Utils ======
-  function money(n) {
-    return `$${Number(n).toFixed(2)}`;
-  }
-
-  // ✅ Fix regex: use a real regex literal and \d
-  function parseMonthsFromText(txt) {
-    const m = String(txt).match(/(\d+)\s*Month/i);
-    return m ? Number(m[1]) : null;
-  }
-
-  function parsePriceFromText(txt) {
-    const clean = String(txt).replace(/[^\d.]/g, "");
-    return clean ? Number(clean) : null;
-  }
-
-  // ====== Modal controls (unchanged) ======
-  function openModal() {
-    backdrop?.classList.add("is-open");
-    document.body.style.overflow = "hidden";
-  }
-  function closeModal(modal) {
-    backdrop?.classList.remove("is-open");
-    modal?.classList.remove("active");
-    document.body.style.overflow = "";
-    closePricingOptions(); // safety
-  }
-  openers.forEach((btn) =>
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      openModal();
-    })
-  );
-  closeBtns.forEach((btn) => btn.addEventListener("click", closeModal));
-  backdrop?.addEventListener("click", (e) => {
-    if (e.target === backdrop) closeModal();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      if (isPricingOpen()) closePricingOptions();
-      else closeModal();
-    }
-  });
-
-  // ====== Pricing dropdown controls ======
-  function isPricingOpen() {
-    return pricingOptions?.classList.contains("is-open");
-  }
-  function openPricingOptions() {
-    if (!pricingOptions) return;
-    pricingOptions.hidden = false;
-    pricingOptions.classList.add("is-open");
-    document.addEventListener("click", outsideCloseHandler, { capture: true });
-  }
-  function closePricingOptions() {
-    if (!pricingOptions) return;
-    pricingOptions.hidden = true;
-    pricingOptions.classList.remove("is-open");
-    document.removeEventListener("click", outsideCloseHandler, {
-      capture: true,
-    });
-  }
-  function togglePricingOptions() {
-    if (!pricingOptions) return;
-    isPricingOpen() ? closePricingOptions() : openPricingOptions();
-  }
-  function outsideCloseHandler(e) {
-    if (!pricingOptions) return;
-    const clickInsideList = pricingOptions.contains(e.target);
-    const clickOnButton = customDropdownBtn?.contains(e.target);
-    if (!clickInsideList && !clickOnButton) closePricingOptions();
-  }
-
-  // Wire dropdown button
-  customDropdownBtn?.addEventListener("click", (e) => {
-    e.preventDefault();
-    togglePricingOptions();
-  });
-  customDropdownBtn?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      togglePricingOptions();
-    }
-  });
-
-  // Handle item selection from dropdown list
-  pricingOptions?.addEventListener("click", (e) => {
-    const item = e.target.closest(".pricing-item");
-    if (!item) return;
-
-    // prevent the document click handler from running after selection
-    e.preventDefault();
-    e.stopPropagation();
-
-    const labelEl = item.querySelector(".item-label");
-    const priceEl = item.querySelector(".item-price");
-
-    const months = parseMonthsFromText(labelEl?.textContent || "");
-    const price = parsePriceFromText(priceEl?.textContent || "");
-    if (!months || !price) return;
-
-    // Update UI
-    if (customDropdownValue) customDropdownValue.textContent = String(months);
-    if (customDurationNum) customDurationNum.textContent = String(months);
-    if (customPriceAmount) customPriceAmount.textContent = money(price);
-    if (customPriceDesc)
-      customPriceDesc.textContent = `charged per ${months} Month`;
-
-    const customRadio = $("#plan-custom");
-    if (customRadio && !customRadio.checked) {
-      customRadio.checked = true;
-      syncCustomVisibility("plan-custom");
-    }
-
-    updateSummaryCustom(months, price);
-
-    // Close dropdown (use rAF so updates paint first)
-    requestAnimationFrame(closePricingOptions);
-  });
-
-  document.addEventListener("click", outsideCloseHandler, { capture: true });
-
-  // ====== Show/hide custom selector with plan choice ======
-  function openCustom() {
-    if (!customSelector) return;
-    customSelector.hidden = false;
-    customSelector.classList.add("is-visible");
-    customSelector.setAttribute("aria-hidden", "false");
-    customDropdownBtn?.focus({ preventScroll: false });
-    $(".plan-title-section").style.display = "none";
-    customSelector.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }
-  function closeCustom() {
-    if (!customSelector) return;
-    customSelector.hidden = true;
-    customSelector.classList.remove("is-visible");
-    customSelector.setAttribute("aria-hidden", "true");
-    $(".plan-title-section").style.display = "block";
-    closePricingOptions();
-  }
-  function syncCustomVisibility(planId) {
-    if (planId === "plan-custom") openCustom();
-    else closeCustom();
-  }
-
-  // ====== Summary updater ======
-  function updateSummaryCustom(months, price) {
-    if (summaryTitleEl) summaryTitleEl.textContent = `${months} Months Plan`;
-    if (summaryLineEl)
-      summaryLineEl.textContent = `${months} Months Plan at ${money(price)}.`;
-    if (scheduledP) {
-      scheduledP.innerHTML = scheduledP.innerHTML.replace(
-        /scheduled for <b>.*?<\/b>/,
-        `scheduled for <b>${months} Months</b>`
-      );
-    }
-  }
-
-  function updateSummaryById(planId) {
-    const plan = PLAN_MAP[planId];
-    if (!plan) return;
-
-    if (planId === "plan-custom") {
-      const months = parseInt(customDurationNum?.textContent || "", 10);
-      const price = parsePriceFromText(customPriceAmount?.textContent || "");
-      if (months && price) {
-        updateSummaryCustom(months, price);
-      } else {
-        if (summaryTitleEl) summaryTitleEl.textContent = "Custom Plan";
-        if (summaryLineEl)
-          summaryLineEl.textContent = "Choose a custom number of months.";
-        if (scheduledP) {
-          scheduledP.innerHTML = scheduledP.innerHTML.replace(
-            /scheduled for .*?<\/b>/,
-            "scheduled for <b>your chosen duration</b>"
-          );
-        }
-      }
-      return;
-    }
-
-    const { months, price, label } = plan;
-    if (summaryTitleEl) summaryTitleEl.textContent = `${label} Plan`;
-    if (summaryLineEl)
-      summaryLineEl.textContent = `${label} Plan at ${money(price)}.`;
-    if (scheduledP) {
-      scheduledP.innerHTML = scheduledP.innerHTML.replace(
-        /scheduled for <b>.*?<\/b>/,
-        `scheduled for <b>${months} Months</b>`
-      );
-    }
-  }
-
-  // ====== Wire up radios ======
-  planRadios.forEach((r) => {
-    r.addEventListener("change", () => {
-      if (r.checked) {
-        updateSummaryById(r.id);
-        syncCustomVisibility(r.id);
-      }
-    });
-  });
-
-  // ====== Init ======
-  // Hide custom selector unless custom is selected
-  const initial = planRadios.find((r) => r.checked) || planRadios[0];
-  if (initial) {
-    updateSummaryById(initial.id);
-    syncCustomVisibility(initial.id);
-  } else {
-    // no radio? just hide custom UI by default
-    closeCustom();
-  }
-
-  // ===== Promo code toggle =====
-  const promoLink = document.querySelector(".promo-link");
-  const promoRow = document.querySelector(".promo-row");
-  const promoInput = document.getElementById("promo-input");
-  const promoApply = document.querySelector(".promo-apply");
-
-  if (promoLink && promoRow && promoInput && promoApply) {
-    promoLink.addEventListener("click", (e) => {
-      e.preventDefault();
-      promoLink.setAttribute("hidden", ""); // hide the link
-      promoRow.hidden = false; // show the input+button
-      promoInput.focus(); // focus the input
-    });
-
-    promoApply.addEventListener("click", () => {
-      const code = promoInput.value.trim();
-      if (!code) {
-        promoInput.focus();
-        return;
-      }
-      // TODO: replace with your real apply-code call
-      // Example: applyPromo(code).then(...).catch(...)
-      console.log("Applying promo code:", code);
-    });
-
-    // Allow Enter key in the input to trigger Apply
-    promoInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        promoApply.click();
-      }
-    });
-  }
-
-  // ===== Payment dropdown =====
-  const selectorBtn = document.querySelector(".payment-selector");
-  const menu = document.querySelector(".payment-menu");
-  const options = menu
-    ? Array.from(menu.querySelectorAll(".payment-option"))
-    : [];
-  const numberSpan = document.querySelector(".card-number"); // in the button
-  let menuOpen = false;
-  let activeIndex = -1;
-
-  function openMenu() {
-    if (!selectorBtn || !menu) return;
-    menu.hidden = false;
-    menuOpen = true;
-    selectorBtn.setAttribute("aria-expanded", "true");
-    selectorBtn.setAttribute("aria-haspopup", "listbox");
-    // Focus the first option by default
-    setActive(0);
-    options[0]?.focus();
-    document.addEventListener("click", onDocumentClick);
-    document.addEventListener("keydown", onKeydown);
-  }
-
-  function closeMenu() {
-    if (!selectorBtn || !menu) return;
-    menu.hidden = true;
-    menuOpen = false;
-    selectorBtn.setAttribute("aria-expanded", "false");
-    activeIndex = -1;
-    document.removeEventListener("click", onDocumentClick);
-    document.removeEventListener("keydown", onKeydown);
-  }
-
-  function toggleMenu() {
-    if (menuOpen) closeMenu();
-    else openMenu();
-  }
-
-  function onDocumentClick(e) {
-    if (!menuOpen) return;
-    const isInside = menu.contains(e.target) || selectorBtn.contains(e.target);
-    if (!isInside) closeMenu();
-  }
-
-  function onKeydown(e) {
-    if (!menuOpen) return;
-    const key = e.key;
-
-    if (key === "Escape") {
-      e.preventDefault();
-      closeMenu();
-      selectorBtn.focus();
-      return;
-    }
-
-    if (key === "ArrowDown" || key === "Down") {
-      e.preventDefault();
-      setActive(Math.min(options.length - 1, activeIndex + 1));
-      options[activeIndex]?.focus();
-    } else if (key === "ArrowUp" || key === "Up") {
-      e.preventDefault();
-      setActive(Math.max(0, activeIndex - 1));
-      options[activeIndex]?.focus();
-    } else if (key === "Enter" || key === " ") {
-      // Space or Enter selects when focus is on an option
-      if (
-        document.activeElement &&
-        document.activeElement.classList.contains("payment-option")
-      ) {
-        e.preventDefault();
-        selectOption(document.activeElement);
-      }
-    }
-  }
-
-  function setActive(index) {
-    if (activeIndex >= 0 && options[activeIndex]) {
-      options[activeIndex].removeAttribute("aria-selected");
-    }
-    activeIndex = index;
-    if (activeIndex >= 0 && options[activeIndex]) {
-      options[activeIndex].setAttribute("aria-selected", "true");
-    }
-  }
-
-  function selectOption(el) {
-    const label = el.getAttribute("data-label") || el.textContent.trim();
-    const method = el.getAttribute("data-method");
-
-    // Update the visible text on the trigger button
-    if (numberSpan && label) {
-      numberSpan.textContent = label;
-    }
-
-    // Handle special methods
-    switch (method) {
-      case "new-card":
-        // TODO: open your "add card" flow/modal here
-        console.log('Open "New Payment Card" flow');
-        break;
-      case "apple-pay":
-        // TODO: trigger your Apple Pay flow
-        console.log("Selected Apple Pay");
-        break;
-      case "google-pay":
-        // TODO: trigger your Google Pay flow
-        console.log("Selected Google Pay");
-        break;
-      default:
-        // 'visa' or other saved methods—no-op or fetch details
-        console.log("Selected saved method:", label);
-    }
-
-    closeMenu();
-    selectorBtn.focus();
-  }
-
-  if (selectorBtn && menu) {
-    // Toggle on click
-    selectorBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      toggleMenu();
-    });
-
-    // Make options clickable
-    options.forEach((opt, idx) => {
-      opt.addEventListener("click", () => selectOption(opt));
-      opt.addEventListener("mousemove", () => setActive(idx)); // hover updates active
-    });
-
-    // Improve ARIA on first load
-    selectorBtn.setAttribute("aria-expanded", "false");
-    selectorBtn.setAttribute("aria-haspopup", "listbox");
-    menu.setAttribute("role", "listbox");
-    options.forEach((o) => o.setAttribute("role", "option"));
-  }
-  function selectOption(el) {
-    const label = el.getAttribute("data-label") || el.textContent.trim();
-    const method = el.getAttribute("data-method");
-
-    // Update visible label on the trigger button
-    if (numberSpan && label) {
-      numberSpan.textContent = label;
-    }
-
-    // Hide all conditional sections
-    document.querySelector(".new-card-form")?.setAttribute("hidden", "");
-    document.querySelector(".apple-pay-button")?.setAttribute("hidden", "");
-    document.querySelector(".google-pay-button")?.setAttribute("hidden", "");
-    document.querySelector(".confirm-button")?.removeAttribute("hidden");
-
-    // Show relevant UI based on selection
-    switch (method) {
-      case "new-card":
-        document.querySelector(".new-card-form")?.removeAttribute("hidden");
-        break;
-      case "apple-pay":
-        document.querySelector(".apple-pay-button")?.removeAttribute("hidden");
-        document.querySelector(".confirm-button")?.setAttribute("hidden", "");
-        break;
-      case "google-pay":
-        document.querySelector(".google-pay-button")?.removeAttribute("hidden");
-        document.querySelector(".confirm-button")?.setAttribute("hidden", "");
-        break;
-      case "visa":
-      default:
-        // Default saved card → confirm button remains
-        break;
-    }
-
-    closeMenu();
-    selectorBtn.focus();
-  }
-  const openBtn = document.querySelector(".open-faq-modal");
-  const overlay = document.querySelector("[data-faq-overlay]");
-  const modal = overlay?.querySelector(".modal");
-  const closeBtn = overlay?.querySelector("[data-faq-close]");
-  const triggers = Array.from(overlay?.querySelectorAll(".faq-trigger") || []);
-
-  if (!openBtn || !overlay || !modal || !closeBtn) return;
-
-  // --- Modal open/close with focus trap
-  let lastFocused = null;
-
-  function openModalSub() {
-    lastFocused = document.activeElement;
-    overlay.hidden = false;
-    modal.setAttribute("data-anim", "in");
-    // focus first interactive element
-    (closeBtn || modal).focus();
-
-    document.addEventListener("keydown", onKeydown);
-    document.addEventListener("focus", trapFocus, true);
-    overlay.addEventListener("click", onOverlayClick);
-  }
-
-  function closeModalSub() {
-    modal.setAttribute("data-anim", "out");
-    // wait for animation end then hide
-    const done = () => {
-      overlay.hidden = true;
-      modal.removeAttribute("data-anim");
-      document.removeEventListener("keydown", onKeydown);
-      document.removeEventListener("focus", trapFocus, true);
-      overlay.removeEventListener("click", onOverlayClick);
-      if (lastFocused) lastFocused.focus();
-      modal.removeEventListener("animationend", done);
-    };
-    modal.addEventListener("animationend", done);
-  }
-
-  function onOverlayClick(e) {
-    if (e.target === overlay) closeModalSub();
-  }
-
-  function onKeydown(e) {
-    if (e.key === "Escape") {
-      e.preventDefault();
-      closeModal();
-    }
-    if (e.key === "Tab") {
-      // simple focus trap: keep focus inside modal
-      const focusables = modal.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      const list = Array.from(focusables).filter(
-        (el) => !el.hasAttribute("disabled")
-      );
-      if (!list.length) return;
-
-      const first = list[0];
-      const last = list[list.length - 1];
-
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
-  }
-
-  function trapFocus(e) {
-    if (!overlay.hidden && !modal.contains(e.target)) {
-      e.stopPropagation();
-      (closeBtn || modal).focus();
-    }
-  }
-
-  openBtn.addEventListener("click", openModalSub);
-  closeBtn.addEventListener("click", closeModal);
-
-  // --- FAQ accordion behavior with animation
-  triggers.forEach((btn) => {
-    btn.addEventListener("click", () => togglePanel(btn));
-    btn.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        togglePanel(btn);
-      }
-    });
-  });
-
-  function togglePanel(btn) {
-    const panelId = btn.getAttribute("aria-controls");
-    const panel = document.getElementById(panelId);
-    const expanded = btn.getAttribute("aria-expanded") === "true";
-
-    if (expanded) {
-      // Close clicked
-      btn.setAttribute("aria-expanded", "false");
-      panel.classList.remove("open");
-
-      // Wait until transition ends, then hide
-      panel.addEventListener(
-        "transitionend",
-        () => {
-          if (!panel.classList.contains("open")) {
-            panel.hidden = true;
-          }
-        },
-        { once: true }
-      );
-    } else {
-      // Close ALL others first
-      triggers.forEach((otherBtn) => {
-        const otherId = otherBtn.getAttribute("aria-controls");
-        const otherPanel = document.getElementById(otherId);
-
-        if (otherBtn !== btn) {
-          otherBtn.setAttribute("aria-expanded", "false");
-          otherPanel.classList.remove("open");
-          otherPanel.addEventListener(
-            "transitionend",
-            () => {
-              if (!otherPanel.classList.contains("open")) {
-                otherPanel.hidden = true;
-              }
-            },
-            { once: true }
-          );
-
-          const chev = otherBtn.querySelector(".chev");
-          if (chev) chev.style.transform = "rotate(0deg)";
-        }
-      });
-
-      // Open clicked
-      panel.hidden = false; // make sure it's visible before animating
-      requestAnimationFrame(() => panel.classList.add("open"));
-      btn.setAttribute("aria-expanded", "true");
-    }
-
-    // Chevron update
-    const chev = btn.querySelector(".chev");
-    if (chev)
-      chev.style.transform = expanded ? "rotate(0deg)" : "rotate(180deg)";
-  }
-
-  const checkoutBtn = document.querySelector(".checkout-button");
-  const confirmModal = document.querySelector(".confirm-section");
-  const planSelectionModal = document.querySelector(".plan-selection-panel");
-  checkoutBtn.addEventListener("click", () => {
-    confirmModal.style.display = "flex";
-    planSelectionModal.style.display = "none";
-  });
-
-  const cyp = document.querySelector(".c_y_p");
-  cyp.addEventListener("click", () => {
-    const popup = document.querySelector(".modal-wrapper");
-    popup.classList.add("active");
-  });
-  const closeModalButton = document.querySelector(".modal-close-button");
-  closeModalButton.addEventListener("click", () => {
-    const popup = document.querySelector(".modal-wrapper");
-    popup.classList.remove("active");
-    document.querySelector(".backdrop").classList.remove("active");
-  });
-})();
 
 // (function () {
 //   const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
@@ -3496,8 +3265,6 @@ transferCompleteOpen.addEventListener("click", () => {
 
   // ===== Initialize =====
   render();
-
-
 })();
 
 (() => {
@@ -3714,4 +3481,213 @@ transferCompleteOpen.addEventListener("click", () => {
   render();
 
   // ===== Optional: expose selection on CTA click =====
+})();
+
+(function () {
+  const card = document.querySelector(".pe__card");
+  const countEl = card.querySelector('[data-field="count"]');
+  const priceEl = card.querySelector('[data-field="price"]');
+  const weeksEls = card.querySelectorAll(
+    '[data-field="weeks"], [data-field="weeks-2"]'
+  );
+
+  const pricePerLesson = parseFloat(card.dataset.pricePerLesson || "0");
+  const billingWeeks = parseInt(card.dataset.billingWeeks || "4", 10);
+  const minLessons = parseInt(card.dataset.minLessons || "1", 10);
+  const maxLessons = parseInt(card.dataset.maxLessons || "30", 10);
+  const initialLessons = parseInt(card.dataset.initialLessons || "1", 10);
+
+  let lessons = clamp(initialLessons, minLessons, maxLessons);
+
+  // Initialize UI
+  weeksEls.forEach((el) => (el.textContent = String(billingWeeks)));
+  updateUI();
+
+  // Event delegation for buttons
+  card.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-action]");
+    if (!btn) return;
+
+    switch (btn.dataset.action) {
+      case "increment":
+        lessons = clamp(lessons + 1, minLessons, maxLessons);
+        updateUI(true);
+        break;
+      case "decrement":
+        lessons = clamp(lessons - 1, minLessons, maxLessons);
+        updateUI(true);
+        break;
+      case "continue":
+        // Replace with your navigation/submit logic
+        console.log("Continue with", { lessons, price: computePrice(lessons) });
+        break;
+      case "back":
+        window.history.back?.();
+        break;
+      case "close":
+        // If this lives in a modal, hook into your close handler
+        const panel = document.getElementById("plan-editor");
+        panel?.remove();
+        break;
+    }
+  });
+
+  // Keyboard support for steppers (left/right to dec/inc)
+  card.addEventListener("keydown", (e) => {
+    if (["ArrowLeft", "ArrowDown"].includes(e.key)) {
+      e.preventDefault();
+      lessons = clamp(lessons - 1, minLessons, maxLessons);
+      updateUI(true);
+    } else if (["ArrowRight", "ArrowUp"].includes(e.key)) {
+      e.preventDefault();
+      lessons = clamp(lessons + 1, minLessons, maxLessons);
+      updateUI(true);
+    }
+  });
+
+  function computePrice(n) {
+    // Simple linear pricing; customize as needed (e.g., tiers, rounding).
+    const raw = n * pricePerLesson;
+    // Round to 2 decimals, then normalize trailing zeros
+    return (Math.round(raw * 100) / 100).toFixed(2);
+  }
+
+  function updateUI(announce = false) {
+    countEl.textContent = String(lessons);
+    const price = computePrice(lessons);
+    // If ends with .00, show without cents to match your original
+    priceEl.textContent = price.endsWith(".00")
+      ? `$${parseInt(price, 10)}`
+      : `$${price}`;
+    if (announce) {
+      priceEl.setAttribute("aria-live", "polite");
+    }
+  }
+
+  function clamp(v, lo, hi) {
+    return Math.max(lo, Math.min(hi, v));
+  }
+})();
+
+(() => {
+  const root = document.getElementById("pp-modal");
+  if (!root) return;
+
+  const MAX = 20,
+    MIN = 1;
+  const range = root.querySelector(".pp-range");
+  const thumb = root.querySelector(".pp-thumb");
+  const rail = root.querySelector(".pp-rail");
+  const fill = root.querySelector(".pp-fill");
+  const count = root.querySelector(".pp-count");
+  const unit = root.querySelector(".pp-unit");
+  const dateEl = root.querySelector(".pp-date");
+  const close = root.querySelector(".pp-close");
+  const cont = root.querySelector(".pp-continue");
+
+  const nextBillAttr = (root.getAttribute("data-next-bill") || "").trim();
+  const baseDate = nextBillAttr ? new Date(nextBillAttr) : new Date();
+
+  // Guard against invalid date attribute
+  const safeBaseDate = isNaN(baseDate.getTime()) ? new Date() : baseDate;
+
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+  function fmtDate(d) {
+    // e.g., "March 22"
+    return d.toLocaleDateString(undefined, { month: "long", day: "numeric" });
+  }
+
+  function computeDate(days) {
+    const d = new Date(safeBaseDate);
+    d.setDate(d.getDate() + Number(days));
+    return d;
+  }
+
+  function setVisualsFromValue(val) {
+    const pct = ((val - MIN) / (MAX - MIN)) * 100;
+    fill.style.width = `${pct}%`;
+    // position thumb centered on fill end
+    const sliderRect = rail.getBoundingClientRect();
+    const leftPx = (pct / 100) * sliderRect.width;
+    thumb.style.left = `${clamp(
+      leftPx - thumb.offsetWidth / 2,
+      0,
+      sliderRect.width - thumb.offsetWidth
+    )}px`;
+
+    count.textContent = String(val);
+    unit.textContent = val === 1 ? "day" : "days";
+    const until = computeDate(val);
+    dateEl.textContent = fmtDate(until);
+
+    thumb.setAttribute("aria-valuenow", String(val));
+    range.value = String(val);
+  }
+
+  function valueFromClientX(clientX) {
+    const rect = rail.getBoundingClientRect();
+    const x = clamp(clientX - rect.left, 0, rect.width);
+    const ratio = x / rect.width;
+    const raw = MIN + ratio * (MAX - MIN);
+    return Math.round(raw);
+  }
+
+  // Initialize
+  setVisualsFromValue(Number(range.value || MIN));
+
+  // Click/drag on rail
+  rail.addEventListener("pointerdown", (e) => {
+    rail.setPointerCapture(e.pointerId);
+    const v = valueFromClientX(e.clientX);
+    setVisualsFromValue(v);
+  });
+  rail.addEventListener("pointermove", (e) => {
+    if (e.pressure === 0) return;
+    const v = valueFromClientX(e.clientX);
+    setVisualsFromValue(v);
+  });
+
+  // Thumb drag
+  thumb.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    thumb.setPointerCapture(e.pointerId);
+  });
+  thumb.addEventListener("pointermove", (e) => {
+    if (e.pressure === 0) return;
+    const v = valueFromClientX(e.clientX);
+    setVisualsFromValue(v);
+  });
+
+  // Keyboard support on thumb
+  thumb.addEventListener("keydown", (e) => {
+    const cur = Number(range.value);
+    let next = cur;
+    if (e.key === "ArrowRight" || e.key === "ArrowUp") next = cur + 1;
+    if (e.key === "ArrowLeft" || e.key === "ArrowDown") next = cur - 1;
+    if (e.key === "Home") next = MIN;
+    if (e.key === "End") next = MAX;
+    if (next !== cur) {
+      e.preventDefault();
+      setVisualsFromValue(clamp(next, MIN, MAX));
+    }
+  });
+
+  // Sync if someone changes the hidden range (e.g., for tests)
+  range.addEventListener("input", () => {
+    setVisualsFromValue(clamp(Number(range.value), MIN, MAX));
+  });
+
+  cont?.addEventListener("click", () => {
+    const days = Number(range.value);
+    const untilISO = computeDate(days).toISOString().slice(0, 10);
+    // Replace with your real submission logic:
+    // e.g., dispatchEvent, postMessage, fetch, etc.
+    console.log("Pause selected:", { days, untilISO });
+  });
+
+  // Recalculate positions on resize
+  window.addEventListener("resize", () => {
+    setVisualsFromValue(Number(range.value || MIN));
+  });
 })();
