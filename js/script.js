@@ -194,7 +194,7 @@ const elements = {
   subsStep2: querySelectorElement("#subsStep2"),
   subsClose: querySelectorElement("#subsClose"),
   subBtnPause: querySelectorElement(".subs-btn-pause"),
-    subsStep1Teacher: querySelectorElement("#subsStep1-teacher"),
+  subsStep1Teacher: querySelectorElement("#subsStep1-teacher"),
   subsStep2Teacher: querySelectorElement("#subsStep2-teacher"),
   subsCloseTeacher: querySelectorElement("#subsClose-teacher"),
   subBtnPauseTeacher: querySelectorElement(".subs-btn-pause-teacher"),
@@ -202,7 +202,9 @@ const elements = {
   subBtnCancelTeacher: querySelectorElement(".subs-btn-cancel-teacher"),
   cmModal: querySelectorElement("#cm-modal"),
   cmModalTeachers: querySelectorElement("#cm-modal-teachers"),
-   cmModalTeachersClose: querySelectorElement("#cm-modal-teachers .cm-close-btn"),
+  cmModalTeachersClose: querySelectorElement(
+    "#cm-modal-teachers .cm-close-btn"
+  ),
   // Cancel subscription modals
   cancelMainModal: document.getElementById("cm-modal"),
   cancelMainClose: document.querySelector("#cm-modal .cm-close-btn"),
@@ -216,10 +218,13 @@ const elements = {
   groupBack: document.querySelector("#gm-modal .gm-header button:first-child"),
   groupClose: document.querySelector("#gm-modal .gm-header button:last-child"),
 
-
-  teacherReason1Modal:querySelectorElement(".reason-1-modal-teacher"),
-  teacherReason1ModalBack:querySelectorElement(".reason-1-modal-teacher .ln-back-btn"),
-  teacherReason1ModalClose:querySelectorElement(".reason-1-modal-teacher .ln-close-btn"),
+  teacherReason1Modal: querySelectorElement(".reason-1-modal-teacher"),
+  teacherReason1ModalBack: querySelectorElement(
+    ".reason-1-modal-teacher .ln-back-btn"
+  ),
+  teacherReason1ModalClose: querySelectorElement(
+    ".reason-1-modal-teacher .ln-close-btn"
+  ),
 
   // Busy cancellation prompt (reason 4)
   cancelPrompt: document.getElementById("cp-cancellation-prompt"),
@@ -239,7 +244,7 @@ const elements = {
     ".reason-2-modal .bo-header button:last-child"
   ),
 
-    budgetModalTeacher: document.querySelector(".reason-3-modal-teacher"),
+  budgetModalTeacher: document.querySelector(".reason-3-modal-teacher"),
   budgetBackTeacher: document.querySelector(
     ".reason-3-modal-teacher .bo-header button:first-child"
   ),
@@ -272,11 +277,14 @@ const elements = {
     ".reason-5-modal .cp-header button:last-child"
   ),
 
+  cpPlanChangeTeacher: querySelectorElement("#cp-change-plan-teacher"),
 
-    cpPlanChangeTeacher: querySelectorElement("#cp-change-plan-teacher"),
-
-  cpPlanChangeBackBtnTeacher: querySelectorElement("#cp-change-plan-teacher .cp-back-btn"),
-  cpPlanChangeCloseBtnTeacher: querySelectorElement("#cp-change-plan-teacher .cp-close-btn"),
+  cpPlanChangeBackBtnTeacher: querySelectorElement(
+    "#cp-change-plan-teacher .cp-back-btn"
+  ),
+  cpPlanChangeCloseBtnTeacher: querySelectorElement(
+    "#cp-change-plan-teacher .cp-close-btn"
+  ),
 
   // Reason 3 (Try private classes → tutors modal)
   tutorsModal: document.getElementById("tutors-modal"),
@@ -287,7 +295,7 @@ const elements = {
     "#tutors-modal .app-header-top-row button:last-child"
   ),
 
-    tutorsModalTeacher: document.getElementById("tutors-modal-teacher"),
+  tutorsModalTeacher: document.getElementById("tutors-modal-teacher"),
   tutorsBackTeacher: document.querySelector(
     "#tutors-modal-teacher .app-header-top-row button:first-child"
   ),
@@ -295,7 +303,7 @@ const elements = {
     "#tutors-modal-teacher .app-header-top-row button:last-child"
   ),
 
-      tutorsModalTeacher2: document.getElementById("tutors-modal-teacher-2"),
+  tutorsModalTeacher2: document.getElementById("tutors-modal-teacher-2"),
   tutorsBackTeacher2: document.querySelector(
     "#tutors-modal-teacher-2 .app-header-top-row button:first-child"
   ),
@@ -308,10 +316,13 @@ const elements = {
   cancelReason6Back: document.querySelector(".reason-6-modal .cp-back-btn"),
   cancelReason6Close: document.querySelector(".reason-6-modal .cp-close-btn"),
 
-
-    cancelReason6ModalTeacher: document.querySelector(".reason-6-modal-teacher"),
-  cancelReason6BackTeacher: document.querySelector(".reason-6-modal-teacher .cp-back-btn"),
-  cancelReason6CloseTeacher: document.querySelector(".reason-6-modal-teacher .cp-close-btn"),
+  cancelReason6ModalTeacher: document.querySelector(".reason-6-modal-teacher"),
+  cancelReason6BackTeacher: document.querySelector(
+    ".reason-6-modal-teacher .cp-back-btn"
+  ),
+  cancelReason6CloseTeacher: document.querySelector(
+    ".reason-6-modal-teacher .cp-close-btn"
+  ),
 
   proceedWithCancellation: querySelectorElements(".proceed-with-cancel"),
   cancellationConfirmation: querySelectorElement("#cancellation-confirmation"),
@@ -330,9 +341,17 @@ const elements = {
   confirmPlanChange: querySelectorElement(".confirm-plan-change"),
   confirmPlanChangeModal: querySelectorElement("#plan-Change-confirmation"),
   tryAffordableBtn: querySelectorElements(".try-affordable-group"),
-
+  tryAffordableBtnTeacher: querySelectorElements(
+    ".try-affordable-group-teacher"
+  ),
+  tryAffordableTeacherModal: querySelectorElement(".reason-4-modal-teacher"),
   trySmallerPlan: querySelectorElement(".try-smaller-plan"),
   cpPlanChange: querySelectorElement("#cp-change-plan"),
+
+  tryAsmallerPlanTeacher: querySelectorElements(".try-smaller-plan-teacher"),
+  tryAsmallerPlanTeacherModal: querySelectorElement(".reason-5-modal-teacher"),
+
+  SubjectsBtn: querySelectorElements(".ln-subject"),
 
   cpPlanChangeBackBtn: querySelectorElement("#cp-change-plan .cp-back-btn"),
   cpPlanChangeCloseBtn: querySelectorElement("#cp-change-plan .cp-close-btn"),
@@ -407,7 +426,7 @@ const elements = {
   ),
 
   resubscribeBtn: querySelectorElement(".re-subscribe"),
-  resubscribeModal:querySelectorElement(".resubscribe-modal")
+  resubscribeModal: querySelectorElement(".resubscribe-modal"),
 };
 
 // Variables
@@ -871,7 +890,10 @@ elements.cancelteacherSubs.addEventListener("click", () => {
   elements.subsStep2Teacher.classList.add("subs-hidden");
 
   // Small delay to trigger CSS transition
-  setTimeout(() => elements.tryPauseModalTeachers.classList.add("subs-show"), 50);
+  setTimeout(
+    () => elements.tryPauseModalTeachers.classList.add("subs-show"),
+    50
+  );
 
   // After 1.5s switch to step2
   setTimeout(() => {
@@ -887,9 +909,11 @@ elements.subsClose.addEventListener("click", () => {
 });
 
 elements.subsCloseTeacher.addEventListener("click", () => {
-
   elements.tryPauseModalTeachers.classList.remove("subs-show");
-  setTimeout(() => (elements.tryPauseModalTeachers.style.display = "none"), 300);
+  setTimeout(
+    () => (elements.tryPauseModalTeachers.style.display = "none"),
+    300
+  );
 });
 
 elements.subBtnPause.addEventListener("click", () => {
@@ -906,7 +930,10 @@ elements.subBtnCancel.addEventListener("click", () => {
 
 elements.subBtnCancelTeacher.addEventListener("click", () => {
   elements.tryPauseModalTeachers.classList.remove("subs-show");
-  setTimeout(() => (elements.tryPauseModalTeachers.style.display = "none"), 300);
+  setTimeout(
+    () => (elements.tryPauseModalTeachers.style.display = "none"),
+    300
+  );
   popupOpen(elements.backdrop, elements.cmModalTeachers);
 });
 
@@ -1051,8 +1078,6 @@ elements.teacherReason1ModalClose?.addEventListener("click", () =>
   closePopup(elements.teacherReason1Modal, elements.backdrop)
 );
 
-
-
 // Budget modal back/close
 elements.budgetBack?.addEventListener("click", () => {
   elements.budgetModal.classList.remove("active");
@@ -1080,7 +1105,6 @@ elements.tutorsClose?.addEventListener("click", () =>
   closePopup(elements.tutorsModal, elements.backdrop)
 );
 
-
 elements.tutorsBackTeacher?.addEventListener("click", () => {
   elements.tutorsModalTeacher.classList.remove("active");
   popupOpen(elements.backdrop, elements.cmModalTeachers);
@@ -1090,7 +1114,6 @@ elements.tutorsBackTeacher?.addEventListener("click", () => {
 elements.tutorsCloseTeacher?.addEventListener("click", () =>
   closePopup(elements.tutorsModalTeacher, elements.backdrop)
 );
-
 
 elements.tutorsBackTeacher2?.addEventListener("click", () => {
   elements.tutorsModalTeacher2.classList.remove("active");
@@ -1162,7 +1185,6 @@ elements.cancelReason6CloseTeacher?.addEventListener("click", () =>
   closePopup(elements.cancelReason6ModalTeacher, elements.backdrop)
 );
 
-
 elements.proceedWithCancellation.forEach((btn) => {
   btn.addEventListener("click", () => {
     // Close whichever modal is active
@@ -1215,6 +1237,28 @@ elements.trySmallerPlan.addEventListener("click", () => {
   if (openContainer) openContainer.classList.remove("active");
   popupOpen(elements.cpPlanChange, elements.backdrop);
 });
+
+elements.tryAsmallerPlanTeacher.forEach((element) => {
+  element.addEventListener("click", () => {
+    if (openContainer) openContainer.classList.remove("active");
+    popupOpen(elements.tryAsmallerPlanTeacherModal, elements.backdrop);
+  });
+});
+
+elements.SubjectsBtn.forEach((element) => {
+  element.addEventListener("click", () => {
+    if (openContainer) openContainer.classList.remove("active");
+    popupOpen(elements.tryAffordableTeacherModal, elements.backdrop);
+  });
+});
+
+elements.tryAffordableBtnTeacher.forEach((element) => {
+  element.addEventListener("click", () => {
+    if (openContainer) openContainer.classList.remove("active");
+    popupOpen(elements.tryAffordableTeacherModal, elements.backdrop);
+  });
+});
+
 elements.confirmCheckOutBtn.addEventListener("click", () => {
   if (openContainer) openContainer.classList.remove("active");
   elements.cpPlanChange.classList.remove("active");
@@ -1500,7 +1544,6 @@ elements.pausedModalConfirmClose.addEventListener("click", (e) => {
   e.stopPropagation();
   popUpClose(elements.backdrop, elements.pauseConfirmedModal);
 });
-
 
 elements.resubscribeBtn.addEventListener("click", (e) => {
   e.stopPropagation();
@@ -1956,9 +1999,6 @@ transferCompleteOpen.addEventListener("click", () => {
   // elements.change_your_plane_popup.classList.remove("active");
   TransferComplete.classList.add("active");
 });
-
-
-
 
 // (function () {
 //   const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
