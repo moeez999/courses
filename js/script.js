@@ -395,6 +395,14 @@ const elements = {
   customPlanOptionsClose: querySelectorElement(".pe__card .pe-close"),
   customPlanOptionsBack: querySelectorElement(".pe__card .pe-back"),
 
+  customPlanTeacherOptions: querySelectorElements(
+    ".custom-plan-option-teacher"
+  ),
+  customPlanTeacherOptionModal: querySelectorElement(".pe2__card"),
+  customPlanTeacherOptionsClose: querySelectorElement(".pe2__card .pe2-close"),
+  customPlanTeacherOptionsBack: querySelectorElement(".pe2__card .pe2-back"),
+  planContinueBtnTeacher: querySelectorElement(".pe2-continue-btn"),
+
   planContinueBtns: querySelectorElements(".pln-continue-btn"),
   planConfirmationModal: querySelectorElement("#lesson-confirmation"),
   planConfirmationClose: querySelectorElement(
@@ -427,6 +435,15 @@ const elements = {
 
   resubscribeBtn: querySelectorElement(".re-subscribe"),
   resubscribeModal: querySelectorElement(".resubscribe-modal"),
+
+  continueCheckoutTeacherBtn: querySelectorElement(".confirm-checkout-teacher"),
+  checkOutTeacherModal: querySelectorElement(".change-review-card"),
+  checkOutTeacherModalBack: querySelectorElement(
+    ".change-review-card .cr-back"
+  ),
+  checkOutTeacherModalClose: querySelectorElement(
+    ".change-review-card .cr-close"
+  ),
 };
 
 // Variables
@@ -1449,11 +1466,17 @@ elements.customPlanOptions.forEach((option) => {
   option.addEventListener("click", () => {
     popUpClose(elements.backdrop, elements.planUpgradeModal);
     popUpClose(elements.backdrop, elements.planDownGradeModal);
+    popUpClose(elements.backdrop, elements.tryAsmallerPlanTeacherModal);
 
     popupOpen(elements.backdrop, elements.customPlanOptionModal);
   });
 });
-
+elements.customPlanTeacherOptions.forEach((option) => {
+  option.addEventListener("click", () => {
+    popUpClose(elements.backdrop, elements.tryAsmallerPlanTeacherModal);
+    popupOpen(elements.backdrop, elements.customPlanTeacherOptionModal);
+  });
+});
 elements.customPlanOptionsClose.addEventListener("click", () => {
   popUpClose(elements.backdrop, elements.customPlanOptionModal);
 });
@@ -1461,6 +1484,15 @@ elements.customPlanOptionsClose.addEventListener("click", () => {
 elements.customPlanOptionsBack.addEventListener("click", () => {
   popUpClose(elements.backdrop, elements.customPlanOptionModal);
   popupOpen(elements.backdrop, elements.planUpgradeModal);
+});
+
+elements.customPlanTeacherOptionsClose.addEventListener("click", () => {
+  popUpClose(elements.backdrop, elements.customPlanTeacherOptionModal);
+});
+
+elements.customPlanTeacherOptionsBack.addEventListener("click", () => {
+  popUpClose(elements.backdrop, elements.customPlanTeacherOptionModal);
+  popupOpen(elements.backdrop, elements.tryAsmallerPlanTeacherModal);
 });
 
 elements.planContinueBtns.forEach((btn) => {
@@ -1548,6 +1580,30 @@ elements.pausedModalConfirmClose.addEventListener("click", (e) => {
 elements.resubscribeBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   popupOpen(elements.backdrop, elements.resubscribeModal);
+});
+
+elements.continueCheckoutTeacherBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  popUpClose(elements.backdrop, elements.tryAsmallerPlanTeacherModal);
+  popupOpen(elements.backdrop, elements.checkOutTeacherModal);
+});
+
+elements.planContinueBtnTeacher.addEventListener("click", (e) => {
+  e.stopPropagation();
+  popUpClose(elements.backdrop, elements.tryAsmallerPlanTeacherModal);
+  popUpClose(elements.backdrop, elements.customPlanTeacherOptionModal);
+  popupOpen(elements.backdrop, elements.checkOutTeacherModal);
+});
+
+elements.checkOutTeacherModalBack.addEventListener("click", (e) => {
+  e.stopPropagation();
+  popUpClose(elements.backdrop, elements.checkOutTeacherModal);
+  popupOpen(elements.backdrop, elements.tryAsmallerPlanTeacherModal);
+});
+
+elements.checkOutTeacherModalClose.addEventListener("click", (e) => {
+  e.stopPropagation();
+  popUpClose(elements.backdrop, elements.checkOutTeacherModal);
 });
 // ==================================================
 // ===================== END =======================
