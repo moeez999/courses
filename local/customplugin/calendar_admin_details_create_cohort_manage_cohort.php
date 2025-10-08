@@ -1566,9 +1566,7 @@ input[type="date"] {
                   </div>
 
                   <script>
-                  $('#teacher2DropdownList').on('click', 'li.teacher-option', function() {
-                      $('#teacher2UserId').val($(this).data('data-userid') || '');
-                  });
+                  // Teacher 2 click handler (now using delegated event below)
                   </script>
 
                   <div class="calendar_admin_details_create_cohort_class_dropdown_wrapper">
@@ -1993,7 +1991,14 @@ async function prefillCohortForm(cohortData) {
         $('.create_new_cohort_tab_select_color_right_circle').css('background', c.color);
     }
 
-    // 4. Date formatting helper
+    // 4. Timezone - Set for both teacher blocks
+    if (c.timezone) {
+        console.log('Setting timezone:', c.timezone);
+        $('.teacher-block[data-teacher="1"] .calendar_admin_details_cohort_tab_timezone_dropdown_right span').text(c.timezone);
+        $('.teacher-block[data-teacher="2"] .calendar_admin_details_cohort_tab_timezone_dropdown_right span').text(c.timezone);
+    }
+
+    // 5. Date formatting helper
     const fmtDate = d => {
         if (!d) return 'Select Date';
         const date = new Date(d * 1000);
@@ -2004,7 +2009,7 @@ async function prefillCohortForm(cohortData) {
         });
     };
 
-    // 5. Weekly label helper
+    // 6. Weekly label helper
     const weeklyLabel = days => {
         if (!days || !days.length) return 'Does not repeat';
         return 'Weekly on ' + days.join(', ');
@@ -2156,7 +2161,8 @@ function gatherTeacherData(teacherNum) {
             .textContent.trim(),
         startTime: $(timeInputSelector).eq(0).val(),
         endTime: $(timeInputSelector).eq(1).val(),
-        startDate: $(`.teacher-block[data-teacher="${teacherNum}"] .conference_modal_date_btn`).text().trim()
+        startDate: $(`.teacher-block[data-teacher="${teacherNum}"] .conference_modal_date_btn`).text().trim(),
+        timezone: $(`.teacher-block[data-teacher="${teacherNum}"] .calendar_admin_details_cohort_tab_timezone_dropdown_right span`).text().trim()
     };
 }
 
@@ -2212,143 +2218,7 @@ $(document).on('click', '#className2DropdownList li', function() {
     $('#className2DropdownList').hide();
 });
 
-// Function to find and select teacher from dropdown by ID
-function selectTeacherFromDropdown(teacherNumber, teacherData) {
-    return new Promise((resolve) => {
-        const dropdownListId = `#${teacherNumber}DropdownList`;
-        const dropdownBtnId = `#${teacherNumber}DropdownBtn`;
-        const userIdFieldId = `#${teacherNumber}UserId`;
-
-        console.log(`Looking for teacher in ${dropdownListId} with ID:`, teacherData.id);
-
-        // Find the teacher option with matching user ID
-        const $teacherOption = $(`${dropdownListId} li[data-userid="${teacherData.id}"]`);
-
-        if ($teacherOption.length > 0) {
-            console.log(`Found matching teacher option:`, $teacherOption.text());
-
-            // Get the HTML content of the option (including avatar)
-            const teacherHtml = $teacherOption.html();
-
-            // Update the dropdown button with the selected teacher
-            $(dropdownBtnId).html(
-                teacherHtml +
-                '<svg viewBox="0 0 20 20"><path d="M7 8l3 3 3-3"></path></svg>'
-            );
-
-            // Set the hidden user ID field
-            $(userIdFieldId).val(teacherData.id);
-
-            // Update the label text to show selection was made
-            $(dropdownBtnId).find('.label').remove(); // Remove "Select Teacher" text if it exists
-
-            console.log(`Successfully selected teacher ${teacherNumber}:`, teacherData.name);
-        } else {
-            console.warn(`Teacher with ID ${teacherData.id} not found in dropdown`);
-
-            // Fallback: Set the teacher name manually if not found in dropdown
-            const avatarHtml = teacherData.avatar ?
-                `<img src="${teacherData.avatar}" class="calendar_admin_details_create_cohort_teacher_avatar" alt="${teacherData.name}" />` :
-                '';
-
-            $(dropdownBtnId).html(
-                avatarHtml +
-                `<span style="margin-left:${avatarHtml ? '10px' : '0'};">${teacherData.name}</span>` +
-                '<svg viewBox="0 0 20 20"><path d="M7 8l3 3 3-3"></path></svg>'
-            );
-
-            $(userIdFieldId).val(teacherData.id);
-        }
-
-        resolve();
-    });
-}
-
-// Add this function to handle the Update Cohort button
-$(document).on('click', '.calendar_admin_details_create_cohort_btn', function() {
-    // Gather all form data
-    const formData = gatherCohortFormData();
-    console.log('=== UPDATE COHORT DATA ===', formData);
-
-    // Here you would typically send this data to your server
-    // to update the cohort record
-    alert('Cohort update data prepared. Check console for details.');
-});
-
-function gatherCohortFormData() {
-    return {
-        cohortId: $('#cohortDropdownBtn').text().trim(),
-        shortName: $('#cohortShortNameInput').val(),
-        enabled: $('#toggleActive').hasClass('active') ? 1 : 0,
-        visible: $('#toggleAvailable').hasClass('active') ? 1 : 0,
-        color: $('#createNewCohortSelectedColorLeft .create_new_cohort_tab_select_color_left_circle').css(
-            'background-color'),
-        teacher1: {
-            id: $('#teacher1UserId').val(),
-            name: $('#teacher1DropdownBtn').find('span').text().trim(),
-            className: $('#className1DropdownBtn').contents().first()[0].textContent.trim(),
-            schedule: $('.teacher-block[data-teacher="1"] .cohort_schedule_btn').contents().first()[0].textContent
-                .trim(),
-            startTime: $('.teacher-block[data-teacher="1"] .time-input').eq(0).val(),
-            endTime: $('.teacher-block[data-teacher="1"] .time-input').eq(1).val(),
-            startDate: $('.teacher-block[data-teacher="1"] .conference_modal_date_btn').text().trim()
-        },
-        teacher2: {
-            id: $('#teacher2UserId').val(),
-            name: $('#teacher2DropdownBtn').find('span').text().trim(),
-            className: $('#className2DropdownBtn').contents().first()[0].textContent.trim(),
-            schedule: $('.teacher-block[data-teacher="2"] .cohort_schedule_btn').contents().first()[0].textContent
-                .trim(),
-            startTime: $('.teacher-block[data-teacher="2"] .calendar_admin_details_time_right_time-input').eq(0).val(),
-            endTime: $('.teacher-block[data-teacher="2"] .calendar_admin_details_time_right_time-input').eq(1).val(),
-            startDate: $('.teacher-block[data-teacher="2"] .conference_modal_date_btn').text().trim()
-        }
-    };
-}
-
-
-
-// Add this function to handle the Update Cohort button
-$(document).on('click', '.calendar_admin_details_create_cohort_btn', function() {
-    // Gather all form data
-    const formData = gatherCohortFormData();
-    console.log('=== UPDATE COHORT DATA ===', formData);
-
-    // Here you would typically send this data to your server
-    // to update the cohort record
-    alert('Cohort update data prepared. Check console for details.');
-});
-
-function gatherCohortFormData() {
-    return {
-        cohortId: $('#cohortDropdownBtn').text().trim(),
-        shortName: $('#cohortShortNameInput').val(),
-        enabled: $('#toggleActive').hasClass('active') ? 1 : 0,
-        visible: $('#toggleAvailable').hasClass('active') ? 1 : 0,
-        color: $('#createNewCohortSelectedColorLeft .create_new_cohort_tab_select_color_left_circle').css(
-            'background-color'),
-        teacher1: {
-            id: $('#teacher1UserId').val(),
-            name: $('#teacher1DropdownBtn').find('span').text().trim(),
-            className: $('#className1DropdownBtn').contents().first()[0].textContent.trim(),
-            schedule: $('.teacher-block[data-teacher="1"] .cohort_schedule_btn').contents().first()[0].textContent
-                .trim(),
-            startTime: $('.teacher-block[data-teacher="1"] .time-input').eq(0).val(),
-            endTime: $('.teacher-block[data-teacher="1"] .time-input').eq(1).val(),
-            startDate: $('.teacher-block[data-teacher="1"] .conference_modal_date_btn').text().trim()
-        },
-        teacher2: {
-            id: $('#teacher2UserId').val(),
-            name: $('#teacher2DropdownBtn').find('span').text().trim(),
-            className: $('#className2DropdownBtn').contents().first()[0].textContent.trim(),
-            schedule: $('.teacher-block[data-teacher="2"] .cohort_schedule_btn').contents().first()[0].textContent
-                .trim(),
-            startTime: $('.teacher-block[data-teacher="2"] .calendar_admin_details_time_right_time-input').eq(0).val(),
-            endTime: $('.teacher-block[data-teacher="2"] .calendar_admin_details_time_right_time-input').eq(1).val(),
-            startDate: $('.teacher-block[data-teacher="2"] .conference_modal_date_btn').text().trim()
-        }
-    };
-}
+// Duplicate function definitions removed - kept only the first occurrence above
 
 
 

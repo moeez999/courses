@@ -91,6 +91,9 @@ if (($cohort->cohorttutorhours === 0 && $cohort->cohorttutorminutes === 0) ||
     $tutorEnd = cc_fmt_time_plus($cohort->cohorttutorhours, $cohort->cohorttutorminutes, 60);
 }
 
+// --- Get timezone ---
+$timezone = !empty($cohort->cohorttimezone) ? $cohort->cohorttimezone : '(GMT+05:00) Pakistan';
+
 // --- Build the exact structure the JavaScript expects ---
 $out = [
     'ok' => true,
@@ -104,6 +107,7 @@ $out = [
         'color'     => !empty($cohort->cohortcolor) ? $cohort->cohortcolor : '#1649c7',
         'startdate' => !empty($cohort->startdate) ? (int)$cohort->startdate : null,
         'enddate'   => !empty($cohort->enddate)   ? (int)$cohort->enddate   : null,
+        'timezone'  => $timezone,
 
         'main' => [
             'days'      => $daysMain,
