@@ -4,11 +4,15 @@ $(function () {
   */
 
   // Scope to MANAGE tab
-  const $manage = $('#manage_cohort_tab_content');
+  const $manage = $("#manage_cohort_tab_content");
 
   // 1) Find nav and the specific row that holds Teacher 1 & 2 (the row right after nav)
-  const $nav = $manage.find('.calendar_admin_details_create_cohort_event_nav').first();
-  const $row = $nav.nextAll('.calendar_admin_details_create_cohort_row').first();
+  const $nav = $manage
+    .find(".calendar_admin_details_create_cohort_event_nav")
+    .first();
+  const $row = $nav
+    .nextAll(".calendar_admin_details_create_cohort_row")
+    .first();
 
   if ($row.length === 0) {
     // Nothing to wire up
@@ -17,8 +21,12 @@ $(function () {
 
   // Helper: the teacher columns are the direct children of $row that contain the teacher dropdown wrapper
   function $teacherCols() {
-    return $row.children('div').filter(function () {
-      return $(this).find('.calendar_admin_details_create_cohort_teacher_dropdown_wrapper').length > 0;
+    return $row.children("div").filter(function () {
+      return (
+        $(this).find(
+          ".calendar_admin_details_create_cohort_teacher_dropdown_wrapper"
+        ).length > 0
+      );
     });
   }
 
@@ -34,18 +42,26 @@ $(function () {
     if (left > Math.max(1, total - 1)) left = Math.max(1, total - 1);
 
     // Hide all teacher columns, then show the two we want
-    $cols.css('display', 'none');
-    $cols.eq(left - 1).css('display', '');           // left
-    if (left < total) $cols.eq(left).css('display', ''); // right (if exists)
+    $cols.css("display", "none");
+    $cols.eq(left - 1).css("display", ""); // left
+    if (left < total) $cols.eq(left).css("display", ""); // right (if exists)
 
     // Toggle delete visibility and nav disabled states (optional UX)
-    $nav.find('.calendar_admin_details_create_cohort_remove').toggle(total > 2);
-    $nav.find('.prev').prop('disabled', left === 1);
-    $nav.find('.next').prop('disabled', left >= total - 1);
+    $nav.find(".calendar_admin_details_create_cohort_remove").toggle(total > 2);
+    $nav.find(".prev").prop("disabled", left === 1);
+    $nav.find(".next").prop("disabled", left >= total - 1);
 
     // Ensure color dropdowns aren't left open when sliding
-    $manage.find('.create_new_cohort_tab_select_color_left_list, .create_new_cohort_tab_select_color_right_list').hide();
-    $manage.find('.create_new_cohort_tab_select_color_left_dropdown, .create_new_cohort_tab_select_color_right_dropdown').removeClass('open');
+    $manage
+      .find(
+        ".create_new_cohort_tab_select_color_left_list, .create_new_cohort_tab_select_color_right_list"
+      )
+      .hide();
+    $manage
+      .find(
+        ".create_new_cohort_tab_select_color_left_dropdown, .create_new_cohort_tab_select_color_right_dropdown"
+      )
+      .removeClass("open");
   }
 
   // ====== Build a new teacher column (no IDs needed) ======
@@ -163,19 +179,25 @@ $(function () {
   render();
 
   // ===== Nav buttons =====
-  $nav.on('click', '.prev', function (e) {
+  $nav.on("click", ".prev", function (e) {
     e.preventDefault();
-    if (left > 1) { left--; render(); }
+    if (left > 1) {
+      left--;
+      render();
+    }
   });
 
-  $nav.on('click', '.next', function (e) {
+  $nav.on("click", ".next", function (e) {
     e.preventDefault();
     const total = $teacherCols().length;
-    if (left < total - 1) { left++; render(); }
+    if (left < total - 1) {
+      left++;
+      render();
+    }
   });
 
   // + Add teacher (keeps current slide; new one visible on ›)
-  $nav.on('click', '.calendar_admin_details_create_cohort_add', function (e) {
+  $nav.on("click", ".calendar_admin_details_create_cohort_add", function (e) {
     e.preventDefault();
     const n = $teacherCols().length + 1;
     $row.append(buildTeacherColumn(n));
@@ -183,126 +205,217 @@ $(function () {
   });
 
   // 🗑 Remove last teacher (snap back to 1–2 when <=2)
-  $nav.on('click', '.calendar_admin_details_create_cohort_remove', function (e) {
-    e.preventDefault();
-    const $cols = $teacherCols();
-    if ($cols.length <= 2) return;
-    $cols.last().remove();
-    if ($teacherCols().length <= 2) left = 1;
-    else left = Math.min(left, $teacherCols().length - 1);
-    render();
-  });
+  $nav.on(
+    "click",
+    ".calendar_admin_details_create_cohort_remove",
+    function (e) {
+      e.preventDefault();
+      const $cols = $teacherCols();
+      if ($cols.length <= 2) return;
+      $cols.last().remove();
+      if ($teacherCols().length <= 2) left = 1;
+      else left = Math.min(left, $teacherCols().length - 1);
+      render();
+    }
+  );
 
   /* ===== Delegated dropdowns inside the manage tab (work for new blocks) ===== */
   // Teacher dropdown
-  $manage.on('click', '.calendar_admin_details_create_cohort_teacher_btn', function (e) {
-    e.stopPropagation();
-    const $list = $(this).siblings('.calendar_admin_details_create_cohort_teacher_list');
-    $manage.find('.calendar_admin_details_create_cohort_teacher_list').not($list).hide();
-    $list.toggle();
-  });
-  $manage.on('click', '.calendar_admin_details_create_cohort_teacher_list li', function () {
-    const html = $(this).html() + '<svg viewBox="0 0 20 20"><path d="M7 8l3 3 3-3"></path></svg>';
-    $(this).closest('.calendar_admin_details_create_cohort_teacher_dropdown_wrapper')
-           .find('.calendar_admin_details_create_cohort_teacher_btn')
-           .html(html);
-    $(this).closest('.calendar_admin_details_create_cohort_teacher_list').hide();
-  });
+  $manage.on(
+    "click",
+    ".calendar_admin_details_create_cohort_teacher_btn",
+    function (e) {
+      e.stopPropagation();
+      const $list = $(this).siblings(
+        ".calendar_admin_details_create_cohort_teacher_list"
+      );
+      $manage
+        .find(".calendar_admin_details_create_cohort_teacher_list")
+        .not($list)
+        .hide();
+      $list.toggle();
+    }
+  );
+  $manage.on(
+    "click",
+    ".calendar_admin_details_create_cohort_teacher_list li",
+    function () {
+      const html =
+        $(this).html() +
+        '<svg viewBox="0 0 20 20"><path d="M7 8l3 3 3-3"></path></svg>';
+      $(this)
+        .closest(
+          ".calendar_admin_details_create_cohort_teacher_dropdown_wrapper"
+        )
+        .find(".calendar_admin_details_create_cohort_teacher_btn")
+        .html(html);
+      $(this)
+        .closest(".calendar_admin_details_create_cohort_teacher_list")
+        .hide();
+    }
+  );
 
   // Class dropdown
-  $manage.on('click', '.calendar_admin_details_create_cohort_class_btn', function (e) {
-    e.stopPropagation();
-    const $list = $(this).siblings('.calendar_admin_details_create_cohort_class_list');
-    $manage.find('.calendar_admin_details_create_cohort_class_list').not($list).hide();
-    $list.toggle();
-  });
-  $manage.on('click', '.calendar_admin_details_create_cohort_class_list li', function () {
-    $(this).closest('.calendar_admin_details_create_cohort_class_dropdown_wrapper')
-           .find('.calendar_admin_details_create_cohort_class_btn')
-           .contents().first()[0].textContent = $(this).text() + ' ';
-    $(this).closest('.calendar_admin_details_create_cohort_class_list').hide();
-  });
+  $manage.on(
+    "click",
+    ".calendar_admin_details_create_cohort_class_btn",
+    function (e) {
+      e.stopPropagation();
+      const $list = $(this).siblings(
+        ".calendar_admin_details_create_cohort_class_list"
+      );
+      $manage
+        .find(".calendar_admin_details_create_cohort_class_list")
+        .not($list)
+        .hide();
+      $list.toggle();
+    }
+  );
+  $manage.on(
+    "click",
+    ".calendar_admin_details_create_cohort_class_list li",
+    function () {
+      $(this)
+        .closest(".calendar_admin_details_create_cohort_class_dropdown_wrapper")
+        .find(".calendar_admin_details_create_cohort_class_btn")
+        .contents()
+        .first()[0].textContent = $(this).text() + " ";
+      $(this)
+        .closest(".calendar_admin_details_create_cohort_class_list")
+        .hide();
+    }
+  );
 
   // Right timezone
-  $manage.on('click', '.calendar_admin_details_cohort_tab_timezone_dropdown_right', function (e) {
-    e.stopPropagation();
-    const $list = $(this).find('.calendar_admin_details_cohort_tab_timezone_list_right');
-    $manage.find('.calendar_admin_details_cohort_tab_timezone_list_right').not($list).hide();
-    $list.toggle();
-  });
-  $manage.on('click', '.calendar_admin_details_cohort_tab_timezone_list_right li', function (e) {
-    e.stopPropagation();
-    $(this).closest('.calendar_admin_details_cohort_tab_timezone_dropdown_right')
-           .find('span').first().text($(this).text());
-    $(this).closest('.calendar_admin_details_cohort_tab_timezone_list_right').hide();
-  });
+  $manage.on(
+    "click",
+    ".calendar_admin_details_cohort_tab_timezone_dropdown_right",
+    function (e) {
+      e.stopPropagation();
+      const $list = $(this).find(
+        ".calendar_admin_details_cohort_tab_timezone_list_right"
+      );
+      $manage
+        .find(".calendar_admin_details_cohort_tab_timezone_list_right")
+        .not($list)
+        .hide();
+      $list.toggle();
+    }
+  );
+  $manage.on(
+    "click",
+    ".calendar_admin_details_cohort_tab_timezone_list_right li",
+    function (e) {
+      e.stopPropagation();
+      $(this)
+        .closest(".calendar_admin_details_cohort_tab_timezone_dropdown_right")
+        .find("span")
+        .first()
+        .text($(this).text());
+      $(this)
+        .closest(".calendar_admin_details_cohort_tab_timezone_list_right")
+        .hide();
+    }
+  );
 
   /* ===== Find-a-time color dropdowns (Manage tab) ===== */
   // Toggle open (works for both left & right, and for dynamically added columns)
-  $manage.on('click',
-    '.create_new_cohort_tab_select_color_left_dropdown, .create_new_cohort_tab_select_color_right_dropdown',
+  $manage.on(
+    "click",
+    ".create_new_cohort_tab_select_color_left_dropdown, .create_new_cohort_tab_select_color_right_dropdown",
     function (e) {
       e.stopPropagation();
       const $dd = $(this);
-      const $myList = $dd.find('.create_new_cohort_tab_select_color_left_list, .create_new_cohort_tab_select_color_right_list');
+      const $myList = $dd.find(
+        ".create_new_cohort_tab_select_color_left_list, .create_new_cohort_tab_select_color_right_list"
+      );
 
       // Close others in Manage tab
-      $manage.find('.create_new_cohort_tab_select_color_left_list, .create_new_cohort_tab_select_color_right_list')
-             .not($myList).hide();
-      $manage.find('.create_new_cohort_tab_select_color_left_dropdown.open, .create_new_cohort_tab_select_color_right_dropdown.open')
-             .not($dd).removeClass('open');
+      $manage
+        .find(
+          ".create_new_cohort_tab_select_color_left_list, .create_new_cohort_tab_select_color_right_list"
+        )
+        .not($myList)
+        .hide();
+      $manage
+        .find(
+          ".create_new_cohort_tab_select_color_left_dropdown.open, .create_new_cohort_tab_select_color_right_dropdown.open"
+        )
+        .not($dd)
+        .removeClass("open");
 
       // Toggle mine
-      $dd.toggleClass('open');
+      $dd.toggleClass("open");
       $myList.toggle();
     }
   );
 
   // Pick a color
-  $manage.on('click',
-    '.create_new_cohort_tab_select_color_left_list li, .create_new_cohort_tab_select_color_right_list li',
+  $manage.on(
+    "click",
+    ".create_new_cohort_tab_select_color_left_list li, .create_new_cohort_tab_select_color_right_list li",
     function (e) {
       e.stopPropagation();
-      const color = $(this).data('color') || $(this).css('background-color');
-      const $dd = $(this).closest('.create_new_cohort_tab_select_color_left_dropdown, .create_new_cohort_tab_select_color_right_dropdown');
+      const color = $(this).data("color") || $(this).css("background-color");
+      const $dd = $(this).closest(
+        ".create_new_cohort_tab_select_color_left_dropdown, .create_new_cohort_tab_select_color_right_dropdown"
+      );
 
       // Update the little circle inside this dropdown
-      $dd.find('.create_new_cohort_tab_select_color_left_circle, .create_new_cohort_tab_select_color_right_circle')
-         .css('background', color);
+      $dd
+        .find(
+          ".create_new_cohort_tab_select_color_left_circle, .create_new_cohort_tab_select_color_right_circle"
+        )
+        .css("background", color);
 
-      $(this).addClass('selected').siblings().removeClass('selected');
+      $(this).addClass("selected").siblings().removeClass("selected");
 
       // Close the list
-      $dd.removeClass('open')
-         .find('.create_new_cohort_tab_select_color_left_list, .create_new_cohort_tab_select_color_right_list')
-         .hide();
+      $dd
+        .removeClass("open")
+        .find(
+          ".create_new_cohort_tab_select_color_left_list, .create_new_cohort_tab_select_color_right_list"
+        )
+        .hide();
     }
   );
 
   // Global click-away for manage tab dropdowns (include color lists)
-  $(document).on('click', function () {
-    $manage.find(
-      '.calendar_admin_details_create_cohort_teacher_list, ' +
-      '.calendar_admin_details_create_cohort_class_list, ' +
-      '.calendar_admin_details_cohort_tab_timezone_list_right, ' +
-      '.create_new_cohort_tab_select_color_left_list, ' +
-      '.create_new_cohort_tab_select_color_right_list'
-    ).hide();
+  $(document).on("click", function () {
+    $manage
+      .find(
+        ".calendar_admin_details_create_cohort_teacher_list, " +
+          ".calendar_admin_details_create_cohort_class_list, " +
+          ".calendar_admin_details_cohort_tab_timezone_list_right, " +
+          ".create_new_cohort_tab_select_color_left_list, " +
+          ".create_new_cohort_tab_select_color_right_list"
+      )
+      .hide();
 
-    $manage.find(
-      '.create_new_cohort_tab_select_color_left_dropdown.open, ' +
-      '.create_new_cohort_tab_select_color_right_dropdown.open'
-    ).removeClass('open');
+    $manage
+      .find(
+        ".create_new_cohort_tab_select_color_left_dropdown.open, " +
+          ".create_new_cohort_tab_select_color_right_dropdown.open"
+      )
+      .removeClass("open");
   });
 
   // ESC closes color lists
-  $(document).on('keydown', function (e) {
-    if (e.key === 'Escape') {
-      $manage.find('.create_new_cohort_tab_select_color_left_list, .create_new_cohort_tab_select_color_right_list').hide();
-      $manage.find('.create_new_cohort_tab_select_color_left_dropdown.open, .create_new_cohort_tab_select_color_right_dropdown.open').removeClass('open');
+  $(document).on("keydown", function (e) {
+    if (e.key === "Escape") {
+      $manage
+        .find(
+          ".create_new_cohort_tab_select_color_left_list, .create_new_cohort_tab_select_color_right_list"
+        )
+        .hide();
+      $manage
+        .find(
+          ".create_new_cohort_tab_select_color_left_dropdown.open, .create_new_cohort_tab_select_color_right_dropdown.open"
+        )
+        .removeClass("open");
     }
   });
 
   // If the tab becomes visible later, re-render to ensure pair is correct
-  $manage.on('show', render); // call manually if you trigger custom events on tab switch
+  $manage.on("show", render); // call manually if you trigger custom events on tab switch
 });
