@@ -28,6 +28,7 @@ if (!empty($studentIds)) {
     $userRecords = $DB->get_records_select('user', "id $inSql", $params, 'firstname ASC', 'id, firstname, lastname, email, picture');
 
     foreach ($userRecords as $user) {
+    
         $userPicture = new user_picture($user);
         $userPicture->size = 1;
         $avatarUrl = $userPicture->get_url($PAGE)->out(false);
