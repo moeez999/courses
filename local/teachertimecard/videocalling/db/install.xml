@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/videocalling/db" VERSION="20240720" COMMENT="XMLDB file for Moodle local/videocalling"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+    >
+    <TABLES>
+        <TABLE NAME="bannerusers" COMMENT="Table for bannerusers">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="user_id" TYPE="char" LENGTH="255" NOTNULL="false"/>
+                <FIELD NAME="startdate" TYPE="datetime" NOTNULL="true"/>
+                <FIELD NAME="finishdate" TYPE="datetime" NOTNULL="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+
+        
+        <TABLE NAME="restrictionusers" COMMENT="Table for restrictionusers">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="user_id" TYPE="char" LENGTH="255" NOTNULL="false"/>
+                <FIELD NAME="user_banner" TYPE="char" LENGTH="255" NOTNULL="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+
+        
+        <TABLE NAME="activevideocalling" COMMENT="Table for activevideocalling">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+
+        
+        <TABLE NAME="planificationclass" COMMENT="Table for planificationclass">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="startdate" TYPE="int"  LENGTH='10' NOTNULL="true"/>
+                <FIELD NAME="finishdate" TYPE="int" LENGTH='10' NOTNULL="false"/>
+                <FIELD NAME="recurrent" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="color" TYPE="char"  LENGTH='255' NOTNULL="true"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+
+        
+        <TABLE NAME="selectedappid" COMMENT="Table for assignamentcohortforclass">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="appid" TYPE="char" LENGTH="255" NOTNULL="false"/>
+                <FIELD NAME="selected" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        
+        <TABLE NAME="assignamentcohortforclass" COMMENT="Table for assignamentcohortforclass">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="idplanificaction" TYPE="char" LENGTH="255" NOTNULL="false"/>
+                <FIELD NAME="idcohort" TYPE="char" LENGTH="255" NOTNULL="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        
+        <TABLE NAME="assignamentteachearforclass" COMMENT="Table for assignamentteachearforclass">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="idplanificaction" TYPE="char" LENGTH="255" NOTNULL="false"/>
+                <FIELD NAME="iduserteacher" TYPE="char" LENGTH="255" NOTNULL="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        
+        
+        <TABLE NAME="optionsrepeat" COMMENT="Table for assignamentcohortforclass">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="idplanificaction" TYPE="char" LENGTH="255" NOTNULL="false"/>
+                <FIELD NAME="monday" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0"/>
+                <FIELD NAME="tuesday" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0"/>
+                <FIELD NAME="wednesday" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0"/>
+                <FIELD NAME="thursday" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0"/>
+                <FIELD NAME="friday" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0"/>
+                <FIELD NAME="saturday" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0"/>
+                <FIELD NAME="sunday" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0"/>
+                <FIELD NAME="never" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0"/>
+                <FIELD NAME="repeaton" TYPE="int"  LENGTH='10' NOTNULL="false"/>
+                <FIELD NAME="type" TYPE="char" LENGTH='50' NOTNULL="false"/>
+                <FIELD NAME="repeatafter" TYPE="int" LENGTH="10" NOTNULL="false"/>
+                <FIELD NAME="repeatevery" TYPE="int" LENGTH="10" NOTNULL="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="videocalling_user_score" COMMENT="Tabla para almacenar el score social del usuario">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="user_id" TYPE="char" LENGTH="255" NOTNULL="true"/>
+                <FIELD NAME="score_total" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="num_feedbacks" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="updated_at" TYPE="datetime" NOTNULL="true"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+
+    </TABLES>
+</XMLDB>

@@ -1,0 +1,136 @@
+Version 1.0.36 (Build 2024012900)
+- Added Loom recording support (beta)
+
+Version 1.0.35 (Build 2023033000)
+- Fixed issue with subtitling default not checking the checkbox
+- Added support for Poodll filter widgets new lang string support
+
+
+Version 1.0.34 (Build 2022120301)
+- added more permissions to control visibility of expire days, options and upload
+- added a media_file_received event
+- fixed an issue with history failing on some browsers and media type (eg Chrome + video)
+
+Version 1.0.33 (Build 2022112700)
+- Removed custom web service declaration and optional param issue
+
+Version 1.0.32 (Build 2022100700)
+- removed unneeded lang strings
+
+Version 1.0.31 (Build 2022081000)
+- fixed web service optional value = > default value
+- Improved layout of widget fields
+
+Version 1.0.30 (Build 2022060500)
+- Changed AMD build steps
+- Change free trial jump link
+- A little hack because the widget buttons were not laying out correctly
+
+Version 1.0.29 (Build 2022030100)
+- forced video rec on iOS to get new code from cloudpoodll
+
+Version 1.0.28 (Build 2021122200)
+- added credential fetching
+
+Version 1.0.27 (Build 2021062800)
+- added screen recording
+
+Version 1.0.26 (Build 2021060400)
+- changed preloading strategy for html5 video
+
+Version 1.0.25 (Build 2021052000)
+-Added missing capability lang string
+-Added regions bahrain and capetown
+
+Version 1.0.24 (Build 2020120500)
+-Fixed bug if the Poodll filter not installed
+
+Version 1.0.23 (Build 2020092901)
+-Added widgets tab for those with a Poodll filter
+
+Version 1.0.22 (Build 2020092900)
+-Removed unneeded cloudpoodll.js lib which was breaking first.js on some installations
+
+Version 1.0.21 (Build 2020060300)
+-Improved support for uploaded files with hard to predict file extensions
+
+Version 1.0.20 (Build 2020041700)
+-fixed no download setting
+-made subtitle track insert work better
+
+Version 1.0.19 (Build 2020040900)
+-Fixed broken responsive display on small screens outside of forum posts (urgh)
+
+Version 1.0.18 (Build 2020040500)
+-Improved responsive display on small screens
+
+Version 1.0.17 (Build 2020021000)
+-Added history tab so user can select from their previous recordings
+
+Version 1.0.16 (Build 2020020700)
+-nothing special, version bump for internal reasons
+
+Version 1.0.15 (Build 2020012300)
+-added languages(arabic, chinese, portuguese, japanese, tamil, Telugu, dutch, farsi, wales english, ireland english, scotland english, russian, turkish, malay, indonesian,hebrew, swiss german)
+-added user tagging
+
+Version 1.0.14 (Build 2019112100)
+-Added better reporting of poor api settings config
+-Fixed broken en-GB region transcription
+
+Version 1.0.13 (Build 2019071300)
+-Fixed default permission for authenticated user
+
+
+Version 1.0.12 (Build 2019053100)
+-fixes for audio track when .wav in player
+-Added support for languages Korean (ko-kr), German (de-de) , English(India) (en-in) and Hindi (hi-in)
+
+Version 1.0.11 (Build 2019031901)
+-fixes for sourcemimetype and added it-IT, fr-FR and pt-BR languages for subtitles
+
+Version 1.0.10
+- added better error handling if api creds fails
+-Added better cron calling
+-Added support for fast cloudpoodll loading in poodllloader.html (used by safari's mainly)
+
+Version 1.0.9 (Build 2018112600)
+- improved reliability of cron call to fetch token
+
+Version 1.0.8
+-reinstated the respecting of $config->enablesubtitling
+-supported license info with token
+-changed appid to atto_cloudpoodll
+
+Version 1.0.7 (Build 2018111400)
+-fixed issue with privacy class definitions breaking on cron in some cases
+
+Version 1.0.7 (Build 2018111200)
+-Added Sao Paulo,  Frankfurt, London regions (no subtitles)
+-Added support for Ottawa region (yes subtitles)
+-Support for accents (en-UK, en-AU) and Canadian French (fr-CA) in subtitle regions
+
+Version 1.0.6 (Build 2018102502)
+-=Better application of context
+
+Version 1.0.5 (Build 2018102501)
+-Changes requested in plugin review
+-addition of MOODLE_INTERNAL check
+-addition of is full admin tree check
+-implementation of non null provider in dataprivacy classes
+
+Version 1.0.4 (Build 2018101004)
+-fixed loading in Safari
+
+Version 1.0.3 (Build 2018101003)
+-fixed loading on iOS
+-fixed missing lang string in permissions system
+
+Version 1.0.2 (Build 2018101002)
+-more fixes for sizes and popup attributes
+
+Version 1.0.1 (Build 2018101001)
+-Fixed sizes and CSS issues
+
+Version 1.0.0 (Build 2018101000)
+-First release of Cloud Poodll

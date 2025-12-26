@@ -1,0 +1,16 @@
+<form class="mform atto_form atto_cloudpoodll_form" id="{{elementid}}_atto_cloudpoodll_form">
+    {{> atto_cloudpoodll/menu}}
+    <div class="root tab-content">
+      {{#isvideo}}{{> atto_cloudpoodll/videopanel}}{{/isvideo}}
+      {{#isaudio}}{{> atto_cloudpoodll/audiopanel}}{{/isaudio}}
+      {{#isscreen}}
+        {{^loom}}{{> atto_cloudpoodll/screenpanel}}{{/loom}}
+        {{#loom}}{{> atto_cloudpoodll/loompanel}}{{/loom}}
+       {{/isscreen}}
+      {{^isscreen}}{{> atto_cloudpoodll/uploadpanel}}{{/isscreen}}
+      {{> atto_cloudpoodll/optionspanel}}
+       {{#showhistory}}
+          <div data-medium-type="{{CSS.HISTORY}}" data-field="history" data-loaded="false" class="tab-pane" id="{{elementid}}_{{CSS.HISTORY}}"></div>
+        {{/showhistory}}
+    </div>
+</form>

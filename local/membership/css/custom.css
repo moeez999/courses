@@ -1,0 +1,314 @@
+
+body {
+	background-color: #f6f6f6;
+}
+.cursor-pointer {
+	cursor: pointer;
+}
+.red-text {
+	color: #ca2a2a;
+}
+.btn-action {
+	background-color: #001cb1 !important;
+	border-radius: 30px !important;
+}
+.btn-action:hover {
+	background-color: #001cb1 !important;
+}
+.input-group > .input-group-append > .btn {
+	border-top-right-radius: 8px !important;
+	border-bottom-right-radius: 8px !important;
+}
+.form-control,
+.form-control:focus {
+	box-shadow: none;
+}
+.swal2-html-container {
+	max-height: 50vh;
+	will-change: transform;
+}
+.swal2-title {
+	padding: 0em 1em !important;
+}
+.rui-breadcrumbs {
+	display: none;
+}
+.wrapper-course {
+	background-color: #f6f6f6;
+	padding-top: 45px;
+}
+.page-header-content {
+	margin: 0;
+}
+.rui-page-title {
+	color: #000000;
+	text-align: center;
+	margin-bottom: 20px !important;
+}
+.rui-page-subtitle {
+	color: #767676;
+	margin-bottom: 1em;
+	font-size: 16px;
+}
+.iti {
+	width: 100%;
+}
+.card-form-loader {
+	position: relative;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: #ffffff;
+	height: 140px;
+	border-radius: 8px;
+	z-index: 1;
+}
+.card-form-loader .spinner-form {
+	position: absolute;
+	top: 45px;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	width: 50px;
+	height: 50px;
+	animation: rotate .5s linear infinite;
+	border: 2px double #001cb1;
+	border-radius: 50%;
+	border-right: 2px solid #001cb1;
+	border-right-style: dotted;
+	cursor: progress;
+}
+[data-braintree-id="applePay"],
+[data-braintree-id="googlePay"],
+[data-braintree-id="venmo"],
+[data-braintree-id="paypalCredit"] {
+	display: none;
+}
+[data-braintree-id="choose-a-way-to-pay"],
+[data-braintree-id="options"],
+[data-braintree-id="toggle"],
+[data-braintree-id="lower-container"],
+[data-braintree-id="save-card-field-group"],
+[data-braintree-id="american-express-card-icon"],
+[data-braintree-id="jcb-card-icon"],
+[data-braintree-id="unionpay-card-icon"] {
+	display: none  !important;
+}
+[data-braintree-id="sheet-container"] {
+	display: flex !important;
+	flex-direction: column-reverse;
+}
+[data-braintree-id="card"], [data-braintree-id="paypal"] {
+	display: block;
+}
+[data-braintree-id="card"]:not(.expanded) .braintree-sheet__content,
+[data-braintree-id="paypal"]:not(.expanded) .braintree-sheet__content {
+	padding: 0;
+	height: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+[data-braintree-id="card"]:not(.expanded) .braintree-sheet__header,
+[data-braintree-id="paypal"]:not(.expanded) .braintree-sheet__header,
+[data-braintree-id="card"].braintree-sheet {
+	border-bottom: 0;
+}
+[data-braintree-id="card"].braintree-sheet {
+	border-radius: 10px 10px 0px 0px;
+}
+[data-braintree-id="paypal"].braintree-sheet {
+	border-radius: 0px 0px 10px 10px;
+}
+.user-select-none,
+[data-braintree-id="card"] .braintree-sheet__header,
+[data-braintree-id="paypal"] .braintree-sheet__header {
+	cursor: pointer;
+	-webkit-user-select: none;
+	-webkit-touch-callout: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+	user-drag: none;
+}
+.braintree-sheet__header .braintree-sheet__logo--header {
+	display: none;
+}
+.braintree-sheet__header .braintree-sheet__text {
+	margin-left: 0;
+}
+.braintree-sheet__header .braintree-sheet__card-icon {
+	padding-left: 0 !important;
+}
+#custom-payment input[type="radio"],
+#custom-payment input[type="checkbox"] {
+	appearance: none;
+	width: 20px;
+	height: 20px;
+	border: 2px solid #828282;
+	border-radius: 16px;
+	background-clip: content-box;
+	padding: 3px;
+	margin: auto;
+	cursor: pointer;
+	vertical-align: middle;
+	margin: -8px 10px 0px 0px;
+}
+#custom-payment input[type="checkbox"] {
+	border-radius: 4px;
+}
+#custom-payment input[type="radio"]:checked,
+#custom-payment input[type="checkbox"]:checked {
+	background-color: #ffffff;
+	border: 6px solid #001cb1;
+}
+#custom-payment input[type="radio"]:hover,
+#custom-payment input[type="checkbox"]:hover {
+	opacity: 0.7;
+}
+.braintree-methods--active:not(.braintree-methods--edit) .braintree-method--active {
+	border-color: #001cb1;
+}
+.braintree-methods--active:not(.braintree-methods--edit) .braintree-method--active .braintree-method__check,
+.braintree-method__delete-container .braintree-method__delete,
+.braintree-method__delete-container .braintree-method__delete:hover {
+	background-color: #001cb1;
+}
+.braintree-show-delete-confirmation .braintree-delete-confirmation {
+	margin-bottom: 10px;
+}
+.braintree-delete-confirmation .braintree-delete-confirmation__button-container [data-braintree-id=delete-confirmation__yes],
+.braintree-delete-confirmation .braintree-delete-confirmation__button-container [data-braintree-id=delete-confirmation__yes]:hover {
+	background: #001cb1;
+}
+.braintree-delete-confirmation .braintree-delete-confirmation__button-container .braintree-delete-confirmation__button {
+	border-top: 0;
+	border-radius: 16px;
+	margin: 10px;
+}
+.braintree-delete-confirmation [data-braintree-id=delete-confirmation__message] {
+	padding: 1.5em;
+	word-break: break-word;
+}
+.braintree-methods--edit .braintree-method {
+	cursor: pointer;
+}
+.braintree-method {
+	width: initial;
+}
+.braintree-method:first-child:not(:last-child) {
+	border-radius: 10px 10px 0 0 !important;
+}
+.braintree-method:last-child:not(:first-child) {
+	border-radius: 0 0 10px 10px !important;
+}
+.braintree-form__hosted-field {
+	border: 1px solid #b2bcca;
+	border-radius: 10px;
+}
+.paypal-button .zoid-outlet {
+	width: 100% !important;
+	max-width: 350px !important;
+}
+.braintree-form__label {
+	display: none !important;
+}
+.braintree-sheet__content--form {
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	flex-direction: row;
+}
+.braintree-form__field-group, .braintree-form__flexible-fields.braintree-form__field-group {
+	flex-grow: 1;
+	flex-basis: initial !important;
+}
+.braintree-form__flexible-fields {
+	flex-grow: 1;
+}
+.braintree-form__flexible-fields .braintree-form__field-group {
+	width: 50%;
+}
+.braintree-form__notice-of-collection {
+	display: none;
+}
+.braintree-form__field-group label {
+	width: 100%;
+}
+@media (max-width: 576px) {
+	.braintree-form__flexible-fields {
+		width: 100%;
+	}
+	.braintree-form__flexible-fields .braintree-form__field-group {
+		width: 100%;
+	}
+}
+.plan-information-container {
+	position: relative;
+	padding: 20px;
+	border: 1px solid #001cb1;
+	border-radius: 8px;
+}
+.plan-information-name {
+	text-transform: uppercase;
+	color: #000000;
+}
+.plan-information-course {
+	text-transform: capitalize;
+	margin-bottom: 5px;
+}
+.plan-information-container .fa-diamond,
+.plan-information-container .fa-check {
+	color: #001cb1;
+	font-size: 14px;
+}
+.plan-information-payment-detail {
+	color: #828282;
+}
+.plan-information-payment-detail span {
+	float: right;
+	color: #000000;
+}
+.login-divider {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.login-divider hr {
+	flex: 1;
+}
+.login-divider span {
+	margin: auto 5px;
+	text-align: center;
+}
+.btn-signup {
+	border-radius: 30px;
+	border: 1px solid #333333;
+	background-color: #ffffff;
+}
+.btn-signup:hover {
+	border: 1px solid #333333;
+}
+
+.discount-plan-tag {
+	--f: 10px;
+	--r: 0px;
+	position: absolute;
+	top: 10px;
+	padding-inline: 10px;
+	background: #001CB1;
+	border-bottom: var(--f) solid #0005;
+	color: #fff;
+	line-height: 1.3em;
+	font-family: sans-serif;
+	font-size: 20px;
+	padding: 10px 20px;
+	left: calc(-1*var(--f));
+	border-right: var(--r) solid #0000;
+	clip-path: polygon(94% 0,0 0,0 calc(100% - var(--f)),var(--f) 100%, var(--f) calc(100% - var(--f)),100% calc(100% - var(--f)), calc(97% - var(--r)) calc(50% - var(--f)/2));
+}
+.discount-plan-tag ~ .plan-information-name {
+	margin-top: 42px;
+}

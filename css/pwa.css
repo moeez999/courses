@@ -1,0 +1,235 @@
+.pwa {
+    --pwa-color-primary: #FFFFFF;
+    --pwa-color-secondary: #FFFFFF;
+    --pwa-color-font: #000000;
+    --pwa-color-font-btn: #FFFFFF;
+    --pwa-color-button: #3f3dec;
+    --pwa-color-button-hover: #26258e;
+}
+.dark-mode .pwa {
+    --pwa-color-primary: #353535;
+    --pwa-color-font: #FFFFFF;
+    --pwa-color-font-btn: #FFFFFF;
+    --pwa-color-button: #3f3dec;
+    --pwa-color-button-hover: #26258e;
+}
+#pwa-btn, #pwa-banner, #pwa-popup, #pwa-install, #pwa-install-popup {
+    display: none;
+}
+.pwa.pwa-install-banner-wrapper {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 88px;
+    display: flex;
+    justify-content: center;
+    background-color: var(--pwa-color-primary);
+    box-shadow: 4px 4px 16px rgba(47,57,67,0.12);
+    z-index: 1100;
+}
+.pwa.pwa-install-banner {
+    padding: 24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+}
+.pwa.pwa-install-banner span {
+    color: var(--pwa-color-button);
+    background-color: var(--pwa-color-primary);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    margin-right: 10px;
+    cursor: pointer;
+}
+.pwa.pwa-install-banner span:hover {
+    color: var(--pwa-color-primary);
+    background-color: var(--pwa-color-button);
+}
+.pwa.pwa-install-banner img {
+    width: 88px;
+    height: 88px;
+}
+.pwa.pwa-install-banner h4 {
+    width: 30%;
+    color: var(--pwa-color-font);
+    text-align: center;
+}
+.pwa.pwa-install-banner button {
+    width: 30%;
+    margin-left: 10px;
+}
+.pwa.pwa-install-banner-wrapper.custom-banner {
+    position: initial;
+    background-color: transparent;
+    box-shadow: none;
+}
+.pwa.pwa-install-banner-wrapper.custom-banner .pwa-install-banner {
+    width: 100%;
+    padding: 0;
+}
+.pwa.pwa-install-banner-wrapper.custom-banner h4 {
+    width: 60%;
+}
+.pwa .overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.4);
+    visibility: hidden;
+    opacity: 0;
+    overflow-y: hidden;
+    overscroll-behavior: contain;
+}
+.pwa .overlay:target, .pwa .overlay.popup-show {
+    visibility: visible;
+    opacity: 1;
+    z-index: 9999;
+}
+.pwa .overlay:target .popup, .pwa .overlay.popup-show .popup {
+    opacity: 1;
+}
+.pwa .popup {
+    width: 50%;
+    max-height:calc(100% - 80px);
+    padding: 20px;
+    background: var(--pwa-color-primary);
+    color: var(--pwa-color-font);
+    position: relative;
+    top:50%;
+    left:50%;
+    text-align: center;
+    box-shadow: var(--pwa-color-button) 0px 0px 5px 0px;
+    opacity: 0;
+    transition: opacity .4s;
+    transform: translate(-50%,-50%);
+}
+.pwa .popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.pwa .popup-header h4 {
+    color: var(--pwa-color-font);
+    word-break: break-word;
+    margin: 0 !important;
+}
+.pwa .small-popup {
+    width: 40%;
+}
+.pwa .popup-close {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+.pwa .popup-body {
+    overflow:auto;
+    max-height:calc(100vh - 215px);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    word-break: break-word;
+    overscroll-behavior: contain;
+}
+@media (max-width:768px) {
+    .pwa.pwa-install-banner {
+        width: 100%;
+    }
+    .pwa .popup {
+        width: 80%;
+    }
+    .pwa .popup-body {
+        align-items: initial;
+    }
+}
+.pwa .small-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    line-height: 16px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 8px;
+    color: var(--pwa-color-primary);
+    background-color: var(--pwa-color-button);
+}
+.pwa .small-close:before {
+    content: "\2716";
+    filter: brightness(7.5);
+}
+.pwa .small-close:hover {
+    background-color: var(--pwa-color-button-hover);
+}
+.pwa .pwa-btn {
+    display: inline-block;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--pwa-color-font-btn);
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background: var(--pwa-color-button);
+    padding: 10px 16px;
+    border: none;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    outline: 0;
+    box-shadow: none;
+    transition: background-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+.pwa .pwa-btn:hover {
+    background: var(--pwa-color-button-hover);
+}
+.pwa .pwa-btn:focus {
+    box-shadow: var(--pwa-color-button) 0px 0px 5px 0px;
+    border: none;
+    outline: 0;
+}
+.pwa .pwa-btn-secondary {
+    background-color: #6c757d;
+}
+.pwa .pwa-btn-secondary:hover {
+    background-color: #5c636a;
+}
+.pwa-offline {
+    background: var(--pwa-color-primary);
+    color: var(--pwa-color-font);
+    font-family: sans-serif;
+    text-align: center;
+}
+.pwa .content-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+.pwa .img-fluid {
+    max-width: 260px;
+    height: auto;
+    margin: auto;
+}
+.pwa .text-center {
+    text-align: center;
+}
+.text-bold {
+    font-family: inherit;
+}

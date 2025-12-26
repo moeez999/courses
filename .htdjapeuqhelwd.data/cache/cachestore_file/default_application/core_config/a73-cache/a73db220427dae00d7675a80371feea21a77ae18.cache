@@ -1,0 +1,4 @@
+a:7:{s:12:"emailcontent";s:143:"<p>Hi %userfirstname%,</p>
+<p><strong>%googlemeetname%</strong></p>
+<p>When: %eventdate% %duration% %timezone%</p>
+<p>Access link: %url%</p>";s:8:"issuerid";s:1:"5";s:13:"minutesbefore";s:1:"5";s:22:"multieventdateexpanded";s:1:"0";s:20:"notificationexpanded";s:1:"0";s:6:"notify";s:1:"1";s:15:"roomurlexpanded";s:1:"1";}

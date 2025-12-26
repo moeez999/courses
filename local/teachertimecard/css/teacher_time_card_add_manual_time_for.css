@@ -1,0 +1,330 @@
+    :root {
+      --add_manual_time_for_step1_w_step1: 600px;
+      --add_manual_time_for_step1_w_step2: 520px;
+
+      --add_manual_time_for_step1_radius: 16px;
+
+      --add_manual_time_for_step1_border_gray: #E4E7EE;
+      --add_manual_time_for_step1_border_gray_dark: #D1D5DB;
+      --add_manual_time_for_step1_black: #000;
+      --add_manual_time_for_step1_text: #121117;
+      --add_manual_time_for_step1_muted: #6B7280;
+      --add_manual_time_for_step1_btn_bg: #ff3b1f;
+
+      --add_manual_time_for_step1_shadow1: 0 16px 48px rgba(0, 0, 0, .18);
+      --add_manual_time_for_step1_shadow2: 0 24px 64px rgba(0, 0, 0, .12);
+    }
+
+    /* body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--add_manual_time_for_step1_text);
+    } */
+
+    body.add_manual_time_for_step1_lock {
+      overflow: hidden;
+    }
+
+    /* Backdrop */
+    #add_manual_time_for_step1_modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, .45);
+      padding: 16px;
+    }
+
+    /* Card */
+    .add_manual_time_for_step1_card {
+      width: var(--add_manual_time_for_step1_w_step1);
+      max-width: 100%;
+      max-height: 90vh;
+      background: #fff;
+      border-radius: var(--add_manual_time_for_step1_radius);
+      box-shadow: var(--add_manual_time_for_step1_shadow1), var(--add_manual_time_for_step1_shadow2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: width .18s ease;
+    }
+
+    .add_manual_time_for_step1_card.add_manual_time_for_step1_is_step2 {
+      width: var(--add_manual_time_for_step1_w_step2);
+    }
+
+    .add_manual_time_for_step1_header {
+      padding: 18px 22px;
+      border-bottom: 1px solid #EFEFEF;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .add_manual_time_for_step1_title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .add_manual_time_for_step1_close {
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .add_manual_time_for_step1_body {
+      padding: 18px 22px;
+      overflow: auto;
+      flex: 1 1 auto;
+    }
+
+    .add_manual_time_for_step1_step {
+      display: none;
+    }
+
+    .add_manual_time_for_step1_step.is-active {
+      display: block;
+    }
+
+    /* Step 1 options */
+    .add_manual_time_for_step1_option {
+      background: #fff;
+      border: 2px solid var(--add_manual_time_for_step1_border_gray);
+      border-radius: 5px;
+      padding: 14px 18px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .add_manual_time_for_step1_option:hover {
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, .04);
+    }
+
+    .add_manual_time_for_step1_option_label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .add_manual_time_for_step1_icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .add_manual_time_for_step1_radio {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--add_manual_time_for_step1_border_gray_dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      flex: 0 0 24px;
+      transition: border-color .15s;
+    }
+
+    .add_manual_time_for_step1_radio_dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: transparent;
+      transition: background-color .15s;
+    }
+
+    .add_manual_time_for_step1_option.add_manual_time_for_step1_selected {
+      border-color: var(--add_manual_time_for_step1_black);
+    }
+
+    .add_manual_time_for_step1_option.add_manual_time_for_step1_selected .add_manual_time_for_step1_radio {
+      border-color: var(--add_manual_time_for_step1_black);
+    }
+
+    .add_manual_time_for_step1_option.add_manual_time_for_step1_selected .add_manual_time_for_step1_radio_dot {
+      background: var(--add_manual_time_for_step1_black);
+    }
+
+    /* Step 2 fields */
+    .add_manual_time_for_step1_field {
+      margin-bottom: 14px;
+    }
+
+    .add_manual_time_for_step1_label {
+      font-size: 13px;
+      color: var(--add_manual_time_for_step1_muted);
+      margin: 0 0 6px 2px;
+    }
+
+    .add_manual_time_for_step1_input,
+    .add_manual_time_for_step1_textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 2px solid var(--add_manual_time_for_step1_border_gray);
+      border-radius: 5px;
+      padding: 12px 14px;
+      font-size: 14px;
+      outline: 0;
+      background: #fff;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .add_manual_time_for_step1_textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .add_manual_time_for_step1_input:focus,
+    .add_manual_time_for_step1_textarea:focus {
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, .15);
+    }
+
+    /* Generic dropdown shell (used by both Student and Group) */
+    .add_manual_time_for_step1_select_wrap {
+      position: relative;
+    }
+
+    .add_manual_time_for_step1_select_fake {
+      border: 2px solid var(--add_manual_time_for_step1_border_gray);
+      border-radius: 5px;
+      padding: 12px 14px;
+      font-size: 14px;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .add_manual_time_for_step1_select_fake:focus-within {
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, .15);
+    }
+
+    .add_manual_time_for_step1_caret {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 7px solid #000;
+      margin-left: 8px;
+    }
+
+    .add_manual_time_for_step1_dropdown {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      margin-top: 8px;
+      background: #fff;
+      border: 1px solid var(--add_manual_time_for_step1_border_gray);
+      border-radius: 10px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, .12);
+      display: none;
+      z-index: 50;
+    }
+
+    .add_manual_time_for_step1_dropdown_search {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--add_manual_time_for_step1_border_gray);
+    }
+
+    .add_manual_time_for_step1_dropdown_search input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 2px solid var(--add_manual_time_for_step1_border_gray);
+      border-radius: 6px;
+      padding: 10px 12px;
+      outline: 0;
+      font-size: 14px;
+    }
+
+    .add_manual_time_for_step1_dropdown_list {
+      max-height: 260px;
+      overflow: auto;
+    }
+
+    .add_manual_time_for_step1_dropdown_item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+    }
+
+    .add_manual_time_for_step1_dropdown_item:hover {
+      background: #F8FAFC;
+    }
+
+    /* Student avatar */
+    .add_manual_time_for_step1_avatar_wrap {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 34px;
+    }
+
+    .add_manual_time_for_step1_avatar_img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .add_manual_time_for_step1_avatar_fallback {
+      display: none;
+      font-size: 12px;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .add_manual_time_for_step1_name {
+      font-size: 14px;
+    }
+
+    /* Footer */
+    .add_manual_time_for_step1_footer {
+      padding: 18px 22px;
+      border-top: 1px solid #EFEFEF;
+      background: #fff;
+    }
+
+    .add_manual_time_for_step1_continue,
+    .add_manual_time_for_step1_submit {
+      width: 100%;
+      height: 55px;
+      border-radius: 5px;
+      background: var(--add_manual_time_for_step1_btn_bg);
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      border: 2px solid var(--add_manual_time_for_step1_black);
+    }
+
+    .add_manual_time_for_step1_continue:disabled,
+    .add_manual_time_for_step1_submit:disabled {
+      opacity: .65;
+      cursor: not-allowed;
+    }
