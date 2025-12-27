@@ -244,3 +244,6 @@ $templatecontext = array_merge($templatecontext, $themesettings->footer_settings
 
 $PAGE->requires->js_call_amd('theme_alpha/rui', 'init');
 echo $OUTPUT->render_from_template('theme_alpha/tmpl-incourse', $templatecontext);
+
+require_once('subscribe.php');
+require_once('profile-role-dropdown.php');

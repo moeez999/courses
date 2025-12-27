@@ -147,6 +147,45 @@
                 <div class="rui-topbar-customfield ml-auto d-none d-lg-flex">{{{.}}}</div>
             {{/topbarcustomhtml}}
             <ul class="rui-icon-menu rui-icon-menu--right {{^topbarcustomhtml}}ml-auto{{/topbarcustomhtml}}">
+<li class="nav-item profile-role">
+    <button id="openProfileRoleDropdown" class="profile-role__btn"
+            aria-haspopup="true"
+            aria-expanded="false"
+            style="
+            background: rgba(255, 255, 255, 1);
+            border: 2.33px solid rgba(220, 220, 229, 1);
+            padding: 9px 9.5px;
+            border-radius: 9.33px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 21px;
+            color: rgba(0, 0, 0, 1);
+            text-transform: capitalize;
+            cursor: pointer;
+        ">
+
+        <img
+            src="{{#useravatar}}{{useravatar}}{{/useravatar}}{{^useravatar}}https://i.pravatar.cc/40{{/useravatar}}"
+            alt="User avatar"
+            style="width:23px;height:23px;border-radius:50%;object-fit:cover;"
+        />
+
+        <span style="font-weight:500;font-size:14px;">
+            {{#userrole}}{{userrole}}{{/userrole}}{{^userrole}}Admin{{/userrole}}
+        </span>
+
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+    </button>
+
+
+</li>
 
                      <li class="nav-item" id="add_new_item">
                         <button id="openModal" class="subscribe-nav-btn" style="background: rgba(255, 255, 255, 1);border: 2.33px solid rgba(220, 220, 229, 1);padding: 9px 19.5px;border-radius: 9.33px;justify-content: center;align-items: center;font-weight: 500;font-size: 14px;line-height: 21px;color: rgba(0, 0, 0, 1);text-transform: capitalize;

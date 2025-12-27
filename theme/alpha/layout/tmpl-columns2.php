@@ -247,4 +247,5 @@ echo $OUTPUT->render_from_template('theme_alpha/tmpl-columns2', $templatecontext
 
 
 require_once('subscribe.php');
+require_once('profile-role-dropdown.php');
 ?>
