@@ -207,17 +207,17 @@
 <div style="width:100%;background:#fff;">
   <div style="margin:0px auto 0;padding:0 16px;box-sizing:border-box;">
     <div style="
-      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
       border:1px solid #e5e7eb;border-radius:12px;background:#fff;
       padding:10px 14px;box-sizing:border-box;">
 
       <!-- Left: tabs -->
-      <ul style="display:flex;align-items:center;gap:26px;margin:0;padding:0;list-style:none;">
+      <ul style="display:flex;align-items:center;gap:18px;margin:0;padding:0;list-style:none;overflow-x:auto;">
         <!-- Each link has a data-role so script can style active/non-active -->
         <li>
           <a href="{{{ config.wwwroot }}}"
              data-role="alpha2-nav-link"
-             style="display:inline-flex;align-items:center;
+             style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
                     font-weight:500;font-size:14px;line-height:1;
                     color:#e53935;border-bottom:2px solid #fe2e0c;">
@@ -228,7 +228,7 @@
         <li>
           <a href="{{{ config.wwwroot }}}/local/customplugin/my_lessons_tutor_profile_send_message_details.php"
              data-role="alpha2-nav-link"
-             style="display:inline-flex;align-items:center;
+             style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
                     font-weight:500;font-size:14px;line-height:1;
                     color:#111;border-bottom:2px solid transparent;">
@@ -239,7 +239,7 @@
         <li>
           <a href="{{{ config.wwwroot }}}/local/customplugin/my_lessons.php"
              data-role="alpha2-nav-link"
-             style="display:inline-flex;align-items:center;
+             style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
                     font-weight:500;font-size:14px;line-height:1;
                     color:#111;border-bottom:2px solid transparent;">
@@ -247,10 +247,33 @@
           </a>
         </li>
 
+
+        <li>
+          <a href="{{{ config.wwwroot }}}/local/customplugin/my_students.php"
+             data-role="alpha2-nav-link"
+             style="display:inline-flex;align-items:center;width:max-content;
+                    padding:10px 4px 8px 4px;margin:0;text-decoration:none;
+                    font-weight:500;font-size:14px;line-height:1;
+                    color:#111;border-bottom:2px solid transparent;">
+            My Students
+          </a>
+        </li>
+
+        <li>
+          <a href="{{{ config.wwwroot }}}/local/customplugin/my_students_details_lessons_plans.php"
+             data-role="alpha2-nav-link"
+             style="display:inline-flex;align-items:center;width:max-content;
+                    padding:10px 4px 8px 4px;margin:0;text-decoration:none;
+                    font-weight:500;font-size:14px;line-height:1;
+                    color:#111;border-bottom:2px solid transparent;">
+            Trial Review
+          </a>
+        </li>
+
         <li>
           <a href="{{{ config.wwwroot }}}/local/customplugin/calendar_admin.php"
              data-role="alpha2-nav-link"
-             style="display:inline-flex;align-items:center;
+             style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
                     font-weight:500;font-size:14px;line-height:1;
                     color:#111;border-bottom:2px solid transparent;">
@@ -261,7 +284,7 @@
         <li>
           <a href="{{{ config.wwwroot }}}/local/attendance/"
              data-role="alpha2-nav-link"
-             style="display:inline-flex;align-items:center;
+             style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
                     font-weight:500;font-size:14px;line-height:1;
                     color:#111;border-bottom:2px solid transparent;">
@@ -272,7 +295,7 @@
         <li>
           <a href="{{{ config.wwwroot }}}/local/membership/dashboard_new.php/"
              data-role="alpha2-nav-link"
-             style="display:inline-flex;align-items:center;
+             style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
                     font-weight:500;font-size:14px;line-height:1;
                     color:#111;border-bottom:2px solid transparent;">
@@ -283,7 +306,7 @@
         <li>
           <a href="{{{ config.wwwroot }}}/local/adminboard/"
              data-role="alpha2-nav-link"
-             style="display:inline-flex;align-items:center;
+             style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
                     font-weight:500;font-size:14px;line-height:1;
                     color:#111;border-bottom:2px solid transparent;">
@@ -294,7 +317,7 @@
         <li>
           <a href="{{{ config.wwwroot }}}/local/videocalling/observer.php"
              data-role="alpha2-nav-link"
-             style="display:inline-flex;align-items:center;
+             style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
                     font-weight:500;font-size:14px;line-height:1;
                     color:#111;border-bottom:2px solid transparent;">
@@ -305,7 +328,7 @@
         <li>
           <a href="{{{ config.wwwroot }}}/user/profile_new.php"
              data-role="alpha2-nav-link"
-             style="display:inline-flex;align-items:center;
+             style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
                     font-weight:500;font-size:14px;line-height:1;
                     color:#111;border-bottom:2px solid transparent;">
@@ -316,7 +339,7 @@
         <li>
           <a href="{{{ config.wwwroot }}}/local/membership/plan.php"
              data-role="alpha2-nav-link"
-             style="display:inline-flex;align-items:center;
+             style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
                     font-weight:500;font-size:14px;line-height:1;
                     color:#111;border-bottom:2px solid transparent;">
@@ -327,7 +350,7 @@
         <li>
           <a href="{{{ config.wwwroot }}}/local/teachertimecard/index.php"
              data-role="alpha2-nav-link"
-             style="display:inline-flex;align-items:center;
+             style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
                     font-weight:500;font-size:14px;line-height:1;
                     color:#111;border-bottom:2px solid transparent;">
@@ -341,7 +364,7 @@
         <li>
           <a href="{{{ config.wwwroot }}}/course/index.php"
              data-role="alpha2-nav-link"
-             style="display:inline-flex;align-items:center;
+             style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
                     font-weight:500;font-size:14px;line-height:1;
                     color:#111;border-bottom:2px solid transparent;">
@@ -349,15 +372,74 @@
           </a>
         </li>
         <li>
-          <a href="{{{ config.wwwroot }}}/user/preferences.php"
+          <a href="{{{ config.wwwroot }}}/local/customplugin/my_settings.php"
              data-role="alpha2-nav-link"
-             style="display:inline-flex;align-items:center;
+             style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
                     font-weight:500;font-size:14px;line-height:1;
                     color:#111;border-bottom:2px solid transparent;">
-            Settings
+           Teacher Settings
           </a>
         </li>
+           <li>
+          <a href="{{{ config.wwwroot }}}/local/customplugin/my_profile.php"
+             data-role="alpha2-nav-link"
+             style="display:inline-flex;align-items:center;width:max-content;
+                    padding:10px 4px 8px 4px;margin:0;text-decoration:none;
+                    font-weight:500;font-size:14px;line-height:1;
+                    color:#111;border-bottom:2px solid transparent;">
+           Teacher Profile
+          </a>
+        </li>
+           </li>
+           <li>
+          <a href="{{{ config.wwwroot }}}/local/customplugin/my_profile_settings.php"
+             data-role="alpha2-nav-link"
+             style="display:inline-flex;align-items:center;width:max-content;
+                    padding:10px 4px 8px 4px;margin:0;text-decoration:none;
+                    font-weight:500;font-size:14px;line-height:1;
+                    color:#111;border-bottom:2px solid transparent;">
+           Student Settings
+          </a>
+        </li>
+
+
+
+        <li>
+          <a href="{{{ config.wwwroot }}}/local/customplugin/my_teachers.php"
+             data-role="alpha2-nav-link"
+             style="display:inline-flex;align-items:center;width:max-content;
+                    padding:10px 4px 8px 4px;margin:0;text-decoration:none;
+                    font-weight:500;font-size:14px;line-height:1;
+                    color:#111;border-bottom:2px solid transparent;">
+           Videos
+          </a>
+        </li>
+
+
+        <li>
+          <a href="{{{ config.wwwroot }}}/local/customplugin/one_and_one_class.php"
+             data-role="alpha2-nav-link"
+             style="display:inline-flex;align-items:center;width:max-content;
+                    padding:10px 4px 8px 4px;margin:0;text-decoration:none;
+                    font-weight:500;font-size:14px;line-height:1;
+                    color:#111;border-bottom:2px solid transparent;">
+           1:1 Class
+          </a>
+        </li>
+
+        <li>
+          <a href="{{{ config.wwwroot }}}/local/customplugin/teacher_settings_profile.php"
+             data-role="alpha2-nav-link"
+             style="display:inline-flex;align-items:center;width:max-content;
+                    padding:10px 4px 8px 4px;margin:0;text-decoration:none;
+                    font-weight:500;font-size:14px;line-height:1;
+                    color:#111;border-bottom:2px solid transparent;">
+           Teacher Admin Settings
+          </a>
+        </li>
+
+
       </ul>
 
       <!-- Right: CTAs -->
@@ -369,7 +451,7 @@
                   font-weight:500;font-size:14px;line-height:1.1;">
           Find Tutors
         </a>
-        <a href="{{{ config.wwwroot }}}/local/findgroups/index.php"
+        <a href="{{{ config.wwwroot }}}/local/customplugin/find_groups.php"
            style="display:inline-flex;align-items:center;justify-content:center;
                   padding:10px 18px;border-radius:10px;background:#fff;
                   border:2px solid #e2e3ea;color:#0b0b0b;text-decoration:none;
