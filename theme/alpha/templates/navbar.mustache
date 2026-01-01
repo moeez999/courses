@@ -149,23 +149,23 @@
             <ul class="rui-icon-menu rui-icon-menu--right {{^topbarcustomhtml}}ml-auto{{/topbarcustomhtml}}">
 <li class="nav-item profile-role">
     <button id="openProfileRoleDropdown" class="profile-role__btn"
-            aria-haspopup="true"
-            aria-expanded="false"
-            style="
-            background: rgba(255, 255, 255, 1);
-            border: 2.33px solid rgba(220, 220, 229, 1);
-            padding: 9px 9.5px;
-            border-radius: 9.33px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-            font-size: 14px;
-            line-height: 21px;
-            color: rgba(0, 0, 0, 1);
-            text-transform: capitalize;
-            cursor: pointer;
+          aria-haspopup="true"
+          aria-expanded="false"
+          style="
+          background: rgba(255, 255, 255, 1);
+          border: 2.33px solid rgba(220, 220, 229, 1);
+          padding: 9px 9.5px;
+          border-radius: 9.33px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 8px;
+          font-weight: 500;
+          font-size: 14px;
+          line-height: 21px;
+          color: rgba(0, 0, 0, 1);
+          text-transform: capitalize;
+          cursor: pointer;
         ">
 
         <img
@@ -175,33 +175,30 @@
         />
 
         <span style="font-weight:500;font-size:14px;">
-            {{#userrole}}{{userrole}}{{/userrole}}{{^userrole}}Admin{{/userrole}}
+          {{#userrole}}{{userrole}}{{/userrole}}{{^userrole}}Admin{{/userrole}}
         </span>
 
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2">
+        <span class="dropdown-arrow" style="margin-left: auto; color: beige;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
+          </svg>
+        </span>
     </button>
 
 
 </li>
-
                      <li class="nav-item" id="add_new_item">
-                        <button id="openModal" class="subscribe-nav-btn" style="background: rgba(255, 255, 255, 1);border: 2.33px solid rgba(220, 220, 229, 1);padding: 9px 19.5px;border-radius: 9.33px;justify-content: center;align-items: center;font-weight: 500;font-size: 14px;line-height: 21px;color: rgba(0, 0, 0, 1);text-transform: capitalize;
-                            ">Subscribe</button>
+                        <button id="openModal" class="subscribe-nav-btn" style="background: rgba(255, 255, 255, 1);border: 2.33px solid rgba(220, 220, 229, 1);padding: 9px 19.5px;border-radius: 9.33px;justify-content: center;align-items: center;font-weight: 500;font-size: 14px;line-height: 21px;color: rgba(0, 0, 0, 1);text-transform: capitalize;">Subscribe</button>
                      </li>
 
                      <li class="nav-item">
                             <div style="margin-top:10%;">
-                            <a href="#" id="openBalance" style="background: rgba(255, 255, 255, 1);border: 2.33px solid rgba(220, 220, 229, 1);padding: 9px 19.5px;border-radius: 9.33px;justify-content: center;align-items: center;font-weight: 500;font-size: 14px;line-height: 21px;color: rgba(0, 0, 0, 1);text-transform: capitalize;
-                            ">Balance: 0</a>
+                            <a href="#" id="openBalance" style="background: rgba(255, 255, 255, 1);border: 2.33px solid rgba(220, 220, 229, 1);padding: 9px 19.5px;border-radius: 9.33px;justify-content: center;align-items: center;font-weight: 500;font-size: 14px;line-height: 21px;color: rgba(0, 0, 0, 1);text-transform: capitalize;">Balance: 0</a>
                             <div>
                      </li>
                      <li class="nav-item">
                             <div style="margin-top:10%;">
-                            <a href="#" style="background: rgba(255, 255, 255, 1);border: 2.33px solid rgba(220, 220, 229, 1);padding: 9px 19.5px;border-radius: 9.33px;justify-content: center;align-items: center;font-weight: 500;font-size: 14px;line-height: 21px;color: rgba(0, 0, 0, 1);text-transform: capitalize;
-                            ">Refer friend</a>
+                            <a href="/courses/local/refer-a-friend/index.php" style="background: rgba(255, 255, 255, 1);border: 2.33px solid rgba(220, 220, 229, 1);padding: 9px 19.5px;border-radius: 9.33px;justify-content: center;align-items: center;font-weight: 500;font-size: 14px;line-height: 21px;color: rgba(0, 0, 0, 1);text-transform: capitalize;">Refer friend</a>
                             <div>
                      </li>
 
@@ -283,6 +280,29 @@
                     font-weight:500;font-size:14px;line-height:1;
                     color:#111;border-bottom:2px solid transparent;">
             My lessons
+          </a>
+        </li>
+
+
+        <li>
+          <a href="{{{ config.wwwroot }}}/local/customplugin/my_students.php"
+             data-role="alpha2-nav-link"
+             style="display:inline-flex;align-items:center;width:max-content;
+                    padding:10px 4px 8px 4px;margin:0;text-decoration:none;
+                    font-weight:500;font-size:14px;line-height:1;
+                    color:#111;border-bottom:2px solid transparent;">
+            My Students
+          </a>
+        </li>
+
+        <li>
+          <a href="{{{ config.wwwroot }}}/local/customplugin/my_students_details_lessons_plans.php"
+             data-role="alpha2-nav-link"
+             style="display:inline-flex;align-items:center;width:max-content;
+                    padding:10px 4px 8px 4px;margin:0;text-decoration:none;
+                    font-weight:500;font-size:14px;line-height:1;
+                    color:#111;border-bottom:2px solid transparent;">
+            Trial Review
           </a>
         </li>
 
@@ -388,7 +408,7 @@
           </a>
         </li>
         <li>
-          <a href="{{{ config.wwwroot }}}/user/preferences.php"
+          <a href="{{{ config.wwwroot }}}/local/customplugin/my_settings.php"
              data-role="alpha2-nav-link"
              style="display:inline-flex;align-items:center;width:max-content;
                     padding:10px 4px 8px 4px;margin:0;text-decoration:none;
@@ -418,7 +438,22 @@
            Student Settings
           </a>
         </li>
-           <li>
+
+
+
+        <li>
+          <a href="{{{ config.wwwroot }}}/local/customplugin/my_teachers.php"
+             data-role="alpha2-nav-link"
+             style="display:inline-flex;align-items:center;width:max-content;
+                    padding:10px 4px 8px 4px;margin:0;text-decoration:none;
+                    font-weight:500;font-size:14px;line-height:1;
+                    color:#111;border-bottom:2px solid transparent;">
+           Videos
+          </a>
+        </li>
+
+
+        <li>
           <a href="{{{ config.wwwroot }}}/local/customplugin/one_and_one_class.php"
              data-role="alpha2-nav-link"
              style="display:inline-flex;align-items:center;width:max-content;
@@ -428,6 +463,19 @@
            1:1 Class
           </a>
         </li>
+
+        <li>
+          <a href="{{{ config.wwwroot }}}/local/customplugin/teacher_settings_profile.php"
+             data-role="alpha2-nav-link"
+             style="display:inline-flex;align-items:center;width:max-content;
+                    padding:10px 4px 8px 4px;margin:0;text-decoration:none;
+                    font-weight:500;font-size:14px;line-height:1;
+                    color:#111;border-bottom:2px solid transparent;">
+           Teacher Admin Settings
+          </a>
+        </li>
+
+
       </ul>
 
       <!-- Right: CTAs -->
@@ -439,7 +487,7 @@
                   font-weight:500;font-size:14px;line-height:1.1;">
           Find Tutors
         </a>
-        <a href="{{{ config.wwwroot }}}/local/findgroups/index.php"
+        <a href="{{{ config.wwwroot }}}/local/customplugin/find_groups.php"
            style="display:inline-flex;align-items:center;justify-content:center;
                   padding:10px 18px;border-radius:10px;background:#fff;
                   border:2px solid #e2e3ea;color:#0b0b0b;text-decoration:none;
@@ -498,9 +546,3 @@
 {{{ output.edit_switch }}}
 
 
-<style>
-.nav-item-scroll::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
-}
-</style>

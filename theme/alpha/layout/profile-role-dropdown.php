@@ -1,6 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<?php
+
+require_once($CFG->dirroot . '/config.php');
+require_login();
+
+global $DB, $PAGE;
+
+/** Collect unique teacher user IDs from cohorts */
+$userids = $DB->get_fieldset_sql("
+    SELECT DISTINCT uid FROM (
+        SELECT cohortmainteacher AS uid FROM {cohort}
+         WHERE cohortmainteacher IS NOT NULL AND cohortmainteacher > 0
+        UNION
+        SELECT cohortguideteacher AS uid FROM {cohort}
+         WHERE cohortguideteacher IS NOT NULL AND cohortguideteacher > 0
+    ) t
+");
+
+/** Fetch user records */
+$teachers_js = [];
+
+if ($userids) {
+    list($insql, $params) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+    $fields = "id, firstname, lastname, picture, imagealt,
+               firstnamephonetic, lastnamephonetic, middlename, alternatename";
+
+    $teachers = $DB->get_records_select(
+        'user',
+        "id $insql AND deleted = 0 AND suspended = 0",
+        $params,
+        'firstname ASC, lastname ASC',
+        $fields
+    );
+
+    foreach ($teachers as $t) {
+        $pic = new user_picture($t);
+        $pic->size = 50;
+
+        $teachers_js[] = [
+            'id'     => (int)$t->id,
+            'name'   => fullname($t, true),
+            'avatar' => $pic->get_url($PAGE)->out(false),
+        ];
+    }
+}
+
+/* =====================================================
+ * STUDENTS = ALL MEMBERS OF ALL COHORTS
+ * ===================================================== */
+$students_js = [];
+
+/** Get all unique cohort members */
+$studentids = $DB->get_fieldset_sql("
+    SELECT DISTINCT userid
+      FROM {cohort_members}
+");
+
+if ($studentids) {
+    list($insql, $params) = $DB->get_in_or_equal($studentids, SQL_PARAMS_NAMED);
+    $students = $DB->get_records_select(
+        'user',
+        "id $insql AND deleted = 0 AND suspended = 0",
+        $params,
+        'firstname ASC, lastname ASC',
+        'id, firstname, lastname, picture, imagealt, firstnamephonetic, lastnamephonetic, middlename, alternatename'
+    );
+
+    foreach ($students as $s) {
+        $pic = new user_picture($s);
+        $pic->size = 50;
+
+        $students_js[] = [
+            'id'     => (int)$s->id,
+            'name'   => fullname($s, true),
+            'avatar' => $pic->get_url($PAGE)->out(false),
+        ];
+    }
+}
+
+/* =====================================================
+ * ADMIN = CURRENT LOGGED-IN USER
+ * ===================================================== */
+$admin_js = [];
+global $USER;
+if ($USER && !empty($USER->id)) {
+    $pic = new user_picture($USER);
+    $pic->size = 50;
+    $admin_js[] = [
+        'id'     => (int)$USER->id,
+        'name'   => fullname($USER, true),
+        'avatar' => $pic->get_url($PAGE)->out(false),
+    ];
+}
+?>
+
 <head>
     <meta charset="UTF-8">
     <title>Profile Role Dropdown</title>
@@ -230,13 +325,13 @@
 
             <!-- TABS -->
             <div class="profile-role-dropdown-tabs">
-                <div class="profile-role-dropdown-tab" data-role="admin">
+                <div class="profile-role-dropdown-tab active" data-role="admin">
                     Admin <div class="profile-role-dropdown-radio"></div>
                 </div>
                 <div class="profile-role-dropdown-tab" data-role="student">
                     Student <div class="profile-role-dropdown-radio"></div>
                 </div>
-                <div class="profile-role-dropdown-tab active" data-role="teacher">
+                <div class="profile-role-dropdown-tab" data-role="teacher">
                     Teacher <div class="profile-role-dropdown-radio"></div>
                 </div>
             </div>
@@ -262,48 +357,51 @@
     <script>
     /* ===== DATA ===== */
     const data = {
-        student: [{
-                name: "Jane Cooper",
-                avatar: "https://i.pravatar.cc/80?img=45"
-            },
-            {
-                name: "Guy Hawkins",
-                avatar: "https://i.pravatar.cc/80?img=12"
-            },
-            {
-                name: "Devon Lane",
-                avatar: "https://i.pravatar.cc/80?img=32"
-            }
-        ],
-        teacher: [{
-                name: "Daniela",
-                avatar: "https://i.pravatar.cc/80?img=29"
-            },
-            {
-                name: "Mary Janes",
-                avatar: "https://i.pravatar.cc/80?img=48"
-            },
-            {
-                name: "Lane",
-                avatar: "https://i.pravatar.cc/80?img=15"
-            },
-            {
-                name: "Warren",
-                avatar: "https://i.pravatar.cc/80?img=22"
-            },
-            {
-                name: "Fox",
-                avatar: "https://i.pravatar.cc/80?img=8"
-            }
-        ],
-        admin: [{
-            name: "Admin User 1",
-            avatar: "https://i.pravatar.cc/80?img=5"
-        }]
+        // student: [{
+        //         name: "Jane Cooper",
+        //         avatar: "https://i.pravatar.cc/80?img=45"
+        //     },
+        //     {
+        //         name: "Guy Hawkins",
+        //         avatar: "https://i.pravatar.cc/80?img=12"
+        //     },
+        //     {
+        //         name: "Devon Lane",
+        //         avatar: "https://i.pravatar.cc/80?img=32"
+        //     }
+        // ],
+        student: <?php echo json_encode($students_js, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>,
+        // teacher: [{
+        //         name: "Daniela",
+        //         avatar: "https://i.pravatar.cc/80?img=29"
+        //     },
+        //     {
+        //         name: "Mary Janes",
+        //         avatar: "https://i.pravatar.cc/80?img=48"
+        //     },
+        //     {
+        //         name: "Lane",
+        //         avatar: "https://i.pravatar.cc/80?img=15"
+        //     },
+        //     {
+        //         name: "Warren",
+        //         avatar: "https://i.pravatar.cc/80?img=22"
+        //     },
+        //     {
+        //         name: "Fox",
+        //         avatar: "https://i.pravatar.cc/80?img=8"
+        //     }
+        // ],
+        teacher: <?php echo json_encode($teachers_js, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>,
+        // admin: [{
+        //     name: "Admin User 1",
+        //     avatar: "https://i.pravatar.cc/80?img=5"
+        // }]
+        admin: <?php echo json_encode($admin_js,   JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
     };
 
     let state = {
-        role: "teacher",
+        role: "admin",
         search: "",
         selected: "",
         selectedUser: null
@@ -319,32 +417,51 @@
 
     /* ===== FUNCTIONS ===== */
     function getDefaultButtonText(role) {
+        if (role === "admin" && data.admin && data.admin.length > 0) {
+            const admin = data.admin[0];
+            return `<img src="${admin.avatar}" style="width: 23px; height: 23px; border-radius: 8px; margin-right: 8px;">
+                    <span>${admin.name}</span>
+                    <span class="dropdown-arrow" style="margin-left: auto;"></span>`;
+        }
         const roleText = role.charAt(0).toUpperCase() + role.slice(1);
         return `<span>Select ${roleText}</span><span class="dropdown-arrow"></span>`;
     }
 
     function renderUsers() {
         userList.innerHTML = "";
+        if (state.role === "admin") {
+            // Show admin info only, no selection
+            if (data.admin && data.admin.length > 0) {
+                const admin = data.admin[0];
+                const div = document.createElement("div");
+                div.className = "profile-role-dropdown-user";
+                div.innerHTML = `
+                    <img src="${admin.avatar}">
+                    <span>${admin.name}</span>
+                `;
+                userList.appendChild(div);
+            } else {
+                userList.innerHTML = "<p style='text-align:center;color:#777'>No admin found</p>";
+            }
+            return;
+        }
         if (!data[state.role]) return;
-
         const filtered = data[state.role].filter(u =>
             u.name.toLowerCase().includes(state.search.toLowerCase())
         );
-
         if (!filtered.length) {
             userList.innerHTML = "<p style='text-align:center;color:#777'>No results</p>";
             return;
         }
-
         filtered.forEach((user, index) => {
             const label = document.createElement("label");
             label.className = "profile-role-dropdown-user";
             label.innerHTML = `
-      <img src="${user.avatar}">
-      <span>${user.name}</span>
-      <input type="radio" name="userSelection" value="${user.name}" ${state.selected === user.name ? 'checked' : ''}>
-      <div class="profile-role-custom-radio"></div>
-    `;
+                <img src="${user.avatar}">
+                <span>${user.name}</span>
+                <input type="radio" name="userSelection" value="${user.name}" ${state.selected === user.name ? 'checked' : ''}>
+                <div class="profile-role-custom-radio"></div>
+            `;
             userList.appendChild(label);
         });
     }
@@ -363,7 +480,25 @@
         const button = document.getElementById("openProfileRoleDropdown");
         const rect = button.getBoundingClientRect();
 
-        dropdown.style.top = (rect.bottom + 8) + "px";
+        // Set admin as default when opening
+        state.role = "admin";
+        state.search = "";
+        state.selected = data.admin && data.admin.length > 0 ? data.admin[0].name : "";
+        state.selectedUser = data.admin && data.admin.length > 0 ? data.admin[0] : null;
+
+        // Set tab UI
+        tabs.forEach(t => t.classList.remove("active"));
+        tabs[0].classList.add("active");
+
+        // Reset button text
+        if (button) {
+            button.innerHTML = getDefaultButtonText("admin");
+        }
+
+        searchInput.value = "";
+        toggleListArea();
+
+        dropdown.style.top = (rect.bottom + 3) + "px";
         dropdown.style.left = (rect.right - 452) + "px";
 
         dropdown.classList.add("active");
@@ -405,12 +540,30 @@
     };
 
     userList.addEventListener('change', (e) => {
+        if (state.role === "admin") return; // No selection for admin
         if (e.target.type === 'radio') {
             const selectedName = e.target.value;
             const selectedUser = data[state.role].find(u => u.name === selectedName);
 
             state.selected = selectedName;
             state.selectedUser = selectedUser;
+
+            // Debug payload for the selected user
+            if (selectedUser) {
+                console.log('Selected user payload:', {
+                    id: selectedUser.id,
+                    name: selectedUser.name
+                });
+
+                // 🔐 LOGIN AS SELECTED USER
+                if (selectedUser && selectedUser.id) {
+                    window.location.href =
+                        M.cfg.wwwroot +
+                        '/local/loginas.php' +
+                        '?userid=' + selectedUser.id +
+                        '&sesskey=' + M.cfg.sesskey;
+                }
+            }
 
             // Update the button with selected user's info
             if (selectedUser && document.getElementById("openProfileRoleDropdown")) {
@@ -439,6 +592,18 @@
     };
 
     /* ===== INIT ===== */
+    // Set admin as default on load, but do not select admin
+    state.role = "admin";
+    state.search = "";
+    state.selected = "";
+    state.selectedUser = null;
+    // Set tab UI
+    tabs.forEach(t => t.classList.remove("active"));
+    tabs[0].classList.add("active");
+    if (document.getElementById("openProfileRoleDropdown")) {
+        document.getElementById("openProfileRoleDropdown").innerHTML = getDefaultButtonText("admin");
+    }
+    searchInput.value = "";
     toggleListArea();
     </script>
 
