@@ -609,4 +609,44 @@ if ($USER && !empty($USER->id)) {
 
 </body>
 
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("openProfileRoleDropdown1");
+        const dropdown = document.getElementById("profileRoleDropdown");
+        const backdrop = document.getElementById("backdrop");
+        function renderButton(user, roleLabel = "Admin") {
+            if (!btn) return;
+            btn.innerHTML = `
+                <img src="${user.avatar}"
+                    style="width:32px; border-radius:50%;object-fit:cover">
+                <span style="font-weight:500">${user.name}</span>
+                <span class="dropdown-arrow" style="margin-left:auto; margin-top: 4px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </span>
+            `;
+        }
+        if (data.admin && data.admin.length) {
+            renderButton(data.admin[0], "Admin");
+        }
+        btn.addEventListener("click", () => {
+            const rect = btn.getBoundingClientRect();
+
+            dropdown.style.top  = rect.bottom + 6 + "px";
+            dropdown.style.left = rect.right - 452 + "px";
+
+            dropdown.classList.add("active");
+            backdrop.classList.add("active");
+            btn.setAttribute("aria-expanded", "true");
+        });
+        backdrop.addEventListener("click", () => {
+            dropdown.classList.remove("active");
+            backdrop.classList.remove("active");
+            btn.setAttribute("aria-expanded", "false");
+        });
+    });
+</script>
+
 </html>
