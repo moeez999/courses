@@ -1,0 +1,128 @@
+        :root {
+            --teach_time_card_table_list_time_line_text: #121117;
+            --teach_time_card_table_list_time_line_muted: #6B7280;
+            --teach_time_card_table_list_time_line_border: #E4E7EE;
+            --teach_time_card_table_list_time_line_radius: 10px;
+
+            /* slot colors (tweak to your palette) */
+            --teach_time_card_table_list_time_line_green: #DDEDC6;
+            --teach_time_card_table_list_time_line_blue: #B9D9FF;
+            --teach_time_card_table_list_time_line_peach: #FFC9B9;
+
+            /* tick badge */
+            --teach_time_card_table_list_time_line_badge_bg: #22C55E;
+            --teach_time_card_table_list_time_line_badge_ring: #ffffff;
+        }
+
+
+
+        /* ===== Single row (Mon Oct-15) ===== */
+        .teach_time_card_table_list_time_line_row {
+            display: grid;
+            grid-template-columns: 120px repeat(12, 1fr);
+            align-items: stretch;
+        }
+
+
+        /* time slots grid cells */
+        .teach_time_card_table_list_time_line_cell {
+            position: relative;
+            border-left: 1px solid var(--teach_time_card_table_list_time_line_border);
+            min-height: 80px;
+            width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+        }
+
+        /* block that sits inside a cell */
+        .teach_time_card_table_list_time_line_block {
+            position: absolute;
+            inset: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: #111827;
+            overflow: visible;
+        }
+
+        .teach_time_card_table_list_time_line_block.green {
+            background: var(--teach_time_card_table_list_time_line_green);
+        }
+
+        .teach_time_card_table_list_time_line_block.blue {
+            background: var(--teach_time_card_table_list_time_line_blue);
+        }
+
+        .teach_time_card_table_list_time_line_block.peach {
+            background: var(--teach_time_card_table_list_time_line_peach);
+        }
+
+        /* avatar variant */
+        .teach_time_card_table_list_time_line_block.avatar {
+            padding: 0;
+        }
+
+        .teach_time_card_table_list_time_line_block.avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* tick badge */
+        .teach_time_card_table_list_time_line_badge {
+            position: absolute;
+            top: 4px;
+            left: 50px;
+            width: 15px;
+            height: 15px;
+            border-radius: 999px;
+            background: var(--teach_time_card_table_list_time_line_badge_bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .teach_time_card_table_list_time_line_badge svg {
+            width: 12px;
+            height: 12px;
+            color: #fff;
+            display: block;
+        }
+
+        /* separators */
+        .teach_time_card_table_list_time_line_row+.teach_time_card_table_list_time_line_row {
+            border-top: 1px solid var(--teach_time_card_table_list_time_line_border);
+        }
+
+        /* ===== Responsive: horizontal scroll for small screens ===== */
+        .teach_time_card_table_list_time_line_scroller {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .teach_time_card_table_list_time_line_scroller::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .teach_time_card_table_list_time_line_scroller::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 700px) {
+
+            .teach_time_card_table_list_time_line_cell {
+                min-height: 56px;
+            }
+
+            .teach_time_card_table_list_time_line_block {
+                font-size: 13px;
+
+            }
+        }

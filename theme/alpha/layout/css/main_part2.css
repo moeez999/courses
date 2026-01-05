@@ -1,0 +1,616 @@
+/* Modal Common Styles */
+.modal-step {
+  display: none;
+}
+.modal-step.active {
+  display: block;
+}
+
+.custom-modal-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #000;
+}
+
+.custom-modal-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-modal-option, .transfer-option_part2_step2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.custom-modal-option:hover, .transfer-option_part2_step2:hover {
+  background: #f9f9f9;
+}
+
+.custom-modal-arrow {
+  font-size: 24px;
+  color: #ccc;
+}
+
+.avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.transfer-info {
+  flex: 1;
+}
+
+.transfer-name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.transfer-amount {
+  font-size: 14px;
+  color: #666;
+}
+
+
+
+
+
+
+/* part 2 Step 3 content===============*/
+
+.tutor-cards-container {
+    padding: 0 20px;
+  }
+  
+  .tutor-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid;
+  }
+  
+  .tutor-top {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .tutor-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+  }
+  
+  .tutor-main-info {
+    flex: 1;
+  }
+  
+  .tutor-name {
+    font-weight: bold;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .verified-icon {
+    width: 16px;
+    height: 16px;
+    margin-left: 5px;
+  }
+
+  .flag-icon {
+    width: 20px;
+    height: 14px;
+    margin-left: 5px;
+  }
+  
+  .tutor-rating-price {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-top: 3px;
+  }
+  
+  .tutor-rating .reviews {
+    color: #666;
+  }
+  
+  .tutor-price {
+    font-weight: bold;
+    color: #000;
+  }
+  
+  .lesson-length {
+    font-weight: normal;
+    color: #666;
+    font-size: 12px;
+    margin-left: 5px;
+  }
+  
+  .super-tutor-badge {
+    background: #fde8e9;
+    color: #c62828;
+    font-size: 12px;
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 5px;
+    margin: 10px 0;
+  }
+  
+  .tutor-details {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+  
+  .tutor-balance-btn, .tutor-profile-btn {
+    width: 100%;
+    background: #fff;
+    border: 1px solid #000;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  
+  .tutor-profile-btn {
+    border-color: #eee;
+    color: #333;
+    border: 1px solid;
+  }
+  
+  .tutor-balance-btn:hover {
+    background: #f9f9f9;
+  }
+  
+  .explore-section {
+    background: #fff;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #eee;
+  }
+  
+  .explore-text {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .explore-btn {
+    background: #ff5331;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+  }
+  
+  .explore-btn:hover {
+    background: #e6451d;
+  }
+  
+
+  .modal-step {
+    display: none; /* default hidden */
+  }
+  
+  .modal-step.active {
+    display: block; /* only active one shows */
+  }
+
+  
+  .modal-step_part2_step3 {
+    display: none; /* default hidden */
+  }
+  
+  .modal-step_part2_step3.active {
+    display: block; /* only active one shows */
+  }
+
+
+
+
+
+
+/* ---- Lesson Selector Step 4---- */
+.lesson-step--selector {
+  display: none;
+  width: 100%;
+}
+.lesson-step--selector.active {
+  display: block;
+}
+
+/* Card-style header */
+.lesson-header-container {
+  position: relative;
+  margin: 24px;               /* space from modal edges */
+  padding: 16px 0;            /* vertical padding */
+  background: #FFF;           /* white card */
+  border: 1px solid #EAEAEA;  /* light gray border */
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lesson-close {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #121331;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.lesson-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #161439;
+}
+
+/* Options list */
+.lesson-options {
+  list-style: none;
+  margin: 0 24px;
+  padding: 0;
+}
+.lesson-option {
+  display: flex;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #EAEAEA;
+  cursor: pointer;
+}
+.lesson-option:last-child {
+  border-bottom: none;
+}
+
+/* Icon container */
+.lesson-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  font-size: 16px;
+}
+
+/* Icon background & color by duration */
+.lesson-option[data-duration="25"] .lesson-icon {
+  background: #EEF2FF; /* light blue */
+  color: #4F46E5;      /* indigo */
+}
+.lesson-option[data-duration="50"] .lesson-icon {
+  background: #FEF3C7; /* light orange */
+  color: #D97706;      /* amber */
+}
+
+/* Text */
+.lesson-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.lesson-text strong {
+  font-size: 16px;
+  color: #161439;
+  line-height: 1.2;
+}
+.lesson-price {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #878CA5;
+}
+
+/* Right arrow */
+.lesson-arrow {
+  font-size: 16px;
+  color: #D1D5DB;
+}
+
+
+/* smooth transitions on option hover */
+.lesson-option {
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* highlight the whole row */
+.lesson-option:hover {
+  background-color: #F4F5F7;    /* very light gray */
+  transform: translateX(2px);   /* tiny slide to the right */
+}
+
+/* darken the arrow on hover */
+.lesson-option:hover .lesson-arrow {
+  color: #9CA3AF;               /* medium gray */
+}
+
+/* subtly brighten the icon circle */
+.lesson-option:hover .lesson-icon {
+  filter: brightness(1.1);
+}
+
+/* change “×” color on hover */
+.lesson-close:hover {
+  color: #374151;               /* darker charcoal */
+}
+
+
+
+
+
+/* === Step 5: Review your transfer === */
+.review-step--container {
+  display: none;
+  width: 100%;
+}
+.review-step--container.active {
+  display: block;
+}
+
+/* Card‐style header */
+.review-header-container {
+  position: relative;
+  margin: 24px;               /* same as your Step 4 card */
+  padding: 16px 0;            /* vertical padding */
+  background: #FFFFFF;
+  border: 1px solid #EAEAEA;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Back & close buttons */
+.review-back,
+.review-close {
+  /* position: absolute; */
+  top: 40%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #121331;
+  cursor: pointer;
+}
+.review-back { left: 16px; }
+.review-close { right: 16px; }
+
+/* Header title */
+.review-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #161439;
+}
+
+/* Body wrapper */
+.review-body {
+  padding: 0 24px 24px;
+  background: #FFFFFF;
+}
+
+/* Avatars */
+.review-avatars {
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+  margin-top: 16px;
+  margin-bottom: 24px;
+  width:50px;
+}
+.review-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.review-avatar + .review-avatar-arrow {
+  margin: 0 16px;
+  font-size: 24px;
+  color: #D1D5DB;
+}
+
+/* Secondary title (optional; hides if redundant) */
+.review-title--body {
+  display: none; /* remove if you want a second heading */
+}
+
+/* Summary list */
+.review-summary {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.summary-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  color: #161439;
+  padding: 8px 0;
+}
+.summary-divider hr {
+  border: none;
+  border-top: 1px solid #EAEAEA;
+  margin: 8px 0;
+}
+
+/* “What happens next?” subtitle */
+.review-subtitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #161439;
+  margin: 16px 0 8px;
+}
+
+/* Next‐steps list */
+.review-next {
+  list-style: disc inside;
+  margin: 0 0 24px;
+  padding: 0;
+  color: #161439;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Confirm transfer button */
+.review-confirm {
+  width: 100%;
+  padding: 12px 0;
+  background-color: #FF2D55;
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: opacity 0.2s ease;
+}
+.review-confirm:hover {
+  opacity: 0.95;
+}
+
+
+
+
+/* === Step 6: Transfer complete === */
+.modal-step--complete {
+  display: none;
+  width: 100%;
+}
+.modal-step--complete.active {
+  display: block;
+}
+
+/* Pink header container */
+.complete-header-container {
+  background-color: #FFF1F0;
+  padding: 24px 16px 32px;
+  position: relative;
+  text-align: center;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+/* Close × */
+.complete-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #121331;
+  cursor: pointer;
+}
+
+/* Avatars + arrow row */
+.complete-avatars {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.complete-avatar-wrapper {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.complete-avatar-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.complete-avatar-arrow {
+  margin: 0 12px;
+  font-size: 20px;
+  color: #FF3B30;
+  font-weight: bold;
+  line-height: 1;
+}
+
+/* +1 badge */
+.complete-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: #FF2D55;
+  color: #FFF;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 4px;
+  border: 2px solid #FFF1F0;
+  border-radius: 4px;
+}
+
+/* Title */
+.complete-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #161439;
+}
+
+/* Body */
+.complete-body {
+  background: #FFF;
+  padding: 0 16px 24px;
+  text-align: center;
+}
+.complete-text {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: #161439;
+  line-height: 1.4;
+}
+
+/* Buttons */
+.complete-btn {
+  width: 100%;
+  max-width: 400px;
+  margin: 8px auto;
+  padding: 12px 0;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: opacity 0.2s ease;
+}
+.complete-btn--primary {
+  background: #FF2D55;
+  color: #FFF;
+}
+.complete-btn--secondary {
+  background: #FFF;
+  color: #161439;
+  border-color: #161439;
+}
+.complete-btn:hover {
+  opacity: 0.95;
+}
+
+

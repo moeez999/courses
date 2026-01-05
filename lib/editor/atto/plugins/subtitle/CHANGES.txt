@@ -1,0 +1,45 @@
+Version 1.0.14 (Build 2021062900)
+-Layout fix for audio subtitles
+-Fixed for poor behaviour on delete tile
+
+Version 1.0.13 (Build 2019112101)
+-fixed bad version number
+
+Version 1.0.12 (Build 2019112100)
+-added missing pause button icon
+-added upload/download subtitles
+-improved failed upload response to properly download vtt track
+-added better track handling in preview player
+
+Version 1.0.11 (Build 2019090200)
+-removed unnecessary h1 style from styles.css ( https://github.com/justinhunt/moodle-atto_subtitle/issues/2 )
+-fixed issue where preview player progress bar was not responding to events
+-Fixed issue where events stopped triggering after removing the last subtitle and adding a new one
+-Moved to using Mustache templates for tile and html generation
+
+Version 1.0.10 (Build 2019053100)
+-fixed issue where audio files were presented with video editor
+-fixed broken step-back button
+-improved title preview bar in audio editor
+-fixed issue where 'infinity' duration displayed as 'alid'
+
+Version 1.0.9 (Build 2019032700)
+-resize fixes for firefox and edge
+
+Version 1.0.7 (Build 2019020800)
+-CSS fixes
+
+Version 1.0.7 (Build 2018121800)
+-Fixed privacy provider implementation
+
+Version 1.0.6 Build(2018120301)
+-Fixed a big where newly created subtiutle track had incorrect "kind" attribute applied.
+
+Version 1.0.5 Build(2018120300)
+-Fixed a big where new subtitles failed to add had there been none before
+
+Version 1.0.4 (Build 2018102501)';
+-tweaks to comments and added MOODLE_INTERNAL checks
+
+Version 1.03 (Build 2018101204)
+-Initial release of Atto Subtitle

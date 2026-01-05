@@ -1,0 +1,312 @@
+#mergeTabContent {
+  padding: 0 4px;
+}
+.merge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin-bottom: 18px;
+  height: 508px;
+}
+.merge-col {
+  flex: 1 1 220px;
+  min-width: 170px;
+  position: relative;
+}
+.merge-label {
+  font-size: 1.1rem;
+  color: #232323;
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+}
+.merging-date-con {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.closing-merge-date-con {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.merge-dropdown-wrapper {
+  position: relative;
+}
+.merge-dropdown-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 2px solid #dadada;
+  border-radius: 12px;
+  background: #fafbfc;
+  padding: 12px 15px;
+  cursor: pointer;
+  font-size: 1.07rem;
+  color: #232323;
+  min-width: 180px;
+  transition: border 0.13s, box-shadow 0.13s;
+  font-weight: 500;
+}
+
+.merge-dropdown-btn:hover {
+  border: 2px solid #232323;
+}
+.merge-dropdown-btn:focus,
+.merge-dropdown-btn.active {
+  border: 2px solid #232323;
+  box-shadow: 0 0 0 1px #23232330;
+}
+.merge-dropdown-selected {
+  color: #232323;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.merge-dropdown-list {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 110%;
+  width: 270px;
+  background: #fff;
+  border: none;
+  border-radius: 17px;
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.13);
+  z-index: 99;
+  padding: 0 0 14px 0;
+}
+.merge-dropdown-title {
+  font-size: 1.22rem;
+  font-weight: bold;
+  margin: 20px 0 8px 24px;
+  letter-spacing: -0.2px;
+  color: #232323;
+}
+.merge-dropdown-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.merge-dropdown-list li {
+  padding: 11px 24px;
+  font-size: 1.11rem;
+  color: #232323;
+  cursor: pointer;
+  border-radius: 7px;
+  transition: background 0.12s, color 0.12s;
+  font-weight: 500;
+}
+.merge-dropdown-list li:hover,
+.merge-dropdown-list li.selected {
+  background: #f7f7f7;
+  color: #fe2e0c;
+}
+
+#mergeCohortForm .merge-date-btn {
+  background: #fff;
+  border: 2px solid #dadada;
+  color: #232323;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 1.07rem;
+  font-weight: 500;
+  margin-top: 4px;
+  cursor: pointer;
+  transition: border 0.13s;
+  box-shadow: 0 1px 8px #2323230d;
+}
+
+#mergeCohortForm .merge-date-btn:hover {
+  border: 2px solid #232323;
+}
+
+#mergeCohortForm .merge-checkbox-label input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  accent-color: #fe2e0c; /* keeps your red accent */
+  background-color: #fff; /* ensures white background */
+  border: 1.5px solid #ccc;
+  border-radius: 4px;
+  appearance: none;
+  cursor: pointer;
+  position: relative;
+  margin-right: 6px;
+  transition: all 0.2s ease;
+}
+
+#mergeCohortForm .merge-checkbox-label input[type="checkbox"]:checked {
+  background-color: #fe2e0c;
+  border-color: #fe2e0c;
+}
+
+#mergeCohortForm .merge-checkbox-label input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.merge-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 1rem;
+  color: #232323;
+  margin-top: 7px;
+}
+.merge-checkbox-label input[type="checkbox"] {
+  width: 19px;
+  height: 19px;
+  accent-color: #fe2e0c;
+  margin-right: 2px;
+}
+.merge-cohort-btn {
+  width: 100%;
+  background: #fe2e0c;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  font-size: 1.09rem;
+  border-radius: 9px;
+  padding: 14px 0;
+  margin-top: 18px;
+  cursor: pointer;
+  box-shadow: 0 3px 13px 0 rgba(254, 46, 12, 0.07);
+  letter-spacing: 0.5px;
+}
+@media (max-width: 600px) {
+  .merge-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .merge-col {
+    min-width: 0;
+  }
+  .merge-dropdown-list {
+    width: 98vw;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* --- Calendar Modal Styles (matches your screenshot) --- */
+.merge-calendar-modal-backdrop {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.14);
+}
+.merge-calendar-modal {
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 10px 36px 0 rgba(0, 0, 0, 0.16);
+  max-width: 300px;
+  max-width: 97vw;
+  padding: 26px 24px 24px 24px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: inherit;
+}
+.merge-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.merge-calendar-header span {
+  font-size: 1.18rem;
+  font-weight: 600;
+}
+.merge-calendar-header button {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+.merge-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 36px);
+  grid-gap: 6px;
+  justify-content: center;
+  font-weight: bold;
+  color: #888;
+  margin-bottom: 6px;
+  text-align: center;
+  font-size: 1.01rem;
+}
+.merge-calendar-weekdays > div {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.merge-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 36px);
+  grid-gap: 6px;
+  justify-content: center;
+}
+.merge-calendar-day-header {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #888;
+  font-size: 1.01rem;
+}
+.merge-calendar-day,
+.merge-calendar-day-inactive {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.01rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.13s;
+}
+.merge-calendar-day-inactive {
+  color: #c2c2c2;
+  background: #fff;
+  pointer-events: none;
+  cursor: default;
+}
+.merge-calendar-day.selected,
+.merge-calendar-day:hover:not(.merge-calendar-day-inactive) {
+  background: #fe2e0c;
+  color: #fff;
+}
+.merge-calendar-done-btn {
+  width: 100%;
+  background: #fe2e0c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 12px 0;
+  margin-top: 19px;
+  cursor: pointer;
+  transition: background 0.13s;
+}
+.merge-calendar-done-btn:active {
+  background: #e52b10;
+}

@@ -1,0 +1,151 @@
+Change List
+=========
+Version 1.0.39 (Build 2024060700)
+- Removed cleanup scheduled task
+
+Version 1.0.38 (Build 2023101700)
+- added some languages including Maori
+
+Version 1.0.37 (Build 2023101300)
+- removed a deprec. Moodle function
+
+Version 1.0.36 (Build 2023062600)
+- Added no audio noise filters setting, to prevent audio distortion when playing back audio at the same time as recording.
+
+Version 1.0.35 (Build 2023051900)
+- M42 support
+
+Version 1.0.34 (Build 2023041500)
+- added RTL support for Arabic/Hebrew/Farsi
+- added corrections feature to standard transcript
+
+Version 1.0.32 (Build 2022100700)
+- removed unneeded lang strings
+
+Version 1.0.31 (Build 2022060500)
+- Changed AMD build steps
+- Change free trial jump link
+
+Version 1.0.30 (Build 2022030200)
+- added version bump so that iOS will pull latest video recorder code
+
+Version 1.0.29 (Build 2021122200)
+- added an enable recorder type setting to the activity
+- added fetch API creds links to settings page
+
+Version 1.0.28 (Build 2021082700)
+- fixed layout issue if video recorder and another submission type were both active
+
+Version 1.0.27 (Build 2021062400)
+-added export file feature
+-added delete remote files feature (currently disabled)
+-added secure playback urls (needs more work)
+-added screen recorder
+
+Version 1.0.26 (Build 2021052000)
+-Added Bahrain and Capetown as regions
+
+Version 1.0.25 (Build 2021042800)
+- Made transcription:none, the default
+- Hard coded transcoding, and removed the option to opt out of it. We always need it.
+
+Version 1.0.24 (Build 2021032600)
+-Unneeded "gggg" appended to name of the audio recorder field on the student view.
+
+Version 1.0.23 (Build 2021022701)
+- Tweak for responsiveness on some themes without width 100% set on form-control-static
+
+Version 1.0.22 (Build 2021022700)
+--CSS tweaks for responsive recorders on old browsers
+
+Version 1.0.20 (Build 2021022100)
+-Made recorders display better on small screen devices
+
+Version 1.0.19 (Build 2021011600)
+- better reporting of unregistered url in admin settings
+
+Version 1.0.18 (Build 2020110400)
+- fixed inability to turn off transcription
+- added "safe save" setting
+
+Version 1.0.17 (Build 2020090100)
+- hide size options on settings form if cloudpoodll disabled
+
+Version 1.0.16 (Build 2020082400)
+- better display options for audio and video
+
+Version 1.0.16 (Build 202004100)
+- enabled hiding cloudpoodll settings on assign edit page if not enabled
+
+Version 1.0.15 (Build 2020012200)
+-added languages(arabic, chinese, portuguese, japanese, tamil, Telugu, dutch, farsi, wales english, ireland english, scotland english, russian, turkish, malay, indonesian,hebrew, swiss german)
+-added user tagging
+
+Version 1.0.14 (Build 2019112100)
+-added better reporting of poor Cloud Poodll config settings
+-made recorder title customizable
+-corrected strings referringto ReadAloud
+-fixed incorrect en-UK lang code (correct is en-GB)
+-added word count to transcript display
+-display shortened transcript and word count on view submissions page
+-display view page link on view submissions page
+-Optimisations of cron task
+-Fixed styles on transcript container
+
+Version 1.0.13 (Build 2019091300)
+-Fixed issue where incorrect privacy function declaration broke plugin privacy registry on load
+
+Version 1.0.12 (Build 2019082000)
+-Fixed enabletranscode control on form which always appeared checked
+
+Version 1.0.11 (Build 2019052000)
+-added  toggle button to improve display of current submission
+-added option to show student transcript to student
+-added fast transcription
+-added more transcription languages
+
+Version 1.0.10 (Build 2019041200)
+-added support for transcription of users speaking to speed up grading
+
+Version 1.0.9 (Build 2019012000)
+- better error reporting if api creds have issue
+-Added better cron calling
+-Added support for fast poodll loading in poodllloader.html (used by safari's mainly)
+
+Version 1.0.8 (Build 2018112600)
+-improved reliability of cron call to fetch token
+-better privacy api integration
+
+Version 1.0.7 (Build 2018111800)
+-added support for auth details in token
+-refresh link on the user settings page
+
+Version 1.0.6 (Build 2018111200)
+-added support for Ottawa, London, Sao Paulo, Frankfurt regions (slow best for short recordings)
+
+Version 1.0.5 (Build 2018102501)
+-addition of MOODLE_INTERNAL check
+- better implementation of data provider in dataprivacy classes
+
+Version 1.0.4 (Build 2018102301)
+- Fixed recorder sizes
+- Setup instance form to disable/enable correctly
+- Added upload recorder
+- Set minimum version Moodle 2.9
+
+Version 1.0.3 (Build 2018101202)
+-fixed language strings and version
+
+Version 1.0.2 (Build 20181012001)
+-messed up version numbers ouch
+- fixed size of video on 123 recorder
+- changed the labels for settings on instance page
+- added margin for delete current submission button
+- gave it a cloud icon (no imagination recently )
+
+Version 1.0.1 (Build 2018191201)
+- Added fallback option for non-HTML5 compatible browsers.
+
+Version 1.0.0(Build 20180912000)
+-First release of Cloud Poodll Assignment Submission
+

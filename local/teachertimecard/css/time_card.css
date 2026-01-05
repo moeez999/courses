@@ -1,0 +1,145 @@
+    :root {
+        --teacher_time_card_table_list_text: #121117;
+        --teacher_time_card_table_list_muted: #6B7280;
+        --teacher_time_card_table_list_border: #E4E7EE;
+        --teacher_time_card_table_list_chip: 44px;
+        --teacher_time_card_table_list_radius: 12px;
+
+        /* chip palette */
+        --teacher_time_card_table_list_green: #CDE7C1;
+        --teacher_time_card_table_list_yellow: #F5E9B7;
+        --teacher_time_card_table_list_blue: #B9D9FF;
+        --teacher_time_card_table_list_lime: #D6E7A9;
+        --teacher_time_card_table_list_peach: #FFC9B9;
+        --teacher_time_card_table_list_outline: #121117;
+
+        /* tick badge */
+        --teacher_time_card_table_list_badge_bg: #22C55E;
+        --teacher_time_card_table_list_badge_ring: #ffffff;
+    }
+
+    /* === FIXED-WIDTH SCROLLER WRAPPER (forces horizontal scroll) === */
+    .teacher_time_card_table_list_scroller {
+        width: 520px;
+        max-width: 100%;
+
+    }
+
+
+    /* chips row: make it one line & wider than container */
+    .teacher_time_card_table_list_chiprow {
+        display: inline-flex;
+        /* inline so width = content width */
+        gap: 10px;
+        align-items: center;
+        flex-wrap: nowrap;
+        /* single line */
+        width: max-content;
+        /* expands to fit all chips */
+        min-width: 100%;
+        /* avoids collapsing smaller than container */
+    }
+
+    .teacher_time_card_table_list_chip {
+        width: var(--teacher_time_card_table_list_chip);
+        height: var(--teacher_time_card_table_list_chip);
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        user-select: none;
+        border: 2px solid transparent;
+        position: relative;
+        /* for badge */
+    }
+
+    /* solids */
+    .teacher_time_card_table_list_chip.green {
+        background: var(--teacher_time_card_table_list_green);
+    }
+
+    .teacher_time_card_table_list_chip.yellow {
+        background: #edbca6;
+        /* as you set */
+        border: 2px solid black;
+    }
+
+    .teacher_time_card_table_list_chip.blue {
+        background: var(--teacher_time_card_table_list_blue);
+    }
+
+    .teacher_time_card_table_list_chip.lime {
+        background: var(--teacher_time_card_table_list_lime);
+    }
+
+    .teacher_time_card_table_list_chip.peach {
+        background: var(--teacher_time_card_table_list_peach);
+    }
+
+    /* outlined variant */
+    .teacher_time_card_table_list_chip.outline {
+        background: #fff;
+        border-color: var(--teacher_time_card_table_list_outline);
+        font-weight: 800;
+    }
+
+    /* avatar chip */
+    .teacher_time_card_table_list_chip.avatar {
+        padding: 0;
+        overflow: visible;
+    }
+
+    .teacher_time_card_table_list_chip.avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        border-radius: 999px;
+    }
+
+    /* tick badge */
+    .teacher_time_card_table_list_badge {
+        position: absolute;
+        top: 0px;
+        left: 30px;
+        width: 15px;
+        height: 15px;
+        border-radius: 999px;
+        background: var(--teacher_time_card_table_list_badge_bg);
+        /* box-shadow: 0 0 0 2px var(--teacher_time_card_table_list_badge_ring); */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+    }
+
+    .teacher_time_card_table_list_badge svg {
+        width: 12px;
+        height: 12px;
+        color: #fff;
+        display: block;
+    }
+
+    /* responsive spacing */
+    @media (max-width:640px) {
+        .teacher_time_card_table_list_chip {
+            width: 40px;
+            height: 40px;
+            font-size: 13px;
+        }
+
+
+        /* full width on small screens */
+    }
+.session-tooltip {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tooltip-visible .session-tooltip {
+    display: block;
+    opacity: 1;
+}

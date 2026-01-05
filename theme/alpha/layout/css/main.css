@@ -1,0 +1,685 @@
+    .open-transfer-modal-btn {
+      display: inline-block;
+      padding: 10px 15px;
+      background-color: #4f46e5;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 20px;
+    }
+
+    /* High z-index overlay to appear on top of all modals */
+    .custom-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999; /* Force to top layer */
+    }
+
+    .custom-modal-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      z-index: 10000; /* Above the overlay */
+      padding: 20px;
+      overflow-y: auto;
+      height: 90%;
+      /* Change this to maintain functionality but hide scrollbar */
+      overflow-y: scroll;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .custom-modal-box::-webkit-scrollbar {
+      display: none;
+    }
+
+    .custom-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .custom-modal-back {
+      font-size: 24px;
+      cursor: pointer;
+      padding: 5px 10px;
+      color: #333;
+      visibility: hidden; /* Hidden by default */
+    }
+
+    /* Show back button on second, third, and fourth step */
+    .modal-step[data-step="transfer-modal_part1"].active ~ .custom-modal-header .custom-modal-back,
+    .modal-step[data-step="transfer-to-modal_part1_step2"].active ~ .custom-modal-header .custom-modal-back,
+    .modal-step[data-step="lessons-selection-modal"].active ~ .custom-modal-header .custom-modal-back {
+      visibility: visible;
+    }
+
+    .custom-modal-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      margin-top: 10px;
+    }
+
+    .custom-modal-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 22px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .custom-modal-content {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .custom-modal-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+
+    .custom-modal-option:last-child {
+      border-bottom: none;
+    }
+
+    .custom-modal-option i {
+      color: #f44336;
+      font-size: 18px;
+      margin-right: 12px;
+    }
+
+    .custom-modal-option div {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      color: #333;
+    }
+
+    .custom-modal-arrow {
+      font-size: 30px;
+      font-weight: bold;
+      color: #999;
+    }
+    
+    /* Larger arrows for transfer options */
+    .transfer-option .custom-modal-arrow {
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    /* Step Content Styles */
+    .modal-step {
+      display: none; /* All steps hidden by default */
+    }
+    
+    .modal-step.active {
+      display: block; /* Only active step is shown */
+    }
+
+    /* Transfer Modal Specific Styles */
+    .transfer-option {
+      display: flex;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+
+    .user-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 15px;
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .transfer-amount {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .section-title {
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+      margin-top: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .lesson-info {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .section-divider {
+      height: 1px;
+      background-color: #eee;
+      margin: 20px 0;
+    }
+
+    /* Base styles for all clickable items in modal - apply to both option and transfer items */
+    .custom-modal-option, .transfer-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 10px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 8px;
+      margin: 0 -10px;
+    }
+
+    /* Hover effect for all clickable items */
+    .custom-modal-option:hover, .transfer-option:hover {
+      background-color: #f5f7ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Arrow styling for all items */
+    .custom-modal-arrow {
+      font-size: 30px;
+      color: #999;
+      transition: all 0.3s ease;
+    }
+
+    /* Arrow hover effect for all items */
+    .custom-modal-option:hover .custom-modal-arrow, 
+    .transfer-option:hover .custom-modal-arrow {
+      color: #4f46e5;
+      transform: translateX(3px);
+    }
+
+    /* User name highlight on hover in transfer options */
+    .transfer-option:hover .user-name {
+      color: #4f46e5;
+    }
+    
+    /* Slight scale effect for avatar on hover */
+    .transfer-option:hover .user-avatar img {
+      transform: scale(1.05);
+      transition: transform 0.3s ease;
+    }
+    
+    /* Add transition to avatar images */
+    .user-avatar img {
+      transition: transform 0.3s ease;
+    }
+    
+    /* Ensure last items don't have bottom border when hovered */
+    .custom-modal-option:last-child:hover,
+    .transfer-option:last-child:hover {
+      border-bottom: none;
+    }
+    
+    /* Handle section groups in step 3 */
+    .section-divider + .section-title + .transfer-option {
+      border-top: none;
+    }
+
+    /* Lesson Selection Modal Specific Styles */
+    .lesson-selection-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0;
+    }
+    
+    .user-avatars {
+      display: flex;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    
+    .avatar-left, .avatar-right {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+    
+    .avatar-arrow {
+      margin: 0 10px;
+      font-size: 20px;
+    }
+    
+    .lesson-counter-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin: 20px 0 30px;
+    }
+    
+    .lesson-counter {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    
+    .counter-btn {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .counter-btn:hover {
+      background: #e9e9e9;
+    }
+    
+    .counter-btn:active {
+      background: #ddd;
+    }
+    
+    .counter-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .lesson-count {
+      font-size: 42px;
+      font-weight: bold;
+      margin: 0 20px;
+    }
+    
+    .lesson-price {
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .balance-container {
+      width: 100%;
+      background: #f5f7fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .balance-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .balance-text {
+      font-weight: bold;
+    }
+    
+    .used-amount {
+      display: flex;
+      align-items: center;
+    }
+    
+    .used-icon {
+      margin-right: 5px;
+      color: #333;
+      font-size: 12px;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      width: 100%;
+      background: #e0e0e0;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: #10b981; /* Green color */
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    
+    .show-breakdown {
+      text-align: center;
+      color: #000;
+      font-weight: 500;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .continue-btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      background: #ff5331; /* Red/orange button */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.3s ease;
+    }
+    
+    .continue-btn:hover {
+      background: #e54a2a;
+    }
+    
+    .continue-btn.disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+
+
+
+
+/* 4rth Modal content*/
+.lesson-modal {
+  display: block;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.lesson-modal-content {
+  background: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.lesson-modal-close {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.lesson-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.lesson-back-btn,
+.lesson-next-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+.lesson-avatars {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.lesson-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.lesson-title {
+  font-size: 20px;
+  margin: 10px 0;
+}
+
+.breakdown-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.breakdown-table td {
+  padding: 6px 0;
+  text-align: right;
+}
+
+.breakdown-table td:first-child {
+  text-align: left;
+}
+
+.highlight-row {
+  font-weight: bold;
+}
+
+.green {
+  color: green;
+}
+
+.breakdown-close-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+
+
+/* 5th modal content Review Transfer Modal Styles */
+.next-steps {
+  margin: 20px 0;
+}
+
+.next-steps ul {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.next-steps li {
+  margin-bottom: 12px;
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+.balance-info {
+  margin: 15px 0;
+}
+
+.balance-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 16px;
+}
+
+.amount {
+  font-weight: 500;
+}
+
+#confirmTransferBtn {
+  margin-top: 20px;
+}
+
+/*  Make sure the section divider works properly in the review screen */
+.modal-step[data-step="review-transfer-modal"] .section-divider {
+  margin: 15px 0;
+}
+
+
+/* Review Transfer Avatar Styling */
+.review-avatars {
+  display: flex;
+  /* align-items: center;
+  justify-content: center; */
+  margin: 10px 0 20px;
+}
+
+.review-avatars .avatar-left,
+.review-avatars .avatar-right {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.review-avatars .avatar-arrow {
+  margin: 0 10px;
+  font-size: 20px;
+}
+
+.review-avatars img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+
+
+
+/* 6th Step Transfer Complete Styling */
+.transfer-complete-content {
+  text-align: left;
+  padding: 20px;
+}
+
+.custom-modal-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.success-message {
+  margin: 20px 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.success-message p {
+  margin: 10px 0;
+}
+
+.section-divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 20px 0;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.action-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.secondary-btn {
+  background-color: white;
+  color: #3cb371;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #3cb371;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  font-size: 16px;
+}
+
+.secondary-btn:hover {
+  background-color: #f5f5f5;
+}
+
+
+/*6th step modal content for confirm payment*/
+.payment-card {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-top: 10px;
+  background: #f9f9f9;
+}
+
+.modal-step[data-step="transfer-complete-modal"] .custom-modal-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: black;
+}
+
+.secondary-btn:hover {
+  background: #f5f5f5;
+}
+
+/* Button hover styles for better UX */
+.continue-btn:hover {
+  background: #e6451d;
+}
+
+.secondary-btn:hover {
+  background: #f5f5f5;
+}

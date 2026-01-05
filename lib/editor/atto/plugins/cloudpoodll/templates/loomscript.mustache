@@ -1,0 +1,44 @@
+//<script>
+    import {setup} from "https://www.unpkg.com/@loomhq/record-sdk@2.36.18/dist/esm/index.js?module";
+    import {isSupported} from "https://www.unpkg.com/@loomhq/record-sdk@2.36.18/dist/esm/is-supported.js?module";
+    import * as loomembed from "https://www.unpkg.com/@loomhq/loom-embed@1.2.2/dist/esm/index.js?module";
+
+
+    async function init() {
+        const { supported, error } = await isSupported();
+
+        if (!supported) {
+            console.warn(`Error setting up Loom: ${error}`);
+            return;
+        }
+
+
+        const button = document.getElementById('{{loomid}}_launcher');
+        if (!button) {
+            return;
+        }
+
+        const { configureButton } = await setup({
+            jws: '{{jws}}'
+        });
+
+        const sdkButton = configureButton({ element: button });
+
+        sdkButton.on("insert-click", async (video) => {
+            //get videourl for return to the editor
+            var videourlfield = document.getElementById('{{loomid}}_videourl');
+            videourlfield.value= video.sharedUrl;
+
+            //get player source for return to the editor
+            var playersourcefield = document.getElementById('{{loomid}}_playersource');
+            const { html } = await loomembed.oembed(video.sharedUrl, { width: 800 });
+            playersourcefield.value=html;
+
+            //dispatch change event so that the editor knows to update
+            videourlfield.dispatchEvent(new Event('change'));
+        });
+
+        //finally click the button and start recording
+        button.click();
+    }
+    init();

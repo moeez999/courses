@@ -1,0 +1,321 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
+
+.nav-mobile{
+    position: fixed;
+    z-index: 10000;
+    background: none;
+    bottom: 0;
+    padding: 0;
+    margin: 0;
+    width: 100vw;
+    height: 10vh    ;
+    background-color: white;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    border: 2px solid gray;
+    box-shadow: 5px 0 10px gray;
+    justify-content: space-evenly;
+    align-content: center;
+    padding: 5px;
+    font-size: 1em;
+    display: none;
+    align-items: center;
+}
+
+.nav-mobile .item{
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: space-evenly;
+    text-align: center;
+    height: 100%;
+}
+
+.nav-mobile .item:hover, .nav-mobile .item:active{
+    color: red;
+}
+
+.nav-mobile .item:hover svg, .nav-mobile .item:active svg{
+    fill: red;
+}
+
+.item--active{
+    color: red;
+}
+.item:not(.item--active){
+    color: gray;
+}
+.value{
+    font-size: 0.9em;
+}
+.item svg{
+    width: 30px;
+    height: 30px;
+    transition: 0.3s;
+    margin: auto;
+}
+.item--active svg{
+    fill: red;
+}
+
+.nav-mobile .item svg:not(.item--active svg){
+    fill: gray;
+}
+
+.nav-mobile .item:hover svg:not(.item--active svg){
+    fill: red;
+}
+
+.nav-mobile .item i{
+    font-size: 2em;
+}
+
+
+.swal2-actions{
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+} 
+
+.btn-swal{
+    background-color: red;
+    border: none;
+    outline: none;
+    border: 2px solid red;
+    transition: 0.3s;
+    padding: 15px 12px;
+    border-radius: 10px;
+    font-size: 1.1em;
+}
+
+.container-swal{
+    overflow: hidden;
+    border-radius: 20px;
+}
+
+.swalHead{
+    padding: 20px;
+    background-color: #ffe9e6;
+    width: 100%;
+    font-size: 1.1em;
+    height: max-content;
+    text-align: start;
+    margin-bottom: 10px;
+}
+.swal2-html-container{
+    padding: 0;
+}
+.swal2-cancel{
+    background-color: white;
+    color: red;
+}
+.swal2-actions .swal2-confirm:not(.btn-submit),
+.swal2-actions .swal2-cancel:not(.btn-submit) {
+    width: 40%;
+}
+.titleCancel{
+    font-size: 1.2em;
+}
+#swal-textarea{
+    resize: none;
+}
+.inputSwal{
+    font-size: 0.9em;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    border: 0.7px solid gray ;
+}
+
+.swalModify{
+    padding: 7px;
+    font-weight: lighter;
+    width: 80%;
+    margin: auto;
+    margin-bottom: 20px;
+}
+
+
+.swalModify b{
+    font-weight: bold;
+}
+
+.btn-submit{
+    width: 80%;
+}
+
+/* RANGE */
+
+.range{
+    height: 100px;
+    width: 90%;
+    background: #fff;
+    border-radius: 100px;
+    padding: 0 65px 0 45px;
+    border: 1.5px solid gray;
+    margin: auto;
+    margin-top: 20px;
+
+  } 
+  .field{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: relative;
+  }
+  .field .value{
+    position: absolute;
+    color: gray;
+    font-weight: lighter;
+  }
+
+  .containerPing {
+    position: absolute;
+    top: 50%;         /* Centra verticalmente */
+    left: 0%;        /* Centra horizontalmente */
+    transform: translate(-50%, -50%); /* Ajusta para centrar perfectamente */
+    display: flex;
+    flex-direction: column;
+    margin-left: 2.5%;
+  } 
+
+  
+  .porcentajes{
+    position:relative;
+  }
+  .porcentajes span{
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    bottom: 0%;
+    right: 0%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 25px/1em Verdana;
+    color: red;
+    font-weight: bold;
+  }
+
+  .container-circle{
+    width: 100%;
+    display: flex;
+    margin-top: 20px;
+    align-items: center;
+    padding-left: 20px;
+    justify-content: start;
+  }
+
+  circle{
+    fill: none;
+    stroke-width: 20;
+    transform: rotate(-90deg);
+    transform-origin: 50%;
+    stroke-dasharray: 100 100;
+    stroke: #AAA;
+  }
+  circle:nth-child(2){ /* el segundo círculo, es el que se ve por encima del anterior y debe tener el color mas intenso y el area del porcentaje */
+    stroke: red;
+    stroke-dasharray: 0 100;
+    animation: rellenar .35s linear forwards;
+  }
+
+  @keyframes rellenar{
+    to{
+      stroke-dasharray: var(--porcentaje) 100;
+    }
+  }
+  
+  .ping-circle {
+    height: 20px;
+    width: 20px;
+    font-size: 0.7em;
+    background-color: red;
+    border-radius: 50%;
+    text-align: center;
+    color: white;
+    top: -5px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+.title-left{
+    text-align:left;
+}
+
+.parrafo{
+    width: 90%;
+    margin: auto;
+    text-align:left;
+}
+
+    .ping-item{
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        border-top: 20px solid red; /* Puedes cambiar el color aquí */
+    }
+  .field .value.left{
+    left: -22px;
+  }
+  .field .value.right{
+    right: -43px;
+  }
+  .range input{
+    -webkit-appearance: none;
+    width: 100%;
+    height: 3px;
+    background: #ddd;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+    z-index: 2222;
+  }
+  .range input::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: red;
+    border-radius: 50%;
+    background: red;
+    border: 1px solid red;
+    cursor: pointer;
+  }
+  .range input::-moz-range-thumb{
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid red;
+    cursor: pointer;
+  }
+  .range input::-moz-range-progress{
+    background: red; 
+    border-radius: 5px;
+    padding: 3.5px;
+
+  }
+
+@media (max-width: 575px) {
+
+    .nav-mobile{
+        display: flex;
+    }
+}
+
+.disabled-option {
+  color: #b5b5b5; /* Grey color for disabled options */
+  background-color: #f2f2f2; /* Light grey background */
+}
+option:disabled {
+  background-color: #e0e0e0; /* Even lighter grey */
+  color: #b5b5b5; /* Disable text color */
+}

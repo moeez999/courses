@@ -1,0 +1,376 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template core_calendar/teacher_view_selector
+
+    This template renders a dropdown to select teachers.
+
+    Example context (json):
+    {
+        "teachers": [
+            {"id": 1, "name": "Teacher A"},
+            {"id": 2, "name": "Teacher B"},
+            {"id": 3, "name": "Teacher C"}
+        ]
+    }
+}}
+<div style="display: flex; flex-direction: row;">
+    <div data-region="teacher-selector" style="flex: 1; margin-right: 10px;">
+        <button id="teacherDropdown" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 150px; display: flex; justify-content: space-between; align-items: center;">
+            <span class="d-sm-inline-block" data-active-item-text style="flex-grow: 1; text-align: left; margin-right: -10px;">
+                {{#selectedTeacher}} {{name}} {{/selectedTeacher}}
+                {{^selectedTeacher}} {{teacherActive}} {{/selectedTeacher}}
+            </span>
+        </button>
+        <ul class="dropdown-menu" data-show-active-item aria-labelledby="teacherDropdown" style="width: 200px;">
+            {{#teachers}}
+            <li>
+                <a class="dropdown-item" href="#" data-teacher-id="{{id}}">
+                    {{name}}
+                </a>
+            </li>
+            {{/teachers}}
+        </ul>
+    </div>
+
+    <div data-region="cohort-selector" style="flex: 1; margin-left: -400px;">
+        <button id="cohortDropdown" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 130px; display: flex; justify-content: space-between; align-items: center;">
+            <span class="d-sm-inline-block" data-active-item-text style="flex-grow: 1; text-align: left;">
+                {{#selectedCohort}} {{name}} {{/selectedCohort}}
+                {{^selectedCohort}} Select Group {{/selectedCohort}}
+            </span>
+        </button>
+        <ul class="dropdown-menu" data-show-active-item aria-labelledby="cohortDropdown" style="width: 200px;">
+        {{#cohorts}}
+            <li>
+                <a class="dropdown-item" href="#" data-cohort-id="{{id}}">
+                    {{name}}
+                </a>
+            </li>
+        {{/cohorts}}
+        </ul>
+    </div>
+</div>
+
+<div class="calendarwrapper" style="margin-left: -89px;">
+    <table class="week-table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+         <thead>
+    <!-- First row, split into two rows -->
+    <tr>
+        <th id="scheduleHeader" style="border: 1px solid #000; padding: 8px; text-align: center;" colspan="6">Daniela's groups schedule (FLORIDA)</th>
+    </tr>
+    <tr>
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;" rowspan="2">TiME (EST)</th>
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;" colspan="5">Days</th>
+    </tr>
+    <tr>
+        <!-- Second row, split from second column onward -->
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Monday</th>
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Tuesday</th>
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Wednesday</th>
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Thursday</th>
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Friday</th>
+    </tr>
+</thead>
+        <tbody id="week-table-tbody">
+            {{#schedules}}
+            <tr>
+                <td style="border: 1px solid #000; padding: 8px; text-align: center; width: 10.5vw; height: 7.5vw;">
+                    {{starttime}}
+                </td>
+                {{#daysList}}
+                <td style="border: 1px solid #000; padding: 8px; width: 10.5vw; height: 7.5vw; text-align: center; font-weight: bold;">
+                    {{#isDay}} {{name}} {{/isDay}}
+                </td>
+                {{/daysList}}
+            </tr>
+            {{/schedules}}
+        </tbody>
+    </table>
+    {{#core_calendar/event_list}} <!-- Event list block -->
+        {{$noeventsmessage}}
+            {{#str}} weekwithnoevents, core_calendar {{/str}}
+        {{/noeventsmessage}}
+    {{/core_calendar/event_list}}
+</div>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // jQuery click event handler for the teacher selection
+    $('a[data-teacher-id]').on('click', function(e) {
+        e.preventDefault(); // Prevent default link behavior
+
+        // Retrieve the teacher ID and name from the clicked link
+        var teacherId = $(this).data('teacher-id');
+        var teacherName = $(this).text(); // Corrected to fetch teacher name properly
+
+        // Update the dropdown button text to show the selected teacher
+        $('#teacherDropdown span[data-active-item-text]').text(teacherName);
+
+        // Show an alert to verify that the click event handler is invoked
+        //alert('AJAX call invoked for teacher: ' + teacherName);
+
+        // Fetch data from the server based on the selected teacher name
+        fetchTeacherData(teacherName);
+    });
+
+
+
+$(document).on('click', 'a[data-cohort-id]', function(e) {
+   //alert('clicked');
+    e.preventDefault(); // Prevent default link behavior
+
+        // Retrieve the teacher ID and name from the clicked link
+        var cohortId = $(this).data('cohort-id');
+        var cohortName = $(this).text(); // Corrected to fetch teacher name properly
+
+         // Retrieve the active teacher's name from the teacher dropdown
+        var activeTeacherName = $('#teacherDropdown span[data-active-item-text]').text().trim();
+
+        // Update the dropdown button text to show the selected teacher
+        $('#cohortDropdown span[data-active-item-text]').text(cohortName);
+
+        // Show an alert to verify that the click event handler is invoked
+        //alert('AJAX call invoked for cohort: ' + cohortId);
+
+        // Fetch data from the server based on the selected teacher name
+        fetchCohortData(cohortId, cohortName, activeTeacherName);
+});
+
+    // Function to fetch teacher data from the server
+    function fetchCohortData(cohortId, cohortName, activeTeacherName) {
+
+         // AJAX call to fetch cohort data based on cohortId
+        $.ajax({
+            url: 'http://localhost/moodle/calendar/cohort_data.php', // Replace with your actual server endpoint
+            method: 'POST', // Adjust HTTP method as per your server's API
+            data: { cohortId: cohortId, cohortName: cohortName, teacher : activeTeacherName }, // Data to send with the request
+            dataType: 'json', // Expected data type from the server response
+            success: function(response) {
+                // Handle successful response from the server
+                console.log('Cohort data fetched successfully:', response);
+
+                // Optionally update your UI or perform further actions
+
+                        // Clear previous table rows
+                var $tbody = $('#week-table-tbody');
+                $tbody.empty();
+                 var schedules = response.schedules || []; // Handle empty schedules
+
+                  // Define the days of the week in the correct order
+        var daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+
+         // If no schedules are found, display "No schedules found" in the table
+        if (schedules.length === 0) {
+            var $noScheduleRow = $('<tr></tr>');
+            $noScheduleRow.append('<td style="border: 1px solid #000; padding: 8px; text-align: center; width: 10.5vw; height: 7.5vw;">No schedules found</td>');
+            daysOfWeek.forEach(function() {
+                $noScheduleRow.append('<td style="border: 1px solid #000; padding: 8px; width: 10.5vw; height: 7.5vw;"></td>');
+            });
+            $tbody.append($noScheduleRow);
+        } else {
+            // Create a map to store schedules by time
+            var scheduleMap = {};
+
+            schedules.forEach(function(schedule) {
+                var startTime = schedule.starthour + ':' + schedule.startminute;
+                if (!scheduleMap[startTime]) {
+                    scheduleMap[startTime] = {};
+                }
+                schedule.days.split(', ').forEach(function(day) {
+                    scheduleMap[startTime][day] = {
+                        starthour: schedule.starthour,
+                        startminute: schedule.startminute,
+                        endhour: schedule.endhour,
+                        endminute: schedule.endminute,
+                        name: schedule.name
+                    };
+                });
+            });
+
+            // Loop through the scheduleMap and create table rows
+            for (var time in scheduleMap) {
+                var [hour, minute] = time.split(':').map(Number);
+                var formattedTime = formatTime(hour, minute);
+
+                var $row = $('<tr></tr>');
+                $row.append('<td style="border: 1px solid #000; padding: 8px; text-align: center; width: 10.5vw; height: 7.5vw;">' + formattedTime + '</td>');
+
+                daysOfWeek.forEach(function(day) {
+                    var schedule = scheduleMap[time][day];
+                    if (schedule) {
+                        var startTime = formatTime(schedule.starthour, schedule.startminute);
+                        var endTime = formatTime(schedule.endhour, schedule.endminute);
+                        var timeRange = startTime + ' - ' + endTime;
+                        if(schedule.name == 'FL1')
+                        {
+                          $row.append('<td style="border: 1px solid #000; padding: 8px; width: 10.5vw; height: 7.5vw; background-color: lightpink; text-align: center; font-weight: bold;">' + schedule.name + '</td>');
+                        }else if(schedule.name == 'FL2'){
+                            $row.append('<td style="border: 1px solid #000; padding: 8px; width: 10.5vw; height: 7.5vw; background-color: lightblue; text-align: center; font-weight: bold;">' + schedule.name + '</td>');
+                        }else{
+                           $row.append('<td style="border: 1px solid #000; padding: 8px; width: 10.5vw; height: 7.5vw; background-color: lightgreen; text-align: center; font-weight: bold;">' + schedule.name + '</td>');
+                        }
+                    } else {
+                        $row.append('<td style="border: 1px solid #000; padding: 8px; width: 10.5vw; height: 7.5vw;"></td>');
+                    }
+                });
+
+                $tbody.append($row);
+            }
+        }
+            },
+            error: function(xhr, status, error) {
+                // Handle errors during the AJAX request
+                console.error('Error fetching cohort data:', error);
+            }
+        });
+    }
+
+    function formatTime(hour, minute) {
+    let period = 'AM';
+    if (hour >= 12) {
+        period = 'PM';
+        if (hour > 12) hour -= 12;
+    } else if (hour === 0) {
+        hour = 12;
+    }
+
+    hour = hour < 10 ? '0' + hour : hour;
+    minute = minute < 10 ? '0' + minute : minute;
+
+    return hour + ':' + minute + ' ' + period;
+}
+
+    // Function to fetch teacher data from the server
+    function fetchTeacherData(teacherName) {
+        // You can make an AJAX call to your server here
+        // Example AJAX call
+      $.ajax({
+    url: 'http://localhost/moodle/calendar/teacher_data.php',
+    method: 'POST',
+    data: { teacherName: teacherName },
+    success: function(response) {
+        debugger
+        // Clear previous cohort dropdown items
+        var $cohortDropdown = $('#cohortDropdown').next('ul.dropdown-menu');
+        $cohortDropdown.empty();
+        $cohortDropdown.empty();
+        $cohortDropdown.prev('.dropdown-toggle').text('Select cohort'); // Reset dropdown text
+        $cohortDropdown.prev('.dropdown-toggle').val(''); // Clear selected value
+
+        // Clear previous table rows
+        var $tbody = $('#week-table-tbody');
+        $tbody.empty();
+
+        // Parse the JSON response into JavaScript objects
+        var group = response.groupname;
+        var teacher = response.username;
+        var cohorts = response.cohorts || []; // Handle empty cohorts
+        var schedules = response.schedules || []; // Handle empty schedules
+
+        debugger
+
+        // Update the header text with the teacher's name and group
+        $('#scheduleHeader').text(teacher + "'s groups schedule (" + group + ")");
+
+        // If no cohorts are found, append "No cohort found" to dropdown
+        if (cohorts.length === 0) {
+            debugger
+            $cohortDropdown.append('<li><a class="dropdown-item" href="#">No cohort found</a></li>');
+        } else {
+            // Iterate through cohorts and append them as list items
+            cohorts.forEach(function(cohort) {
+                $cohortDropdown.append('<li><a class="dropdown-item" href="#" data-cohort-id="' + cohort.id + '">' + cohort.name + '</a></li>');
+            });
+        }
+
+        // Define the days of the week in the correct order
+        var daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+
+        // If no schedules are found, display "No schedules found" in the table
+        if (schedules.length === 0) {
+            var $noScheduleRow = $('<tr></tr>');
+            $noScheduleRow.append('<td style="border: 1px solid #000; padding: 8px; text-align: center; width: 10.5vw; height: 7.5vw;">No schedules found</td>');
+            daysOfWeek.forEach(function() {
+                $noScheduleRow.append('<td style="border: 1px solid #000; padding: 8px; width: 10.5vw; height: 7.5vw;"></td>');
+            });
+            $tbody.append($noScheduleRow);
+        } else {
+            // Create a map to store schedules by time
+            var scheduleMap = {};
+
+            schedules.forEach(function(schedule) {
+                var startTime = schedule.starthour + ':' + schedule.startminute;
+                if (!scheduleMap[startTime]) {
+                    scheduleMap[startTime] = {};
+                }
+                schedule.days.split(', ').forEach(function(day) {
+                    scheduleMap[startTime][day] = {
+                        starthour: schedule.starthour,
+                        startminute: schedule.startminute,
+                        endhour: schedule.endhour,
+                        endminute: schedule.endminute,
+                        name: schedule.name
+                    };
+                });
+            });
+
+            // Loop through the scheduleMap and create table rows
+            for (var time in scheduleMap) {
+                var [hour, minute] = time.split(':').map(Number);
+                var formattedTime = formatTime(hour, minute);
+
+                var $row = $('<tr></tr>');
+                $row.append('<td style="border: 1px solid #000; padding: 8px; text-align: center; width: 10.5vw; height: 7.5vw;">' + formattedTime + '</td>');
+
+                daysOfWeek.forEach(function(day) {
+                    var schedule = scheduleMap[time][day];
+                    if (schedule) {
+                        var startTime = formatTime(schedule.starthour, schedule.startminute);
+                        var endTime = formatTime(schedule.endhour, schedule.endminute);
+                        var timeRange = startTime + ' - ' + endTime;
+                        if(schedule.name == 'FL1')
+                        {
+                          $row.append('<td style="border: 1px solid #000; padding: 8px; width: 10.5vw; height: 7.5vw; background-color: lightpink; text-align: center; font-weight: bold;">' + schedule.name + '</td>');
+                        }else if(schedule.name == 'FL2'){
+                            $row.append('<td style="border: 1px solid #000; padding: 8px; width: 10.5vw; height: 7.5vw; background-color: lightblue; text-align: center; font-weight: bold;">' + schedule.name + '</td>');
+                        }else{
+                           $row.append('<td style="border: 1px solid #000; padding: 8px; width: 10.5vw; height: 7.5vw; background-color: lightgreen; text-align: center; font-weight: bold;">' + schedule.name + '</td>');
+                        }
+                    } else {
+                        $row.append('<td style="border: 1px solid #000; padding: 8px; width: 10.5vw; height: 7.5vw;"></td>');
+                    }
+                });
+
+                $tbody.append($row);
+            }
+        }
+    },
+    error: function(xhr, status, error) {
+        debugger
+        console.error('Error fetching teacher data:', error);
+    }
+});
+    }
+});
+
+
+</script>

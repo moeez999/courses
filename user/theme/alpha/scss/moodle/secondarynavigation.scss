@@ -1,0 +1,109 @@
+.secondary-navigation {
+    border-bottom: 1px solid $gray-200;
+    border-radius: $border-radius $border-radius 0 0;
+
+    .theme-dark & {
+        border-color: $dm-border-color;
+    }
+
+    #page-admin-search & {
+        display: none;
+    }
+
+    @include media-breakpoint-up(lmd) {
+        width: calc(100% + 2 * #{$wrapper-padding-x});
+        margin: -40px -#{$wrapper-padding-x} 30px;
+        padding: 7px $wrapper-padding-x;
+    }
+
+    @include media-breakpoint-up(lmd) {
+        top: 55px;
+    }
+
+    @include media-breakpoint-up(lmd) {
+        position: sticky;
+        z-index: $zindex-fixed - 1;
+
+        background-color: $container-bg;
+
+        .sticky-header & {
+            background-color: transparent;
+            border: 0;
+
+            margin: 0;
+            padding: 0;
+            position: fixed;
+
+            width: auto;
+            max-width: 150px;
+            
+            top: 70px;
+            right: 15px;
+            // top: $navbar-height + 4px;
+            // position: fixed;
+
+            // margin: 0 auto;
+            // width: 600px;
+            // left: calc(50% - 300px);
+            // max-width: 90%;
+            // border: 1px solid $gray-200;
+            // border-radius: $btn-border-radius;
+            // .theme-dark & {
+            //     border-color: $dm-border-color;
+            // }
+        }
+
+        .theme-dark & {
+            background-color: $dm-container-bg;
+        }
+
+        #page-site-index & {
+            background-color: transparent;
+            top: 78px;
+            right: 50px;
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+
+        .nav-tabs {
+            padding: 0;
+        }
+    }
+
+    .navigation {
+        .nav-tabs {
+            background: none;
+
+            .nav-link {
+                padding: 7px 10px;
+                height: 32px;
+                font-size: $font-size-xs;
+                border-radius: $btn-border-radius;
+
+                &.active {
+                    background-color: $primary-color-100;
+                    color: $primary-color-600;
+
+                    .theme-dark & {
+                        background-color: $primary-color-800;
+                        color: $primary-color-200;
+                    }
+                }
+
+                &:hover {
+                    background-color: $gray-100;
+                    color: $primary-color-600;
+
+                    .theme-dark & {
+                        background-color: $dm-gray-200;
+                        color: $primary-color-200;
+                    }
+
+                }
+            }
+        }
+    }
+}
