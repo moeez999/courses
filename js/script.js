@@ -217,6 +217,7 @@ const elements = {
   groupModal: document.getElementById("gm-modal"),
   groupBack: document.querySelector("#gm-modal .gm-header button:first-child"),
   groupClose: document.querySelector("#gm-modal .gm-header button:last-child"),
+  feedbackClose: querySelectorElement(".fb-close-btn"),
 
   teacherReason1Modal: querySelectorElement(".reason-1-modal-teacher"),
   teacherReason1ModalBack: querySelectorElement(
@@ -698,6 +699,32 @@ function detectAndAdjustPosition(elementGetPosition, modalToSetPosition) {
   // }
 }
 
+function detectAndAdjustPositionZ(elementGetPosition, modalToSetPosition) {
+  const rect = elementGetPosition.getBoundingClientRect();
+  // e]initial modal position
+  let left = rect.left + window.scrollX;
+  let top = rect.bottom + window.scrollY;
+
+  // Get modal dimensions
+  const modalWidth = modalToSetPosition.getBoundingClientRect().width; // Modal width
+  const viewportWidth = window.innerWidth;
+
+  // Check if modal goes out of the right boundary
+  if (left + modalWidth > viewportWidth) {
+    left = viewportWidth - modalWidth - 24; // scrollbar width (14px) and spacing from right (10px)
+  }
+
+  // if (window.innerWidth <= 600) {
+  //   modalToSetPosition.style.top = `${top}px`;
+  // } else {
+  top = top - 130;
+  left = left - 290;
+  modalToSetPosition.style.top = `${top}px`;
+  modalToSetPosition.style.left = `${left}px`;
+
+  // }
+}
+
 function bgMoodle(control) {
   switch (control) {
     case true:
@@ -746,6 +773,34 @@ function detectAndAdjustPositionCustomDeiker(
 
   // }
 }
+function detectAndAdjustPositionCustomDeikerZ(
+  elementGetPosition,
+  modalToSetPosition
+) {
+  const rect = elementGetPosition.getBoundingClientRect();
+  // e]initial modal position
+  let left = rect.left + window.scrollX;
+  let top = rect.bottom + window.scrollY;
+
+  // Get modal dimensions
+  const modalWidth = modalToSetPosition.getBoundingClientRect().width; // Modal width
+  const viewportWidth = window.innerWidth;
+
+  // Check if modal goes out of the right boundary
+  if (left + modalWidth > viewportWidth) {
+    left = viewportWidth - modalWidth - 24; // scrollbar width (14px) and spacing from right (10px)
+  }
+
+  // if (window.innerWidth <= 600) {
+  //   modalToSetPosition.style.top = `${top}px`;
+  // } else {
+  top = 1205;
+  left = left + 50;
+  modalToSetPosition.style.top = `${top}px`;
+  modalToSetPosition.style.left = `${left}px`;
+
+  // }
+}
 function detectAndAdjustPositionCustomDeikerGroup(
   elementGetPosition,
   modalToSetPosition
@@ -780,6 +835,9 @@ function popupOpen(backdropContainer, popup, nested) {
   if (nested) {
     openNestedContainer = popup;
   } else {
+    if (openContainer){
+      openContainer.classList.remove("active");
+    }
     openContainer = popup;
   }
   backdropContainer.classList.add("active");
@@ -795,7 +853,8 @@ function popUpClose(backdropContainer, popup, nested) {
 
 elements.userOptionOpen.forEach((e, i) =>
   e.addEventListener("click", () => {
-    detectAndAdjustPosition(e, elements.userOptions);
+    // detectAndAdjustPosition(e, elements.userOptions);
+     detectAndAdjustPositionZ(e, elements.userOptions);
     popupOpen(elements.backdrop, elements.userOptions);
   })
 );
@@ -807,9 +866,12 @@ elements.smManager.forEach((e) =>
   })
 );
 
-elements.sm_ChangeGroup.addEventListener("click", () => {
+elements.sm_ChangeGroup.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation(); // ⬅️ IMPORTANT
   popupOpen(elements.backdrop, elements.sm_ChangeGroupModal);
 });
+
 elements.sm_ChangeGroupModalClose.addEventListener("click", () => {
   popUpClose(elements.backdrop, elements.sm_ChangeGroupModal);
 });
@@ -818,14 +880,18 @@ elements.sm_changeToThisGroup.addEventListener("click", () => {
   popupOpen(elements.backdrop, elements.sm_ChangeGroupModal);
 });
 
-elements.sm_changeYourPlan.addEventListener("click", () => {
+elements.sm_changeYourPlan.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation(); // ⬅️ IMPORTANT
   popupOpen(elements.backdrop, elements.sm_changeYourPlanModal);
 });
 
 // ===== Pause Flow Integration =====
 
 // 1. Open Pause Modal
-elements.pauseModalOpener?.addEventListener("click", () => {
+elements.pauseModalOpener?.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation(); // ⬅️ IMPORTANT
   popupOpen(elements.backdrop, elements.pauseModal);
 });
 
@@ -1295,7 +1361,11 @@ elements.checkOutModalClose.addEventListener("click", () => {
 });
 elements.subscription_dropdown_options_open.forEach((e, i) =>
   e.addEventListener("click", () => {
-    detectAndAdjustPositionCustomDeiker(
+    // detectAndAdjustPositionCustomDeiker(
+    //   e,
+    //   elements.subscription_dropdown_options
+    // );
+     detectAndAdjustPositionCustomDeikerZ(
       e,
       elements.subscription_dropdown_options
     );
@@ -2778,6 +2848,25 @@ transferCompleteOpen.addEventListener("click", () => {
 
     showBackdrop(level);
     modalStack.push({ modal, level });
+
+   const level2BackDrop = document.querySelector("#backdrop-level-2");
+    const btn = document.querySelector(".backdrop-level-2-close.new");
+
+    if (level2BackDrop && btn) {
+      level2BackDrop.addEventListener("click", () => {
+        const modal =
+          btn.closest("main.modal-basic-style") || btn.closest("main");
+
+        if (modal) {
+          modal.classList.remove("active");
+          closeModal(modal);
+        } else {
+          closeTopModal();
+        }
+
+        closeAllModals();
+      });
+    }
   }
 
   function closeModal(modal) {
