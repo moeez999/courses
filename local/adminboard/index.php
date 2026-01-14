@@ -17,23 +17,25 @@ $courses = $DB->get_records_sql($sql_courses);
 
 $courses_list = array_values($courses);
 
-usort($courses_list, function($a, $b) {
-    preg_match('/Level (\d+)/', $a->fullname, $matchesA);
-    preg_match('/Level (\d+)/', $b->fullname, $matchesB);
-    
-    $numA = isset($matchesA[1]) ? (int)$matchesA[1] : PHP_INT_MAX;
-    $numB = isset($matchesB[1]) ? (int)$matchesB[1] : PHP_INT_MAX;
+usort($courses_list, function ($a, $b) {
+  preg_match('/Level (\d+)/', $a->fullname, $matchesA);
+  preg_match('/Level (\d+)/', $b->fullname, $matchesB);
 
-    return $numA <=> $numB;
+  $numA = isset($matchesA[1]) ? (int)$matchesA[1] : PHP_INT_MAX;
+  $numB = isset($matchesB[1]) ? (int)$matchesB[1] : PHP_INT_MAX;
+
+  return $numA <=> $numB;
 });
 
 $new_courses = [];
 foreach ($courses_list as $course) {
-    $new_courses[$course->id] = $course;
+  $new_courses[$course->id] = $course;
 }
 
 
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -54,9 +56,11 @@ foreach ($courses_list as $course) {
     <section class="mainLayout">
       <aside>
         <div class="logo">
-
         </div>
         <ul>
+
+          <h2 style="font-size: 25px;font-weight: 600; margin-top: -17px;">Groups</h2>
+
           <li>Teachers</li>
           <li class="without-bg">Select a group</li>
           <li class="days">Days & Time</li>
@@ -69,7 +73,7 @@ foreach ($courses_list as $course) {
           global $DB;
 
           // SQL query to fetch all courses except the one with id = 1
-           $sql_courses = "SELECT id, fullname, shortname FROM {course} WHERE id NOT IN (1, 2)";
+          $sql_courses = "SELECT id, fullname, shortname FROM {course} WHERE id NOT IN (1, 2)";
 
           // Execute the query
           $courses = $DB->get_records_sql($sql_courses);
@@ -82,14 +86,14 @@ foreach ($courses_list as $course) {
 
               echo '<li id="' . $course_id_attr . '" class="padding-change parent-element">';
               echo '<p>' . $course->fullname . '</p>'; // Display course name
-          
+
               // SQL query to fetch all topics (sections) for the current course
               $sql_topics = "SELECT id, name 
                                 FROM {course_sections} 
                                 WHERE course = :courseid 
                                     AND name IS NOT NULL 
                                     AND visible = 1"; // Exclude empty and hidden sections
-          
+
               $topics = $DB->get_records_sql($sql_topics, ['courseid' => $course->id]);
 
               // Check if topics exist
@@ -131,8 +135,8 @@ foreach ($courses_list as $course) {
 
         <div class="bottom-part">
           <div class="heading-and-setting">
-            <h1>Admin Panel</h1>
-
+            <?php require_once('admin_dashboard_table_content_dropdowns.php'); ?>
+            <!-- <h1>Admin Panel</h1> -->
             <div class="settingIcon">
               <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -188,14 +192,14 @@ foreach ($courses_list as $course) {
 
                   echo '<li id="' . $course_id_attr . '" class="parentElement">';
                   echo '<div class="greenElement"><h1>' . $course->fullname . '</h1></div>'; // Display course name
-              
+
                   // SQL query to fetch all topics (sections) for the current course
                   $sql_topics = "SELECT id, name 
                                 FROM {course_sections} 
                                 WHERE course = :courseid 
                                     AND name IS NOT NULL 
                                     AND visible = 1"; // Exclude empty and hidden sections
-              
+
                   $topics = $DB->get_records_sql($sql_topics, ['courseid' => $course->id]);
 
                   // Check if topics exist
@@ -224,7 +228,7 @@ foreach ($courses_list as $course) {
               <?php
               global $DB;
               // SQL query to fetch all courses except the one with id = 1
-               $sql_courses = "SELECT id, fullname, shortname FROM {course} WHERE id NOT IN (1, 2)";
+              $sql_courses = "SELECT id, fullname, shortname FROM {course} WHERE id NOT IN (1, 2)";
 
               // Execute the query
               $courses = $DB->get_records_sql($sql_courses);
@@ -232,7 +236,7 @@ foreach ($courses_list as $course) {
               if ($courses) {
                 //$html_output = ''; // To store the generated HTML
                 $iteration = 1; // Start iteration count
-              
+
                 foreach ($courses as $course) {
                   // Generate the `course_name` based on the iteration
                   $course_name = "level{$iteration}";
@@ -278,7 +282,10 @@ foreach ($courses_list as $course) {
                                         </div>
                                     </div>
                                     <div class=\"bottomPart {$course_name}Status\"></div>
-                                </div>";
+
+                                    </div>";
+
+
 
                   echo $html_output;
 
@@ -286,7 +293,7 @@ foreach ($courses_list as $course) {
                 }
 
                 // Output the generated HTML
-              
+
               } else {
                 echo "No courses found.";
               }
@@ -298,6 +305,7 @@ foreach ($courses_list as $course) {
     </section>
 
     <!-- popup  -->
+
     <!-- ===== -->
     <section class="dim">
       <div class="filters">
@@ -1127,6 +1135,13 @@ foreach ($courses_list as $course) {
   </div>
 
   <script src="./scripts/script.js?v=<?php echo time(); ?>"></script>
+
+  <?php require_once('admin_dashboard_table_content_modal_cohorts.php'); ?>
+  <?php require_once('admin_dashboard_table_content_modal_session.php'); ?>
+  <?php require_once("admin_dashboard_table_content_menu_teacher_management.php"); ?>
+
+
+
 </body>
 
 </html>

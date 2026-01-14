@@ -2,9 +2,9 @@ const basicDetailsElement = document.querySelector(".basicDetails");
 const body = document.body;
 
 async function fetchAllData() {
-    debugger
+//    debugger
   try {
-      debugger
+  //    debugger
     // Fetch both courses and teacher details in parallel
     const [coursesResponse, teachersResponse] = await Promise.all([
       fetch('./courses.php'),
@@ -14,32 +14,32 @@ async function fetchAllData() {
       })
     ]);
 
-    // Process the responses once both fetches are complete
-    const coursesData = await coursesResponse.json();
-    const teachersData = await teachersResponse.json();
+      
+      // Process the responses once both fetches are complete
+      const coursesData = await coursesResponse.json();
+      const teachersData = await teachersResponse.json();
 
-    // Now you can process both data together
-    const totalLevels = coursesData.totalLevels;
-    const teachers = teachersData.teachers;
+      // Now you can process both data together
+      const totalLevels = coursesData.totalLevels;
+      const teachers = teachersData.teachers;
 
-    // **************************************** */ 
-    // Dynamically create constants for each level
-    for (let i = 1; i <= totalLevels; i++) {
-      const constantName = `level${i}StatusElement`;
-      const element = document.querySelector(`.level${i}Status`);
+      // **************************************** */ 
+      // Dynamically create constants for each level
+      for (let i = 1; i <= totalLevels; i++) {
+        const constantName = `level${i}StatusElement`;
+        const element = document.querySelector(`.level${i}Status`);
 
-      if (element) {
-        // Dynamically create a constant for each level and assign the element
-        window[constantName] = element; // Assign to global scope for access (e.g., level1StatusElement)
+        if (element) {
+          // Dynamically create a constant for each level and assign the element
+          window[constantName] = element; // Assign to global scope for access (e.g., level1StatusElement)
+        }
       }
-    }
 
 
-    // **************************************** */
+      // **************************************** */
 
     teachers.forEach((ele) => {
-      const { image, name, backgroundColor } = ele.teacher;
-
+      const { image, name, backgroundColor } = ele.teacher;  
       const basicDetails = `
   <div class="col01" >
     <div class="teacher" style="--t-bg-color: ${backgroundColor}">
@@ -55,11 +55,13 @@ async function fetchAllData() {
         return (
           `<div class="col01" data-id=${key}>
       <div class="group">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M10 0C4.48622 0 0 4.48622 0 10C0 15.5138 4.48622 20 10 20C15.5138 20 20 15.5138 20 10C20 4.48622 15.5138 0 10 0ZM15.589 7.36842L9.19799 13.7093C8.82205 14.0852 8.22055 14.1103 7.81955 13.7343L4.43609 10.6516C4.03509 10.2757 4.01002 9.64912 4.3609 9.24812C4.73684 8.84712 5.36341 8.82205 5.76441 9.19799L8.44611 11.6541L14.1604 5.93985C14.5614 5.53885 15.188 5.53885 15.589 5.93985C15.99 6.34085 15.99 6.96742 15.589 7.36842Z" fill="white"/>
-</svg>
-      </div>
-      <div class="days-and-time">
+        
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 0C4.48622 0 0 4.48622 0 10C0 15.5138 4.48622 20 10 20C15.5138 20 20 15.5138 20 10C20 4.48622 15.5138 0 10 0ZM15.589 7.36842L9.19799 13.7093C8.82205 14.0852 8.22055 14.1103 7.81955 13.7343L4.43609 10.6516C4.03509 10.2757 4.01002 9.64912 4.3609 9.24812C4.73684 8.84712 5.36341 8.82205 5.76441 9.19799L8.44611 11.6541L14.1604 5.93985C14.5614 5.53885 15.188 5.53885 15.589 5.93985C15.99 6.34085 15.99 6.96742 15.589 7.36842Z" fill="white"/>
+      </svg>
+      
+        </div>
+      <div class="days-and-time" onclick="admin_dashboard_table_content_menu_teacher_management_toggle(this)">
         <p>${dayAndTime?.red?.time.slice(0, -2)} <span>${dayAndTime?.red?.time.slice(-2)}</span></p>
         ${dayAndTime?.red?.days?.map(e => `<div class="redBox">${e}</div>`).join("")}
         <p>${dayAndTime?.blue?.time.slice(0, -2)} <span>${dayAndTime?.red?.time.slice(-2)}</span></p>
@@ -108,15 +110,16 @@ async function fetchAllData() {
             </clipPath>
           </defs>
         </svg>
+        
       </div>`;
             } else if (status === "notStarted") {
               return `
-      <div class="notStarted">
+      <div class="notStarted" onclick="admin_dashboard_table_content_modal_session_openModal(event)">
         <div class="innerCircle"></div>
       </div>`;
             } else {
               return `
-      <div class="inProgress">
+        <div class="inProgress" onclick="admin_dashboard_table_content_modal_cohorts_openModal(event)">
         <h1>${status}</h1>
         <div
           class="progressBar"
@@ -144,6 +147,9 @@ async function fetchAllData() {
         }
       }
     })
+
+
+    
 
     // ***************************
     const startLevel = 1; // Starting level number (1 for level1Collapse, mobileLevel1Collapse, etc.)
@@ -249,6 +255,7 @@ async function fetchAllData() {
     //     );
     //   }
     // }
+
   } catch (error) {
     console.error('Error:', error);
   }
@@ -257,7 +264,7 @@ async function fetchAllData() {
   }
 }
 
-debugger
+// debugger
 fetchAllData();
 
 function callMe() {
@@ -340,11 +347,15 @@ function callMe() {
   function activePopup(element) {
     element.classList.add("active");
   }
-  function popupAdjustAccordinScreen(addEvent, mainElement, popup, eventName) {
-    addEvent.addEventListener(eventName, (event) => {
-      activePopup(mainElement);
-    });
-  }
+  
+  // function popupAdjustAccordinScreen(addEvent, mainElement, popup, eventName) {
+  //   addEvent.addEventListener(eventName, (event) => {
+  //     activePopup(mainElement);
+  //   });
+  // }
+
+
+
 
   function automaticallyAdjust(event) {
     activePopup(elements.teacherManagementDim);
@@ -388,10 +399,10 @@ function callMe() {
   });
 
 
-  popupAdjustAccordinScreen(elements.groups[0], elements.groupSettingDim, elements.groupSetting, "click");
-  popupAdjustAccordinScreen(elements.monthlyRetention[0], elements.monthlyRetentionDim, elements.monthlyRetentionContainer, "click");
-  popupAdjustAccordinScreen(elements.completed[0], elements.SessionDetailDim, elements.SessionDetailContainer, "click");
-  popupAdjustAccordinScreen(elements.inProgress[0], elements.teachersOfGroupDim, elements.teacherOfGroup, "mouseenter");
+  // popupAdjustAccordinScreen(elements.groups[0], elements.groupSettingDim, elements.groupSetting, "click");
+  // popupAdjustAccordinScreen(elements.monthlyRetention[0], elements.monthlyRetentionDim, elements.monthlyRetentionContainer, "click");
+  // popupAdjustAccordinScreen(elements.completed[0], elements.SessionDetailDim, elements.SessionDetailContainer, "click");
+  // popupAdjustAccordinScreen(elements.inProgress[0], elements.teachersOfGroupDim, elements.teacherOfGroup, "mouseenter");
 
 
   // Tab switch
